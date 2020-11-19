@@ -1,0 +1,22 @@
+.container{
+    background-image:url('./../img/MainPagebackground.png');
+    position:fixed;
+    left : 0px;
+    top : 0px;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size : cover;
+}
+
+.centerLogo{
+    
+  
+    top : 30%;
+    width : 40%;
+    height:auto;
+}
+
+.center{
+    text-align: center;
+}

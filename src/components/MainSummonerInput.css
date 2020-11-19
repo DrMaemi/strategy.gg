@@ -1,0 +1,17 @@
+.search{
+    width : 300px;
+    height : 45px;
+}
+.searchButton{
+    background-image: url('/src/img/SearchButton.png');
+  
+    position: relative;
+    right: 43px;
+    top : 12px;
+
+    width : 40px;
+    height : 40px;
+    border : none;
+    cursor : pointer;
+}
+@media (max-width: 100px) {}
