@@ -3,10 +3,12 @@ import requests, time
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+"""
 cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
 firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
+"""
 
 def getspec(info): # processing code
     #keysUserInfo = ["summoner_name", "profile_icon_id", "tier", "league_point"]
@@ -92,7 +94,7 @@ def getinfo(summoner_name, api_key):
         return False
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
-            return False
+            return 0
         time.sleep(3)
         r = requests.get(url)
     info['userinfo'] = r.json()
@@ -106,6 +108,7 @@ def getleagueinfo(summoner_id, api_key):
     url = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/"\
             + summoner_id + "?api_key=" + api_key
     r = requests.get(url)
+    start_time = time.time()
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
             return False
@@ -118,6 +121,7 @@ def get5matches(account_id, api_key):
     url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/'\
             + account_id + '?queue=420&season=13&endIndex=5' + '&api_key=' + api_key
     r = requests.get(url)
+    start_time = time.time()
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
             return False
@@ -134,6 +138,7 @@ def get5matches(account_id, api_key):
         url = "https://kr.api.riotgames.com/lol/match/v4/matches/"\
                 + str(match_id) + "?api_key=" + api_key
         r = requests.get(url)
+        start_time = time.time()
         while r.status_code != 200: # api 요청에 오류가 있는 경우
             if time.time() - start_time >= 30:
                 return False
