@@ -1,9 +1,11 @@
 import json
 from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
 from functools import wraps
 import maintospec
 
 app = Flask(__name__)
+CORS(app)
 #app.config['JSON_AS_ASCII'] = False
 
 host_addr = "0.0.0.0"
@@ -20,7 +22,7 @@ def as_json(f):
 
 @app.route("/")
 def route():
-    return "Strate.gg 백엔드 서버에 오신 것을 환영합니다."
+    return "Strategy.gg 백엔드 서버에 오신 것을 환영합니다."
 
 @app.route("/specpage/<summoner_name>")
 @as_json
