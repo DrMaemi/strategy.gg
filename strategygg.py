@@ -32,4 +32,4 @@ def specpage(summoner_name):
     return spec
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host_addr, port=5000, threaded=True)
