@@ -131,6 +131,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         "matchspecs":matchspecs, # list<json>
         #"timelinespecs":timelinespecs # list<json>
     }
+    print("is done..?")
     ref.child("spec").update(spec)
     return spec
 
