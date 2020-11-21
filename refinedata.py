@@ -3,34 +3,53 @@ import numpy as np
 import requests, time, pickle
 from math import ceil
 
-diff_columns = [
-    "total_gold", # 0 numeric
-    "current_gold", # 1 numeric
-    "total_level", # 2 numeric
-    "avg_level", # 3 numeric
-    "kills_total_minion", # 4 numeric
-    "kills_total_jungle_minion", # 5 numeric
-    "first_blood", # 6 binary
-    "kills", # 7
-    "deaths", # 8
-    "assists", # 9
-    "place_wards", # 10
-    "kills_wards", # 11
-    "first_tower", # 12 binary
-    "first_inhibitor", # 13 binary
-    # "first_tower_lane", # 14 category, delete
-    "kills_total_towers", # 15
-    "kills_mid_towers", # 16
-    "kills_top_towers", # 17
-    "kills_bot_towers", # 18
-    "kills_inhibitors", # 19
-    "first_dragon", # 20
-    # "dragon_type", # 21, delete 해서 총 22개 남는다.
-    "total_dragons", # 22
-    "rift_heralds", # 23
-]
+class Metadata:
+    def __init__(self):
+        self.raw_columns = [
+            'blueTotalGolds','blueCurrentGolds','blueTotalLevel'\
+                ,'blueAvgLevel','blueTotalMinionKills','blueTotalJungleMinionKills'
+                ,'blueFirstBlood','blueKill','blueDeath','blueAssist'\
+                ,'blueWardPlaced','blueWardKills','blueFirstTower','blueFirstInhibitor'\
+                ,'blueFirstTowerLane'\
+                ,'blueTowerKills','blueMidTowerKills','blueTopTowerKills','blueBotTowerKills'\
+                ,'blueInhibitor','blueFirstDragon','blueDragonType','blueDragon','blueRiftHeralds'\
+                ,'redTotalGolds','redCurrentGolds','redTotalLevel'\
+                ,'redAvgLevel','redTotalMinionKills','redTotalJungleMinionKills'
+                ,'redFirstBlood','redKill','redDeath','redAssist'\
+                ,'redWardPlaced','redWardKills','redFirstTower','redFirstInhibitor'\
+                ,'redFirstTowerLane'\
+                ,'redTowerKills','redMidTowerKills','redTopTowerKills','redBotTowerKills'\
+                ,'redInhibitor','redFirstDragon','redDragnoType','redDragon','redRiftHeralds'
+        ]
+        self.diff_columns = [
+            "total_gold", # 0 numeric
+            "current_gold", # 1 numeric
+            "total_level", # 2 numeric
+            "avg_level", # 3 numeric
+            "kills_total_minion", # 4 numeric
+            "kills_total_jungle_minion", # 5 numeric
+            "first_blood", # 6 binary
+            "kills", # 7
+            "deaths", # 8
+            "assists", # 9
+            "place_wards", # 10
+            "kills_wards", # 11
+            "first_tower", # 12 binary
+            "first_inhibitor", # 13 binary
+            # "first_tower_lane", # 14 category, delete
+            "kills_total_towers", # 15
+            "kills_mid_towers", # 16
+            "kills_top_towers", # 17
+            "kills_bot_towers", # 18
+            "kills_inhibitors", # 19
+            "first_dragon", # 20
+            # "dragon_type", # 21, delete 해서 총 22개 남는다.
+            "total_dragons", # 22
+            "rift_heralds", # 23
+        ]
 
 def refine_timeline_df(timeline_df):
+    diff_columns = Metadata().diff_columns
     refined_timeline_df = pd.DataFrame(columns=diff_columns)
     raw_columns = list(timeline_df.columns)
     offset = 24
@@ -44,20 +63,7 @@ def refine_timeline_df(timeline_df):
     return refined_timeline_df # DataFrame
 
 def get_timeline_features(timeline_data, time):
-    columns = ['blueTotalGolds','blueCurrentGolds','blueTotalLevel'\
-                ,'blueAvgLevel','blueTotalMinionKills','blueTotalJungleMinionKills'
-                ,'blueFirstBlood','blueKill','blueDeath','blueAssist'\
-                ,'blueWardPlaced','blueWardKills','blueFirstTower','blueFirstInhibitor'\
-                ,'blueFirstTowerLane'\
-                ,'blueTowerKills','blueMidTowerKills','blueTopTowerKills','blueBotTowerKills'\
-                ,'blueInhibitor','blueFirstDragon','blueDragonType','blueDragon','blueRiftHeralds'\
-                ,'redTotalGolds','redCurrentGolds','redTotalLevel'\
-                ,'redAvgLevel','redTotalMinionKills','redTotalJungleMinionKills'
-                ,'redFirstBlood','redKill','redDeath','redAssist'\
-                ,'redWardPlaced','redWardKills','redFirstTower','redFirstInhibitor'\
-                ,'redFirstTowerLane'\
-                ,'redTowerKills','redMidTowerKills','redTopTowerKills','redBotTowerKills'\
-                ,'redInhibitor','redFirstDragon','redDragnoType','redDragon','redRiftHeralds']
+    columns = Metadata().raw_columns
     #json data에서 필요한 frames 데이터만
     frames = timeline_data['frames']
     #시작하고 n분 즉, 수집하고 싶은 시간까지의 인덱스가 어디있을지 추출하는 코드

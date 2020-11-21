@@ -13,6 +13,11 @@ firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
 
+def searchspec(summoner_name):
+    ref = db.reference("Users/"+summoner_name)
+    spec = ref.child("spec").get()
+    return spec
+
 def getspec(info, models): # processing code, to provide userspec, matchspecs
     #keys of userspec = ["summoner_name", "profile_icon_id", "tier", "league_point"]
     #keys of matchspecs = ["team", "win", "champion_id", "level", "spell_id", "kill", "death", "assist","avg"\
@@ -20,18 +25,15 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     if info == 0: return 0 # 존재하지 않는 소환사입니다.
     elif info == 1: return 1 # 정보를 받아오는데 너무 오래 걸립니다.
     summoner_name = info['userinfo']['name']
-    summoner_name_db = summoner_name.replace(" ", "")
-    summoner_name_db = summoner_name_db.lower()
-    ref = db.reference("Users/{}".format(summoner_name_db))
-    spec = ref.child("spec").get()
-    if spec is not None: # spec 정보가 존재한다면
-        return spec # db에 있는 spec 정보를 반환합니다.
+    for leagueinfo in info['leagueinfo']:
+        if leagueinfo['queueType'] == "RANKED_SOLO_5x5":
+            targetLeagueInfo = leagueinfo
     userspec = {
         "summoner_name":summoner_name,
         "profile_icon_id":info['userinfo']['profileIconId'],
-        "tier":info['leagueinfo'][0]['tier'],
-        "rank":info['leagueinfo'][0]['rank'],
-        "league_point":info['leagueinfo'][0]['leaguePoints']
+        "tier":targetLeagueInfo['tier'],
+        "rank":targetLeagueInfo['rank'],
+        "league_point":targetLeagueInfo['leaguePoints']
     }
     matchspecs, timelinespecs = [], []
     outlines = info['5matches']['outlines']
@@ -123,14 +125,15 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         "matchspecs":matchspecs, # list<json>
         "timelinespecs":timelinespecs # list<json>
     }
+    summoner_name_db = summoner_name.replace("+", "")
+    summoner_name_db = summoner_name_db.replace(" ", "")
+    summoner_name_db = summoner_name_db.replace("%20", "")
+    summoner_name_db = summoner_name_db.lower()
+    ref = db.reference("Users/"+summoner_name_db)
     ref.child("spec").update(spec)
     return spec
 
 def getinfo(summoner_name, api_key):
-    ref = db.reference("Users")
-    info = ref.child(summoner_name).child("info").get()
-    if info is not None:
-        return info
     info = {}
     url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/'\
             + summoner_name + '?api_key=' + api_key
@@ -152,11 +155,6 @@ def getinfo(summoner_name, api_key):
     if matches == 1: return 1 # 매치 정보를 받아오는데 너무 오래 걸림
     info['leagueinfo'] = leagueinfo
     info['5matches'] = matches
-    to_db = {
-        "info":info,
-    }
-    ref = db.reference("Users/{}".format(summoner_name))
-    ref.update(to_db)
     return info
     
 def getleagueinfo(summoner_id, api_key):
