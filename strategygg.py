@@ -50,6 +50,9 @@ def route():
 def specpage():
     summoner_name = request.args.get("name")
     models = 0
+    summoner_name = summoner_name.replace(" ","")
+    summoner_name = summoner_name.replace("+","")
+    summoner_name = summoner_name.replace("%20","")
     info = maintospec.getinfo(summoner_name, api_key)
     spec = maintospec.getspec(info, models)
     return spec
