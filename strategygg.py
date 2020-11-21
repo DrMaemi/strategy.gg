@@ -53,6 +53,7 @@ def specpage():
     summoner_name = summoner_name.replace(" ","")
     summoner_name = summoner_name.replace("+","")
     summoner_name = summoner_name.replace("%20","")
+    summoner_name = summoner_name.lower()
     info = maintospec.getinfo(summoner_name, api_key)
     spec = maintospec.getspec(info, models)
     return spec

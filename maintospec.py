@@ -105,7 +105,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
                 gold_differences[idx] = -val
 
         timelinespec = {
-            "refined_timeline_data":refined_timeline_data,
+            #"refined_timeline_data":refined_timeline_data,
             "gold_differences":gold_differences,
             "win_rates":win_rates
         }
