@@ -96,7 +96,7 @@ def get_timeline_features(timeline_data, time):
                 redtotal_minionkill.append(participant[str(i)]['minionsKilled'])
                 redtotal_jungleminionkill.append(participant[str(i)]['jungleMinionsKilled'])
     elif participantLength == 11:
-        for i in range(len(participant)-1):
+        for i in range(participantLength-1):
             i = i+1
             if 1 <=participant[i]['participantId'] <= 5:
                 bluetotal_gold.append(participant[i]['totalGold'])

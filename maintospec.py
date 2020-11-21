@@ -84,30 +84,16 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         for time in range(1, endtime+1):
             timeline_features = get_timeline_features(timeline_data, time*60000)
             timeline_df = pd.concat([timeline_df, timeline_features])
-        #################################################################
-        timeline_df.to_csv("timeline_example{}.csv".format(idx), index=False)
-        #################################################################
         refined_timeline_df = refine_timeline_df(timeline_df)
         gold_differences = refined_timeline_df['total_gold'].tolist()
+        for i in range(len(gold_differences)):
+            gold = gold_differences[i]
+            if team == 0:
+                gold_differences[i] = int(gold)
+            elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
+                gold_differences[i] = -int(gold)
         refined_timeline_data = np.array(refined_timeline_df) # Numpy array
         win_rates = [0.5] # at 1 minute, win rate is 50%
-        """ # 모델을 이용해서 기대승률 그래프 생성
-        scaler = StandardScaler()
-        for tl in range(2, endtime+1):
-            if tl > 40: break
-            input_data = refined_timeline_data[:tl, :]
-            input_data = scaler.fit_transform(input_data)
-            timestamps, input_dim = input_data.shape
-            input_data = input_data.reshape(1, timestamps, input_dim)
-            if team == 0: # 블루팀이 이길 확률 계산
-                win_rate = models[tl-2].predict(input_data)[0][0] # 2분 모델부터 0번 인덱스에 들어가 있다.
-            elif team == 1: # 레드팀이 이길 확률 계산
-                win_rate = models[tl-2].predict(input_data)[0][1]
-            win_rates.append(win_rate)
-        """ # 피드백 개수도 알려줘야 하는데.
-        if team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
-            for idx, val in enumerate(gold_differences):
-                gold_differences[idx] = -val
 
         timelinespec = {
             #"refined_timeline_df":refined_timeline_df,
@@ -131,10 +117,11 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         }
         matchspecs.append(matchspec)
         timelinespecs.append(timelinespec)
+
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs, # list<json>
-        #"timelinespecs":timelinespecs # list<json>
+        "timelinespecs":timelinespecs # list<json>
     }
     ref.child("spec").update(spec)
     return spec

@@ -1,12 +1,13 @@
+"""
 import numpy as np
 import pandas as pd
-import sys
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import GRU, Activation, Dense
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.models import load_model
+"""
 
 import json, sys
 from flask import Flask, request, jsonify, Response
@@ -29,7 +30,7 @@ print("All model has been loaded !")
 """
 
 
-host_addr = "0.0.0.0"
+host_addr = "61.99.75.232"
 api_key = "RGAPI-654e6569-1095-4fa6-b858-0666d96c5342"
 # 11월 22일 11:19 까지
 # RGAPI-10aa0fac-4046-4ed9-a1e4-43255599a53f 11월 22일 11:21 까지
@@ -48,12 +49,13 @@ def route():
 @app.route("/specpage/", methods=['GET'])
 @as_json
 def specpage():
-    summoner_name = request.args.get("name")
-    models = 0
+    summoner_name = request.args.get("name") # ?name=<summoner_name>
+    #print(type(summoner_name)) -> <class 'str'>
     summoner_name = summoner_name.replace(" ","")
     summoner_name = summoner_name.replace("+","")
     summoner_name = summoner_name.replace("%20","")
     summoner_name = summoner_name.lower()
+    models = 0
     info = maintospec.getinfo(summoner_name, api_key)
     spec = maintospec.getspec(info, models)
     return spec
