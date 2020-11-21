@@ -34,6 +34,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     matchspecs, timelinespecs = [], []
     outlines = info['5matches']['outlines']
     matchinfos = info['5matches']['matchinfos']
+    timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
     for idx, outline in enumerate(outlines['matches']):
         matchinfo = matchinfos[idx]
         # find particiapnt id for this player
@@ -75,7 +76,6 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         elif team == 1: # 레드팀이면
             team_score = "{}:{}".format(redKills, blueKills)
         duration = matchinfo['gameDuration']
-        timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
         timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
@@ -136,7 +136,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
 
 def getinfo(summoner_name, api_key):
     ref = db.reference("Users")
-    info = ref.child(summoner_name).get()
+    info = ref.child(summoner_name).child("info").get()
     if info is not None:
         return info
     info = {}
