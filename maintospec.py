@@ -20,7 +20,9 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     if info == 0: return 0 # 존재하지 않는 소환사입니다.
     elif info == 1: return 1 # 정보를 받아오는데 너무 오래 걸립니다.
     summoner_name = info['userinfo']['name']
-    ref = db.reference("Users/{}".format(summoner_name))
+    summoner_name_db = summoner_name.replace(" ", "")
+    summoner_name_db = summoner_name_db.lower()
+    ref = db.reference("Users/{}".format(summoner_name_db))
     spec = ref.child("spec").get()
     if spec is not None: # spec 정보가 존재한다면
         return spec # db에 있는 spec 정보를 반환합니다.
@@ -66,8 +68,8 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         else:
             avg = round((kill+assist)/death, 2)
         blueKills, redKills = 0, 0
-        for idx, participant in enumerate(matchinfo['participants']):
-            if idx < 5: # 0 to 4 : blue team participants
+        for i, participant in enumerate(matchinfo['participants']):
+            if i < 5: # 0 to 4 : blue team participants
                 blueKills += participant['stats']['kills']
             else: # 5 to 9 : red team participants
                 redKills += participant['stats']['kills']
@@ -79,12 +81,12 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
-        print("is done..?1")
         for time in range(1, endtime+1):
             timeline_features = get_timeline_features(timeline_data, time*60000)
             timeline_df = pd.concat([timeline_df, timeline_features])
-        print("is done..?2")
-        print(timeline_df)
+        #################################################################
+        timeline_df.to_csv("timeline_example{}.csv".format(idx), index=False)
+        #################################################################
         refined_timeline_df = refine_timeline_df(timeline_df)
         gold_differences = refined_timeline_df['total_gold'].tolist()
         refined_timeline_data = np.array(refined_timeline_df) # Numpy array
@@ -108,7 +110,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
                 gold_differences[idx] = -val
 
         timelinespec = {
-            #"refined_timeline_data":refined_timeline_data,
+            #"refined_timeline_df":refined_timeline_df,
             "gold_differences":gold_differences,
             "win_rates":win_rates
         }

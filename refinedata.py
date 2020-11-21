@@ -31,7 +31,7 @@ diff_columns = [
 ]
 
 def refine_timeline_df(timeline_df):
-    refined_timeline_data = pd.DataFrame(columns=diff_columns)
+    refined_timeline_df = pd.DataFrame(columns=diff_columns)
     raw_columns = list(timeline_df.columns)
     offset = 24
     place = 0
@@ -39,9 +39,9 @@ def refine_timeline_df(timeline_df):
         if idx != 14 and idx != 21: # first_tower_lane(:String), dragon_type(:String) 제외
             bf, rf = raw_columns[idx], raw_columns[idx+offset]
             series = timeline_df[bf] - timeline_df[rf]
-            refined_timeline_data[diff_columns[place]] = series
+            refined_timeline_df[diff_columns[place]] = series
             place += 1
-    return refined_timeline_data # DataFrame
+    return refined_timeline_df # DataFrame
 
 def get_timeline_features(timeline_data, time):
     columns = ['blueTotalGolds','blueCurrentGolds','blueTotalLevel'\
@@ -79,20 +79,37 @@ def get_timeline_features(timeline_data, time):
     bluetotal_minionkill, bluetotal_jungleminionkill = [],[],[],[],[]
     redtotal_gold, redcurrent_gold, redtotal_level, \
     redtotal_minionkill, redtotal_jungleminionkill = [],[],[],[],[]
-    for i in range(len(participant)):
-        i = i+1
-        if 1 <=participant[str(i)]['participantId'] <= 5:
-            bluetotal_gold.append(participant[str(i)]['totalGold'])
-            bluecurrent_gold.append(participant[str(i)]['currentGold'])
-            bluetotal_level.append(participant[str(i)]['level'])
-            bluetotal_minionkill.append(participant[str(i)]['minionsKilled'])
-            bluetotal_jungleminionkill.append(participant[str(i)]['jungleMinionsKilled'])
-        else:
-            redtotal_gold.append(participant[str(i)]['totalGold'])
-            redcurrent_gold.append(participant[str(i)]['currentGold'])
-            redtotal_level.append(participant[str(i)]['level'])
-            redtotal_minionkill.append(participant[str(i)]['minionsKilled'])
-            redtotal_jungleminionkill.append(participant[str(i)]['jungleMinionsKilled'])
+    participantLength = len(participant)
+    if participantLength == 10:
+        for i in range(participantLength):
+            i = i+1
+            if 1 <=participant[str(i)]['participantId'] <= 5:
+                bluetotal_gold.append(participant[str(i)]['totalGold'])
+                bluecurrent_gold.append(participant[str(i)]['currentGold'])
+                bluetotal_level.append(participant[str(i)]['level'])
+                bluetotal_minionkill.append(participant[str(i)]['minionsKilled'])
+                bluetotal_jungleminionkill.append(participant[str(i)]['jungleMinionsKilled'])
+            else:
+                redtotal_gold.append(participant[str(i)]['totalGold'])
+                redcurrent_gold.append(participant[str(i)]['currentGold'])
+                redtotal_level.append(participant[str(i)]['level'])
+                redtotal_minionkill.append(participant[str(i)]['minionsKilled'])
+                redtotal_jungleminionkill.append(participant[str(i)]['jungleMinionsKilled'])
+    elif participantLength == 11:
+        for i in range(len(participant)-1):
+            i = i+1
+            if 1 <=participant[i]['participantId'] <= 5:
+                bluetotal_gold.append(participant[i]['totalGold'])
+                bluecurrent_gold.append(participant[i]['currentGold'])
+                bluetotal_level.append(participant[i]['level'])
+                bluetotal_minionkill.append(participant[i]['minionsKilled'])
+                bluetotal_jungleminionkill.append(participant[i]['jungleMinionsKilled'])
+            else:
+                redtotal_gold.append(participant[i]['totalGold'])
+                redcurrent_gold.append(participant[i]['currentGold'])
+                redtotal_level.append(participant[i]['level'])
+                redtotal_minionkill.append(participant[i]['minionsKilled'])
+                redtotal_jungleminionkill.append(participant[i]['jungleMinionsKilled'])
     #timestamp별로 독립적인 변수들을 나타내므로 n분까지의 데이터를 수집하기 위해서는 계속 중첩해서 
     #더해줘야 함
     blue_kill, red_kill = 0,0
@@ -132,19 +149,23 @@ def get_timeline_features(timeline_data, time):
             elif events[x]['type'] == 'CHAMPION_KILL': 
                 if 1 <= events[x]['killerId'] <= 5:
                     if red_kill ==0 and blue_kill ==0:
-                        blue_firstkill += 0
+                        blue_firstkill += 1
                     else:
                         pass
                     blue_kill += 1
-                    blue_assist += len(events[x]['assistingParticipantIds'])
+                    try:
+                        blue_assist += len(events[x]['assistingParticipantIds'])
+                    except: pass
                     red_death += 1
                 else:
                     if red_kill ==0 and blue_kill ==0:
-                        red_firstkill += 0
+                        red_firstkill += 1
                     else:
                         pass
                     red_kill += 1
-                    red_assist += len(events[x]['assistingParticipantIds'])
+                    try:
+                        red_assist += len(events[x]['assistingParticipantIds'])
+                    except: pass
                     blue_death += 1
             elif events[x]['type'] == 'ELITE_MONSTER_KILL':
                 if 1 <= events[x]['killerId'] <= 5:
