@@ -1,20 +1,29 @@
 import pandas as pd
+import numpy as np
 import requests, time
 import firebase_admin
+from refinedata import get_timeline_features, refine_timeline_df
 from firebase_admin import credentials
 from firebase_admin import db
-"""
+from math import ceil
+from sklearn.preprocessing import StandardScaler
+
 cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
 firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
-"""
 
-def getspec(info): # processing code
-    #keysUserInfo = ["summoner_name", "profile_icon_id", "tier", "league_point"]
-    #keys5matches = ["team", "win", "champion_id", "level", "spell_id", "kill", "death", "assist","avg"\
+def getspec(info, models): # processing code, to provide userspec, matchspecs
+    #keys of userspec = ["summoner_name", "profile_icon_id", "tier", "league_point"]
+    #keys of matchspecs = ["team", "win", "champion_id", "level", "spell_id", "kill", "death", "assist","avg"\
     #                , "lane", "score", "duration", "num_of_feedback"]
+    if info == 0: return 0 # 존재하지 않는 소환사입니다.
+    elif info == 1: return 1 # 정보를 받아오는데 너무 오래 걸립니다.
     summoner_name = info['userinfo']['name']
+    ref = db.reference("Users/{}".format(summoner_name))
+    spec = ref.child("spec").get()
+    if spec is not None: # spec 정보가 존재한다면
+        return spec # db에 있는 spec 정보를 반환합니다.
     userspec = {
         "summoner_name":summoner_name,
         "profile_icon_id":info['userinfo']['profileIconId'],
@@ -22,7 +31,7 @@ def getspec(info): # processing code
         "rank":info['leagueinfo'][0]['rank'],
         "league_point":info['leagueinfo'][0]['leaguePoints']
     }
-    matchspecs = []
+    matchspecs, timelinespecs = [], []
     outlines = info['5matches']['outlines']
     matchinfos = info['5matches']['matchinfos']
     for idx, outline in enumerate(outlines['matches']):
@@ -61,7 +70,45 @@ def getspec(info): # processing code
                 blueKills += participant['stats']['kills']
             else: # 5 to 9 : red team participants
                 redKills += participant['stats']['kills']
-        team_score = "{}:{}".format(blueKills, redKills)
+        if team == 0: # 블루팀이면
+            team_score = "{}:{}".format(blueKills, redKills)
+        elif team == 1: # 레드팀이면
+            team_score = "{}:{}".format(redKills, blueKills)
+        duration = matchinfo['gameDuration']
+        timelines = info['timelines'] # list of json: gameId, timeline_data
+        timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
+        endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
+        timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
+        for time in range(1, endtime+1):
+            timeline_features = get_timeline_features(timeline_data, time*60000)
+            timeline_df = pd.concat([timeline_df, timeline_features])
+        refined_timeline_df = refine_timeline_df(timeline_df)
+        gold_differences = refined_timeline_df['total_gold'].tolist()
+        refined_timeline_data = np.array(refined_timeline_df) # Numpy array
+        win_rates = [0.5] # at 1 minute, win rate is 50%
+        """ # 모델을 이용해서 기대승률 그래프 생성
+        scaler = StandardScaler()
+        for tl in range(2, endtime+1):
+            if tl > 40: break
+            input_data = refined_timeline_data[:tl, :]
+            input_data = scaler.fit_transform(input_data)
+            timestamps, input_dim = input_data.shape
+            input_data = input_data.reshape(1, timestamps, input_dim)
+            if team == 0: # 블루팀이 이길 확률 계산
+                win_rate = models[tl-2].predict(input_data)[0][0] # 2분 모델부터 0번 인덱스에 들어가 있다.
+            elif team == 1: # 레드팀이 이길 확률 계산
+                win_rate = models[tl-2].predict(input_data)[0][1]
+            win_rates.append(win_rate)
+        """ # 피드백 개수도 알려줘야 하는데.
+        if team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
+            for idx, val in enumerate(gold_differences):
+                gold_differences[idx] = -val
+
+        timelinespec = {
+            "refined_timeline_data":refined_timeline_data,
+            "gold_differences":gold_differences,
+            "win_rates":win_rates
+        }
         matchspec = {
             "team":team, # blue: 0, red: 1
             "win":win, # int: lose: 0, win: 1
@@ -74,34 +121,50 @@ def getspec(info): # processing code
             "avg":avg, # float..2
             "lane":lane,
             "team_score":team_score,
-            "duration":matchinfo['gameDuration'],
+            "duration":duration,
             "feedbacks":[0, 0] # [# positives, # negatives]
         }
         matchspecs.append(matchspec)
+        timelinespecs.append(timelinespec)
     spec = {
         "userspec":userspec, # json
-        "matchspecs":matchspecs # list<json>
+        "matchspecs":matchspecs, # list<json>
+        "timelinespecs":timelinespecs # list<json>
     }
+    ref.child("spec").update(spec)
     return spec
 
 def getinfo(summoner_name, api_key):
+    ref = db.reference("Users")
+    info = ref.child(summoner_name).get()
+    if info is not None:
+        return info
     info = {}
     url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/'\
             + summoner_name + '?api_key=' + api_key
     r = requests.get(url)
     start_time = time.time()
     if r.status_code == 404: # 소환사 이름이 존재하지 않는 경우
-        return False
+        return 0
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
-            return 0
+            return 1
         time.sleep(3)
         r = requests.get(url)
     info['userinfo'] = r.json()
     summoner_id = r.json()['id']
     account_id = r.json()['accountId']
-    info['leagueinfo'] = getleagueinfo(summoner_id, api_key)
-    info['5matches'] = get5matches(account_id, api_key)
+    leagueinfo = getleagueinfo(summoner_id, api_key)
+    if leagueinfo == 1: return 1 # 리그 정보를 받아오는데 너무 오래 걸림
+    matches = get5matches(account_id, api_key)
+    if matches == 1: return 1 # 매치 정보를 받아오는데 너무 오래 걸림
+    info['leagueinfo'] = leagueinfo
+    info['5matches'] = matches
+    to_db = {
+        "info":info,
+    }
+    ref = db.reference("Users/{}".format(summoner_name))
+    ref.update(to_db)
     return info
     
 def getleagueinfo(summoner_id, api_key):
@@ -111,7 +174,7 @@ def getleagueinfo(summoner_id, api_key):
     start_time = time.time()
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
-            return False
+            return 1
         time.sleep(3)
         r = requests.get(url)
     return r.json()
@@ -124,7 +187,7 @@ def get5matches(account_id, api_key):
     start_time = time.time()
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
-            return False
+            return 1
         time.sleep(3)
         r = requests.get(url)
     outlines = r.json()
@@ -141,7 +204,7 @@ def get5matches(account_id, api_key):
         start_time = time.time()
         while r.status_code != 200: # api 요청에 오류가 있는 경우
             if time.time() - start_time >= 30:
-                return False
+                return 1
             time.sleep(3)
             r = requests.get(url)
         matchinfos.append(r.json())
@@ -151,10 +214,10 @@ def get5matches(account_id, api_key):
         r = requests.get(url)
         while r.status_code != 200: # api 요청에 오류가 있는 경우
             if time.time() - start_time >= 30:
-                return False
+                return 1
             time.sleep(3)
             r = requests.get(url)
-        timeline = {"gameId":match_id, "timeline":r.json()}
+        timeline = {"gameId":match_id, "timeline_data":r.json()}
         timelines.append(timeline)
     result['outlines'] = outlines
     result['matchinfos'] = matchinfos
