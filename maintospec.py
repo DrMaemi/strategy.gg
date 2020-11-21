@@ -129,7 +129,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs, # list<json>
-        "timelinespecs":timelinespecs # list<json>
+        #"timelinespecs":timelinespecs # list<json>
     }
     ref.child("spec").update(spec)
     return spec
