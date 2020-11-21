@@ -56,9 +56,12 @@ def specpage():
     summoner_name = summoner_name.replace("%20","")
     summoner_name = summoner_name.lower()
     models = 0
-    spec = maintospec.searchspec(summoner_name)
-    if spec is not None:
-        return spec
+    try:
+        spec = maintospec.searchspec(summoner_name)
+        if spec is not None:
+            return spec
+    except ValueError:
+        return 0
     info = maintospec.getinfo(summoner_name, api_key)
     spec = maintospec.getspec(info, models)
     return spec
