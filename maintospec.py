@@ -79,9 +79,12 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
+        print("is done..?1")
         for time in range(1, endtime+1):
             timeline_features = get_timeline_features(timeline_data, time*60000)
             timeline_df = pd.concat([timeline_df, timeline_features])
+        print("is done..?2")
+        print(timeline_df)
         refined_timeline_df = refine_timeline_df(timeline_df)
         gold_differences = refined_timeline_df['total_gold'].tolist()
         refined_timeline_data = np.array(refined_timeline_df) # Numpy array
@@ -131,7 +134,6 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         "matchspecs":matchspecs, # list<json>
         #"timelinespecs":timelinespecs # list<json>
     }
-    print("is done..?")
     ref.child("spec").update(spec)
     return spec
 
