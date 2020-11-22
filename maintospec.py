@@ -27,18 +27,34 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     elif info == 1: return 1 # 정보를 받아오는데 너무 오래 걸립니다.
     summoner_name = info['userinfo']['name']
     summoner_name_db = processString(summoner_name)
-    for leagueinfo in info['leagueinfo']:
-        if leagueinfo['queueType'] == "RANKED_SOLO_5x5":
-            targetLeagueInfo = leagueinfo
-    userspec = {
-        "summoner_name":summoner_name,
-        "profile_icon_id":info['userinfo']['profileIconId'],
-        "tier":targetLeagueInfo['tier'],
-        "rank":targetLeagueInfo['rank'],
-        "league_point":targetLeagueInfo['leaguePoints']
-    }
+    try:
+        for leagueinfo in info['leagueinfo']:
+            if leagueinfo['queueType'] == "RANKED_SOLO_5x5":
+                targetLeagueInfo = leagueinfo
+        userspec = {
+            "summoner_name":summoner_name,
+            "profile_icon_id":info['userinfo']['profileIconId'],
+            "tier":targetLeagueInfo['tier'],
+            "rank":targetLeagueInfo['rank'],
+            "league_point":targetLeagueInfo['leaguePoints']
+        }
+    except:
+        userspec = {
+            "summoner_name":summoner_name,
+            "profile_icon_id":info['userinfo']['profileIconId'],
+            "tier":0,
+            "rank":0,
+            "league_point":0
+        }
     matchspecs = []
     outlines = info['5matches']['outlines']
+    if outlines == 0:
+        spec = {
+            "userspec":userspec,
+            "matchspecs":0
+        }
+        db.reference("Specs/"+summoner_name_db).update(spec)
+        return spec
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
     for idx, outline in enumerate(outlines['matches']):
@@ -100,6 +116,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
         win_rates = [0.5] # at 1 minute, win rate is 50%
         timelinespec = {
+            "tier":targetLeagueInfo['tier'],
             "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
             "refined_timeline_data":refined_timeline_data,
             "gold_differences":gold_differences,
@@ -171,6 +188,11 @@ def get5matches(account_id, api_key):
     url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/'\
             + account_id + '?queue=420&season=13&endIndex=5' + '&api_key=' + api_key
     r = requests.get(url)
+    if r.status_code == 404: # 매치 정보가 없는 경우
+        result['outlines'] = 0
+        result['matchinfos'] = 0
+        result['timelines'] = 0
+        return result
     start_time = time.time()
     while r.status_code != 200: # api 요청에 오류가 있는 경우
         if time.time() - start_time >= 30:
