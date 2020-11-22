@@ -10,7 +10,7 @@ from tensorflow.keras.models import load_model
 """
 
 import json, sys
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, abort
 from flask_cors import CORS
 from functools import wraps
 from preprocessfordb import processString
@@ -32,9 +32,9 @@ print("All model has been loaded !")
 
 
 host_addr = "61.99.75.232"
-api_key = "RGAPI-654e6569-1095-4fa6-b858-0666d96c5342"
-# 11월 22일 11:19 까지
-# RGAPI-10aa0fac-4046-4ed9-a1e4-43255599a53f 11월 22일 11:21 까지
+api_key = "RGAPI-0e8e7be1-298c-4b83-a99e-c56abd66e42f"
+# 11월 23일 12:00 까지
+# RGAPI-1d4e187a-0ff8-429d-9c75-84c2c35bab73 11월 23일 12:00 까지
 def as_json(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -59,9 +59,11 @@ def specpage():
         if spec is not None:
             return spec
     except ValueError:
-        return 0
+        return abort(406)
     info = maintospec.getinfo(summoner_name, api_key)
     spec = maintospec.getspec(info, models)
+    if spec == 0: return abort(406)
+    elif spec == 1: return abort(408)
     return spec
 
 @app.route("/modeltest")
