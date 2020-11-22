@@ -37,7 +37,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         "rank":targetLeagueInfo['rank'],
         "league_point":targetLeagueInfo['leaguePoints']
     }
-    matchspecs, timelinespecs = [], []
+    matchspecs = []
     outlines = info['5matches']['outlines']
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
@@ -97,10 +97,11 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
                 gold_differences[i] = int(gold)
             elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
                 gold_differences[i] = -int(gold)
-        refined_timeline_data = np.array(refined_timeline_df) # Numpy array
+        refined_timeline_data = refined_timeline_df.to_json(orient="records") # df.to_json object, List<json>
         win_rates = [0.5] # at 1 minute, win rate is 50%
         timelinespec = {
-            #"refined_timeline_df":refined_timeline_df,
+            "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
+            "refined_timeline_data":refined_timeline_data,
             "gold_differences":gold_differences,
             "win_rates":win_rates
         }
