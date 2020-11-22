@@ -97,7 +97,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
                 gold_differences[i] = int(gold)
             elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
                 gold_differences[i] = -int(gold)
-        refined_timeline_data = refined_timeline_df.to_json(orient="records") # df.to_json object, List<json>
+        refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
         win_rates = [0.5] # at 1 minute, win rate is 50%
         timelinespec = {
             "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
