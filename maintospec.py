@@ -122,17 +122,11 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
             "feedbacks":[0, 0] # [# positives, # negatives]
         }
         matchspecs.append(matchspec)
-        timelinespecs.append(timelinespec)
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs # list<json>
-        #"timelinespecs":timelinespecs # list<json>
-    }
-    analysis = {
-        "timelinespecs":timelinespecs
     }
     db.reference("Specs/"+summoner_name_db).update(spec)
-    db.reference("Analyses/{}/{}".format(summoner_name_db, game_id)).update(analysis)
     return spec
 
 def getinfo(summoner_name, api_key):
