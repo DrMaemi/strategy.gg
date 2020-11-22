@@ -26,6 +26,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     if info == 0: return 0 # 존재하지 않는 소환사입니다.
     elif info == 1: return 1 # 정보를 받아오는데 너무 오래 걸립니다.
     summoner_name = info['userinfo']['name']
+    summoner_name_db = processString(summoner_name)
     for leagueinfo in info['leagueinfo']:
         if leagueinfo['queueType'] == "RANKED_SOLO_5x5":
             targetLeagueInfo = leagueinfo
@@ -98,12 +99,12 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
                 gold_differences[i] = -int(gold)
         refined_timeline_data = np.array(refined_timeline_df) # Numpy array
         win_rates = [0.5] # at 1 minute, win rate is 50%
-
         timelinespec = {
             #"refined_timeline_df":refined_timeline_df,
             "gold_differences":gold_differences,
             "win_rates":win_rates
         }
+        db.reference("Analyses/{}/{}".format(summoner_name_db, game_id)).update({"timelinespec":timelinespec})
         matchspec = {
             "game_id":game_id,
             "team":team, # blue: 0, red: 1
@@ -130,9 +131,8 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     analysis = {
         "timelinespecs":timelinespecs
     }
-    summoner_name = processString(summoner_name)
-    db.reference("Specs/"+summoner_name).update(spec)
-    db.reference("Analyses/{}/{}".format(summoner_name, game_id)).update(analysis)
+    db.reference("Specs/"+summoner_name_db).update(spec)
+    db.reference("Analyses/{}/{}".format(summoner_name_db, game_id)).update(analysis)
     return spec
 
 def getinfo(summoner_name, api_key):
