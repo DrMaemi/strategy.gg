@@ -13,6 +13,7 @@ import json, sys
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from functools import wraps
+from preprocessfordb import processString
 import maintospec
 
 app = Flask(__name__)
@@ -51,10 +52,7 @@ def route():
 def specpage():
     summoner_name = request.args.get("name") # ?name=<summoner_name>
     #print(type(summoner_name)) -> <class 'str'>
-    summoner_name = summoner_name.replace(" ","")
-    summoner_name = summoner_name.replace("+","")
-    summoner_name = summoner_name.replace("%20","")
-    summoner_name = summoner_name.lower()
+    summoner_name = processString(summoner_name)
     models = 0
     try:
         spec = maintospec.searchspec(summoner_name)

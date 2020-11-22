@@ -6,6 +6,7 @@ from refinedata import get_timeline_features, refine_timeline_df
 from firebase_admin import credentials
 from firebase_admin import db
 from math import ceil
+from preprocessfordb import processString
 from sklearn.preprocessing import StandardScaler
 
 cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
@@ -14,8 +15,8 @@ firebase_admin.initialize_app(cred,{
 })
 
 def searchspec(summoner_name):
-    ref = db.reference("Users/"+summoner_name)
-    spec = ref.child("spec").get()
+    ref = db.reference("Specs/"+summoner_name)
+    spec = ref.get()
     return spec
 
 def getspec(info, models): # processing code, to provide userspec, matchspecs
@@ -40,6 +41,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
     for idx, outline in enumerate(outlines['matches']):
+        game_id = outline['gameId']
         matchinfo = matchinfos[idx]
         # find particiapnt id for this player
         for identity in matchinfo['participantIdentities']:
@@ -103,6 +105,7 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
             "win_rates":win_rates
         }
         matchspec = {
+            "game_id":game_id,
             "team":team, # blue: 0, red: 1
             "win":win, # int: lose: 0, win: 1
             "champion_id":outline['champion'], # int
@@ -119,18 +122,17 @@ def getspec(info, models): # processing code, to provide userspec, matchspecs
         }
         matchspecs.append(matchspec)
         timelinespecs.append(timelinespec)
-
     spec = {
         "userspec":userspec, # json
-        "matchspecs":matchspecs, # list<json>
-        "timelinespecs":timelinespecs # list<json>
+        "matchspecs":matchspecs # list<json>
+        #"timelinespecs":timelinespecs # list<json>
     }
-    summoner_name_db = summoner_name.replace("+", "")
-    summoner_name_db = summoner_name_db.replace(" ", "")
-    summoner_name_db = summoner_name_db.replace("%20", "")
-    summoner_name_db = summoner_name_db.lower()
-    ref = db.reference("Users/"+summoner_name_db)
-    ref.child("spec").update(spec)
+    analysis = {
+        "timelinespecs":timelinespecs
+    }
+    summoner_name = processString(summoner_name)
+    db.reference("Specs/"+summoner_name).update(spec)
+    db.reference("Analyses/{}/{}".format(summoner_name, game_id)).update(analysis)
     return spec
 
 def getinfo(summoner_name, api_key):
