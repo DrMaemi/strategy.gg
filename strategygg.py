@@ -75,3 +75,4 @@ def modeltest():
 
 if __name__ == "__main__":
     app.run(host_addr, port=5000, threaded=True)
+    #app.run()
