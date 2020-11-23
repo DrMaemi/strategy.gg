@@ -44,6 +44,7 @@ class SummonerDetailPage extends React.Component{
         if(err == 0){
             return(
                 <div className="container" >
+                    <OtherGnb/>
                     {this.state.isLoading ? (<div>로딩중입니다!!.</div>) :(
                         <div>로딩완료{console.log(spec.userspec.summoner_name)} </div>
                     )}

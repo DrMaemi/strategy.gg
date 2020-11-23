@@ -24,7 +24,7 @@ function MainSummonerInput(){
        <input 
          type = "text" 
          name = "users"
-         placeholder = "Hide On Bush"
+         placeholder = "소환사 이름을 입력하세요"
          className="search"
          onChange={onChange}
         />
