@@ -3,10 +3,13 @@ import MainGnb from './../components/MainGnb.js'
 import './MainPage.css';
 import MainLogo from './../img/MainLogo.png';
 import MainSummonerInput from './../components/MainSummonerInput.js';
+import {Link} from "react-router-dom";
 
 function MainPage(){
     return(
-        <div className="container" >
+     
+          
+            <div className="container" >
             <MainGnb/>
             
             <div className="center">
@@ -14,8 +17,10 @@ function MainPage(){
                 <MainSummonerInput/>
            
             </div>
+        
             
         </div>
+     
     );
 }
 
