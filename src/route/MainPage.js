@@ -4,9 +4,12 @@ import './MainPage.css';
 import MainLogo from './../img/MainLogo.png';
 import MainSummonerInput from './../components/MainSummonerInput.js';
 
+
 function MainPage(){
     return(
-        <div className="container" >
+     
+          
+            <div className="container" >
             <MainGnb/>
             
             <div className="center">
@@ -14,8 +17,10 @@ function MainPage(){
                 <MainSummonerInput/>
            
             </div>
+        
             
         </div>
+     
     );
 }
 
