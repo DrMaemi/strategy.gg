@@ -58,8 +58,8 @@ const MainSummonerInput = () => {
     <form onSubmit={onSubmit}>
        <input 
          type = "text" 
-         name = "users"
-         placeholder = "Hide On Bush"
+         name = "summoners"
+         placeholder = "소환사 이름을 입력해 주세요"
          className="search"
          onChange={onChange}
         />
