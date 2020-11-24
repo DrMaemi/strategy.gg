@@ -139,7 +139,7 @@ def getspec(info, Models):
         """피드백 개수도 알려줘야 하는데."""
         refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
         win_rates = list(win_rates)
-        for ridx, win_rate in enumerate(win_rates):
+        for ridx, win_rate in enumerate(win_rates[1:]):
             win_rates[ridx] = round(float(win_rate*100), 1)
         timelinespec = {
             "tier":userspec['tier'],
