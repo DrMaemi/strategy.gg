@@ -117,7 +117,7 @@ def getspec(info, Models):
             elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
                 gold_differences[i] = -int(gold)
         # 모델을 이용해서 기대승률 그래프 생성
-        win_rates = [50.0] # at 1 minute, win rate is 50%
+        win_rates = [0.5] # at 1 minute, win rate is 50%
         refined_timeline_npArr = np.array(refined_timeline_df)
         model_tier = userspec['tier']
         try:
@@ -139,7 +139,7 @@ def getspec(info, Models):
         """피드백 개수도 알려줘야 하는데."""
         refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
         win_rates = list(win_rates)
-        for ridx, win_rate in enumerate(win_rates[1:]):
+        for ridx, win_rate in enumerate(win_rates):
             win_rates[ridx] = round(float(win_rate*100), 1)
         timelinespec = {
             "tier":userspec['tier'],
