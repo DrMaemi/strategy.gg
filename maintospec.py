@@ -77,6 +77,7 @@ def getspec(info, Models):
             else: win = 0
         targetParticipant = matchinfo['participants'][targetId-1] # json
         spell1id, spell2id = targetParticipant['spell1Id'], targetParticipant['spell2Id']
+        role = outline['role']
         lane = outline['lane']
         if lane == "NONE":
             if spell1id == 11 or spell2id == 11:
@@ -141,7 +142,7 @@ def getspec(info, Models):
         for ridx, win_rate in enumerate(win_rates):
             win_rates[ridx] = float(win_rate)
         timelinespec = {
-            "tier":targetLeagueInfo['tier'],
+            "tier":userspec['tier'],
             "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
             "refined_timeline_data":refined_timeline_data,
             "gold_differences":gold_differences,
@@ -161,6 +162,7 @@ def getspec(info, Models):
             "assist":assist, # int
             "avg":avg, # float..2
             "lane":lane,
+            "role":role,
             "team_score":team_score,
             "duration":duration,
             "feedbacks":[0, 0] # [# positives, # negatives]
