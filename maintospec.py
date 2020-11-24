@@ -140,7 +140,7 @@ def getspec(info, Models):
         refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
         win_rates = list(win_rates)
         for ridx, win_rate in enumerate(win_rates):
-            win_rates[ridx] = float(win_rate)
+            win_rates[ridx] = round(float(win_rate), 1)
         timelinespec = {
             "tier":userspec['tier'],
             "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
