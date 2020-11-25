@@ -62,6 +62,7 @@ def getspec(info, Models):
     for idx, outline in enumerate(outlines['matches']):
         game_id = outline['gameId']
         matchinfo = matchinfos[idx]
+        timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         # find particiapnt id for this player
         for identity in matchinfo['participantIdentities']:
             if identity['player']['summonerName'] == summoner_name:
@@ -82,6 +83,29 @@ def getspec(info, Models):
         if lane == "NONE":
             if spell1id == 11 or spell2id == 11:
                 lane = "JUNGLE"
+            elif role == "DUO_SUPPORT" or role == "CARRY":
+                lane == "BOTTOM"
+            else:
+                calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
+                frames = timeline_data['frames']
+                if len(frames) > 10: frames = frames[3:11]
+                else: frames = frames[3:]
+                for frame in frames:
+                    participantFrames = frame['participantFrames']
+                    for pfidx in range(1, 11):
+                        pf = participantFrames[str(pfidx)]
+                        if pf['participantId'] == targetId:
+                            x, y = pf['position']['x'], pf['position']['y']
+                            if (x<4000 and y>4000) or (x<11000 and y>11000):
+                                calPositions['TOP'] += 1
+                            elif (x>4000 and y<4000) or (x>11000 and y<11000):
+                                calPositions['BOTTOM'] += 1
+                            else:
+                                calPositions['MID'] += 1
+                            break
+                posVals = list(calPositions.values())
+                posKeys = list(calPositions.keys())
+                lane = posKeys[posVals.index(max(posVals))]
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
         death = stats['deaths']
@@ -102,7 +126,6 @@ def getspec(info, Models):
         elif team == 1: # 레드팀이면
             team_score = "{}:{}".format(redKills, blueKills)
         duration = matchinfo['gameDuration']
-        timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
         for time in range(1, endtime+1):

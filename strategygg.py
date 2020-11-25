@@ -15,16 +15,16 @@ import maintospec
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-ce606ec0-fc66-4a07-aa72-3497ceda8624" # 유시현 24일 10:50?
+api_key = "RGAPI-5a1938c2-2081-4160-b5a6-5aa48bbe8f15" # 유시현 26일 12:57?
 
 mod = sys.modules[__name__]
 tiers = ["GOLD"]
-#["GOLD", "PLATINUM", "DIAMOND"]
+#["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
 Models = {
     "tiers":tiers,
-    "GOLD":[],
+    "GOLD":[]
     #"PLATINUM":[],
-    "DIAMOND":[]
+    #"DIAMOND":[],
     #"MASTER":[],
     #"CHALLENGER":[]
 }
