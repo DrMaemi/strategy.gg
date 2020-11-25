@@ -1,0 +1,16 @@
+.QuestionImg{
+    position : absolute;
+    top : 20%;
+    left : 45%;
+    border-radius: 15px 15px 15px 15px;
+    text-align : center;
+}
+.NotFoundMsg{
+    font-family : nanumsquare;
+    src : url(../components/common/NANUMSQUAREB.TTF);
+    font-size : 50px;
+    color : white;
+    position : absolute;
+    top : 40%;
+    left : 37%;
+}

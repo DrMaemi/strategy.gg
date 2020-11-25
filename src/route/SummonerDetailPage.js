@@ -1,13 +1,15 @@
 import React,{useState} from 'react';
-import { Route } from 'react-router-dom';
+import { Route} from 'react-router-dom';
 import OtherGnb from './../components/OtherGnb.js';
 import './SummonerDetailPage.css';
 import axios from "axios"; 
 import Summoner from '../components/Summoner'
+import ExceptPage from './ExceptPage.js';
+import Game from '../components/Game'
 
 class SummonerDetailPage extends React.Component{
 
-
+    
     constructor(props){
         super(props);
         this.state = {
@@ -40,16 +42,26 @@ class SummonerDetailPage extends React.Component{
         // const userSpec = spec.userspec;
         // const matchSpecs = spec.matchspecs;
         const err = this.state.err;
-        
-      
+
     
-        if(err == 0){
+        if(err === 0){
             return(
                 <div className="container" >
                     <OtherGnb/>
                     {this.state.isLoading ? (<div>로딩중입니다!!.</div>) :(
+                        <div>
+                        {console.log(spec.matchspecs)}
                         <Summoner info = {spec.userspec}></Summoner>
-                        /*<div>로딩완료{console.log(spec.userspec)} </div>*/
+                        <Game info = {spec.matchspecs[0]}/>
+                        <Game info = {spec.matchspecs[1]}/>
+                        <Game info = {spec.matchspecs[2]}/>
+                        <Game info = {spec.matchspecs[3]}/>
+                        <Game info = {spec.matchspecs[4]}/>
+
+                        
+                        
+                        
+                        </div>
                     )}
                 </div>
             );
@@ -59,8 +71,7 @@ class SummonerDetailPage extends React.Component{
                 <div className="container" >
             
                 <OtherGnb/>
-                오류페이징비니다
-            
+                <ExceptPage></ExceptPage>
             
                 </div>
             );

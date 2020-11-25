@@ -1,0 +1,117 @@
+.GameContainer{
+    background-color:#3B3838;
+    
+    width : 870px;
+    height: 110px;
+    border-radius : 10px;
+}
+.Champion{
+    position : relative;
+    top : 12%;
+    left : 2%;
+    width : 70px;
+    height : 70px;
+    display: inline-block;
+}
+.Level{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+
+    position : relative;
+    top : -8%;
+    left : 4%;
+    
+}
+.Spell1{
+    position : relative;
+    top : -105%;
+    left : 11%;
+    width : 30px;
+    height : 30px;
+    
+}
+.Spell2{
+    position : relative;
+    top : -75%;
+    left : 7.7%;
+    width : 30px;
+    height : 30px;
+}
+.KDA{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    
+    position : relative;
+    top : -110%;
+    left : 13%;
+
+    display: inline-block;
+}
+.KDA{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    
+    position : relative;
+    top : -110%;
+    left : 13%;
+
+}
+.AVG{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+
+    position : relative;
+    top : -137%;
+    left : 19%;
+}
+.Lane{
+    position : relative;
+    top : -210%;
+    left : 32%;
+    width : 60px;
+    height : 60px;
+}
+.TeamScore{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+
+    position : relative;
+    top : -275%;
+    left : 43%; 
+}
+.Win{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+
+    position : relative;
+    top : -287%;
+    left : 44.5%; 
+}
+.Duration{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+
+    position : relative;
+    top : -340%;
+    left : 55%; 
+}
+.Analysis{
+    background-image: url('../img//Anaysis.png');
+    background-repeat: no-repeat;
+    background-color : transparent;
+    border : 0px;
+    position : relative;
+    top : -388%;
+    left : 90%; 
+    width : 50px;
+    height : 50px;
+    background-repeat: no-repeat;
+
+}

@@ -3,6 +3,7 @@ import './Summoner.css'
 
 import  "./../firebase"
 import { storage } from './../firebase';
+    
 
 const Summoner = (props) => {
     const [Profileimg,setProfileimg] = useState(null);
@@ -39,6 +40,7 @@ const Summoner = (props) => {
             <b className = "LP">{league_point}LP</b>
 
         </div>
+        
     );
 
 }

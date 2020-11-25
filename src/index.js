@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import ModelPage from './route/ModelPage';
 import firebase from "./firebase";
-import Summoner from './components/Summoner';
+import Game from "../src/components/Game"
 ReactDOM.render(
   <React.StrictMode>
     <App />
