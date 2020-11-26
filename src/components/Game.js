@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import  "./../firebase"
 import "./Game.css"
 import { storage } from './../firebase';
+import PieChart from "./PieChart"
 function ChIDToName(id)
 {
     switch(id){
@@ -214,21 +215,6 @@ const Game = (props) => {
     var sec = props.info.duration - min*60;
     const duration = min+'분 '+sec+'초';
 
-    /*feedback*/
-    const feedback = props.info.feedbacks[0]+':'+props.info.feedbacks[1];
-    console.log(
-        ChampionName,
-        level,
-        props.info.spell_id[0],
-        props.info.spell_id[1],
-        KDA,
-        AVG,
-        props.info.lane,
-        TeamScore,
-        Win,
-        duration,
-        feedback
-    );
     return(
     <div className = "GameContainer">
         <img src = {ChampionImg} className = "Champion"/>
@@ -241,6 +227,7 @@ const Game = (props) => {
         <h3 className = "TeamScore">{TeamScore}</h3>
         <h5 className = "Win">{Win}</h5>
         <h3 className = "Duration">{duration}</h3>
+        <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
         <button className = "Analysis" width = "70px" height="70px"></button>      
     </div>
     );
