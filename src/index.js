@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import PieChart from "./components/PieChart"
+import WiningRateChart from './components/WiningRateChart'
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <WiningRateChart />
   </React.StrictMode>,
   document.getElementById('root')
 );
