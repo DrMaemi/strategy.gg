@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import WiningRateChart from './components/WiningRateChart'
+import GoldChart from './components/GoldChart'
 ReactDOM.render(
   <React.StrictMode>
-    <WiningRateChart />
+    <GoldChart />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -68,12 +68,12 @@
 
     position : relative;
     top : -137%;
-    left : 19%;
+    left : 20%;
 }
 .Lane{
     position : relative;
     top : -210%;
-    left : 32%;
+    left : 33%;
     width : 60px;
     height : 60px;
 }
@@ -84,7 +84,7 @@
 
     position : relative;
     top : -275%;
-    left : 43%; 
+    left : 45%; 
 }
 .Win{
     color : white;
@@ -93,7 +93,7 @@
 
     position : relative;
     top : -287%;
-    left : 44.5%; 
+    left : 46.5%; 
 }
 .Duration{
     color : white;
@@ -102,12 +102,12 @@
 
     position : relative;
     top : -340%;
-    left : 55%; 
+    left : 57%; 
 }
 .PieChart{
     position : relative;
     top : -10%;
-    left : 10%;
+    left : 13%;
 }
 .Analysis{
     background-image: url('../img//Anaysis.png');
@@ -115,8 +115,8 @@
     background-color : transparent;
     border : 0px;
     position : relative;
-    top : -388%;
-    left : 90%; 
+    top: -750%;
+    left: 91%;
     width : 50px;
     height : 50px;
     background-repeat: no-repeat;
