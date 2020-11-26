@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import firebase from "./firebase";
 import Game from "../src/components/Game"
+import PieChart from "./components/PieChart"
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <PieChart />
   </React.StrictMode>,
   document.getElementById('root')
 );

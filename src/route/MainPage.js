@@ -7,20 +7,13 @@ import MainSummonerInput from './../components/MainSummonerInput.js';
 
 function MainPage(){
     return(
-     
-          
-            <div className="container" >
+        <div className="container" >
             <MainGnb/>
-            
             <div className="center">
                 <img src={MainLogo} className="centerLogo" alt="MainLogo"/>
                 <MainSummonerInput/>
-           
             </div>
-        
-            
         </div>
-     
     );
 }
 

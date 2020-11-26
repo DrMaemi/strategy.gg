@@ -192,13 +192,13 @@ const Game = (props) => {
 
     const [LaneImg, setLaneImg] = useState(null);
     var Lane = props.info.lane;
-    if(props.info.lane === "BOTTOM" && props.info.lane ==="DUO_CARRY"){
+    if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_CARRY"){
         Lane = "AD";
     }
-    else if(props.info.lane === "BOTTOM" && props.info.lane ==="DUO_SUPPORT"){
+    else if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_SUPPORT"){
         Lane = "SUPPORTER";
     }
-    const LaneURL = storage.ref().child('Lane/'+String(props.info.lane)+'.png').getDownloadURL();
+    const LaneURL = storage.ref().child('Lane/'+String(Lane)+'.png').getDownloadURL();
     LaneURL.then(resolve=>{
         setLaneImg(resolve);
     });
@@ -207,7 +207,7 @@ const Game = (props) => {
     /*win*/
     var Win = "승리";
     if(props.info.win === 0){
-        Win = "패배";
+        Win = "패배";   
     }
     /*duration*/
     var min = parseInt(props.info.duration/60);
