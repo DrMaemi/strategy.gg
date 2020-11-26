@@ -88,24 +88,25 @@ def getspec(info, Models):
             else:
                 calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
                 frames = timeline_data['frames']
-                if len(frames) > 10: frames = frames[3:11]
-                else: frames = frames[3:]
-                for frame in frames:
-                    participantFrames = frame['participantFrames']
-                    for pfidx in range(1, 11):
-                        pf = participantFrames[str(pfidx)]
-                        if pf['participantId'] == targetId:
-                            x, y = pf['position']['x'], pf['position']['y']
-                            if (x<4000 and y>4000) or (x<11000 and y>11000):
-                                calPositions['TOP'] += 1
-                            elif (x>4000 and y<4000) or (x>11000 and y<11000):
-                                calPositions['BOTTOM'] += 1
-                            else:
-                                calPositions['MID'] += 1
-                            break
-                posVals = list(calPositions.values())
-                posKeys = list(calPositions.keys())
-                lane = posKeys[posVals.index(max(posVals))]
+                frames = frames[3:11]
+                try:
+                    for frame in frames:
+                        participantFrames = frame['participantFrames']
+                        for pfidx in range(1, 11):
+                            pf = participantFrames[str(pfidx)]
+                            if pf['participantId'] == targetId:
+                                x, y = pf['position']['x'], pf['position']['y']
+                                if (x<4000 and y>4000) or (x<11000 and y>11000):
+                                    calPositions['TOP'] += 1
+                                elif (x>4000 and y<4000) or (x>11000 and y<11000):
+                                    calPositions['BOTTOM'] += 1
+                                else:
+                                    calPositions['MID'] += 1
+                                break
+                    posVals = list(calPositions.values())
+                    posKeys = list(calPositions.keys())
+                    lane = posKeys[posVals.index(max(posVals))]
+                except: pass
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
         death = stats['deaths']
