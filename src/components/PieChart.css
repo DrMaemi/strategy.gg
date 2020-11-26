@@ -1,0 +1,6 @@
+.inline{
+    display: flexbox;
+    position: relative;
+    left: 70%;
+    top : -435%;
+}
