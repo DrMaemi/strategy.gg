@@ -42,12 +42,18 @@ def getfboutline(win_rates):
             maxDifferential = max(absInterval)
             maxDifferentials.append(maxDifferential)
             point = absInterval.index(maxDifferential)
-            diff = round(targetInterval[point], 1)
-            if diff > 0: # 긍정적 피드백
-                feedback_points[str(point+lower+1)] = {"diff":diff}
+            delta = round(targetInterval[point], 1)
+            if delta > 0: # 긍정적 피드백
+                feedback_points[str(point+lower+1)] = {
+                    "win_rate":win_rates[point+lower],
+                    "delta":delta
+                }
                 pFeedbackNum += 1
-            elif diff < 0: # 부정적 피드백
-                feedback_points[str(point+lower+1)] = {"diff":diff}
+            elif delta < 0: # 부정적 피드백
+                feedback_points[str(point+lower+1)] = {
+                    "win_rate":win_rates[point+lower],
+                    "delta":delta
+                }
                 nFeedbackNum += 1
         if alpha != 0: # 5분씩 나눈 구간 후 마지막 구간
             lower = 5*(totalFeedbacks)-1
@@ -56,12 +62,18 @@ def getfboutline(win_rates):
             maxDifferential = max(absInterval)
             if maxDifferential >= np.median(maxDifferentials):
                 point = absInterval.index(maxDifferential)
-                diff = round(targetInterval[point], 1)
-                if diff > 0:
-                    feedback_points[str(point+lower+1)] = {"diff":diff}
+                delta = round(targetInterval[point], 1)
+                if delta > 0:
+                    feedback_points[str(point+lower+1)] = {
+                        "win_rate":win_rates[point+lower],
+                        "delta":delta
+                    }
                     pFeedbackNum += 1
-                elif diff < 0:
-                    feedback_points[str(point+lower+1)] = {"diff":diff}
+                elif delta < 0:
+                    feedback_points[str(point+lower+1)] = {
+                        "win_rate":win_rates[point+lower],
+                        "delta":delta
+                    }
                     nFeedbackNum += 1
         feedback_num = [pFeedbackNum, nFeedbackNum]
     feedbackOutline = {

@@ -6,6 +6,11 @@ firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
 
+def store_feedback(summoner_name, game_id, point, feedback):
+    db_path = "{}/{}/timelinespec/feedback_points/{}"
+    ref = db.reference(db_path.format(summoner_name, game_id, point))
+    ref.child("feedback").update(feedback)
+
 def store_timelinespec(summoner_name, game_id, timelinespec):
     ref = db.reference("Analyses/{}/{}".format(summoner_name, game_id))
     ref.update({"timelinespec":timelinespec})

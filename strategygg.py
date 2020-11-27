@@ -12,11 +12,14 @@ from functools import wraps
 from preprocessfordb import processString
 import processdb as db
 import maintospec
+import spectoanalysis
 
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-86201f93-ffb4-4260-8c4c-b1dc8838d708" # 유시현 27일 14:40?
+api_key = "RGAPI-01aff5e1-a515-4b3b-b504-fed4caaf5417"
+# 라이엇 계정 28일 20:46?
+# RGAPI-c9b82b6e-cbcb-4d0e-973d-6dfbd717b2fd
 
 mod = sys.modules[__name__]
 tiers = ["GOLD"]
@@ -69,15 +72,14 @@ def specpage():
     elif spec == 1: return abort(408)
     return spec
 
-"""
 @app.route("/analysis/")
 @as_json
 def analysispage():
     summoner_name = request.args.get("name")
     game_id = request.args.get("game_id")
     summoner_name = processString(summoner_name)
-    return maintospec.getanalysis(summoner_name, game_id)
-"""
+    timelinespec = spectoanalysis.getfeedback(summoner_name, game_id)
+    return timelinespec
 
 @app.route("/modeltest")
 def modeltest():
