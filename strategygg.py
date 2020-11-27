@@ -10,12 +10,13 @@ from flask import Flask, request, jsonify, Response, abort
 from flask_cors import CORS
 from functools import wraps
 from preprocessfordb import processString
+import processdb as db
 import maintospec
 
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-5a1938c2-2081-4160-b5a6-5aa48bbe8f15" # 유시현 26일 12:57?
+api_key = "RGAPI-86201f93-ffb4-4260-8c4c-b1dc8838d708" # 유시현 27일 14:40?
 
 mod = sys.modules[__name__]
 tiers = ["GOLD"]
@@ -30,7 +31,7 @@ Models = {
 }
 # load models
 for tier in tiers:
-    for tl in range(2, 3):
+    for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
@@ -57,7 +58,7 @@ def specpage():
     #print(type(summoner_name)) -> <class 'str'>
     summoner_name = processString(summoner_name)
     try:
-        spec = maintospec.searchspec(summoner_name)
+        spec = db.load_spec(summoner_name)
         if spec is not None:
             return spec
     except ValueError:
@@ -67,6 +68,16 @@ def specpage():
     if spec == 0: return abort(406)
     elif spec == 1: return abort(408)
     return spec
+
+"""
+@app.route("/analysis/")
+@as_json
+def analysispage():
+    summoner_name = request.args.get("name")
+    game_id = request.args.get("game_id")
+    summoner_name = processString(summoner_name)
+    return maintospec.getanalysis(summoner_name, game_id)
+"""
 
 @app.route("/modeltest")
 def modeltest():

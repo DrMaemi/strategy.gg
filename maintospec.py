@@ -6,20 +6,69 @@ from math import ceil
 from sklearn.preprocessing import StandardScaler
 
 from preprocessfordb import processString
+import processdb as db
 from refinedata import get_timeline_features, refine_timeline_df
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
-cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
-firebase_admin.initialize_app(cred,{
-    "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
-})
+def getanalysis(summoner_name, game_id):
+    timelinespec = db.load_timelinespec(summoner_name, game_id)
+    analysis = {
+        "gold_differences":timelinespec['gold_differences'],
+        "win_rates":timelinespec['win_rates'],
+        "feedback_points":timelinespec['feedback_points']
+    }
+    return analysis
 
-def searchspec(summoner_name):
-    ref = db.reference("Specs/"+summoner_name)
-    spec = ref.get()
-    return spec
+def getfboutline(win_rates):
+    # 우선 매 분마다 win_rates의 변화도를 구한다
+    length = len(win_rates)
+    differentials = []
+    for idx in range(length-1):
+        differentials.append(win_rates[idx+1]-win_rates[idx])
+    totalFeedbacks, alpha = divmod(length, 5)
+    if totalFeedbacks == 0:
+        feedback_num = [0, 0]
+        feedback_points = 0
+    else: # itvidx: interval index
+        pFeedbackNum, nFeedbackNum = 0, 0
+        feedback_points = {} # key: 시간대 value: 긍정, 부정과 변화율
+        maxDifferentials = [] # 각 구간의 최고 변화율을 담는다.
+        for itvidx in range(totalFeedbacks):
+            if itvidx == 0:
+                lower, upper = 0, 4
+            else:
+                lower, upper = 5*itvidx-1, 5*(itvidx+1)-1
+            targetInterval = differentials[lower:upper]
+            absInterval = list(map(abs, targetInterval))
+            maxDifferential = max(absInterval)
+            maxDifferentials.append(maxDifferential)
+            point = absInterval.index(maxDifferential)
+            diff = round(targetInterval[point], 1)
+            if diff > 0: # 긍정적 피드백
+                feedback_points[str(point+lower+1)] = {"diff":diff}
+                pFeedbackNum += 1
+            elif diff < 0: # 부정적 피드백
+                feedback_points[str(point+lower+1)] = {"diff":diff}
+                nFeedbackNum += 1
+        if alpha != 0: # 5분씩 나눈 구간 후 마지막 구간
+            lower = 5*(totalFeedbacks)-1
+            targetInterval = differentials[lower:]
+            absInterval = list(map(abs, targetInterval))
+            maxDifferential = max(absInterval)
+            if maxDifferential >= np.median(maxDifferentials):
+                point = absInterval.index(maxDifferential)
+                diff = round(targetInterval[point], 1)
+                if diff > 0:
+                    feedback_points[str(point+lower+1)] = {"diff":diff}
+                    pFeedbackNum += 1
+                elif diff < 0:
+                    feedback_points[str(point+lower+1)] = {"diff":diff}
+                    nFeedbackNum += 1
+        feedback_num = [pFeedbackNum, nFeedbackNum]
+    feedbackOutline = {
+        "feedback_num":feedback_num,
+        "feedback_points":feedback_points # Json
+    }
+    return feedbackOutline
 
 def getspec(info, Models):
     #keys of userspec = ["summoner_name", "profile_icon_id", "tier", "league_point"]
@@ -55,7 +104,7 @@ def getspec(info, Models):
             "userspec":userspec,
             "matchspecs":0
         }
-        db.reference("Specs/"+summoner_name_db).update(spec)
+        db.store_spec(summoner_name_db, spec)
         return spec
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
@@ -83,8 +132,6 @@ def getspec(info, Models):
         if lane == "NONE":
             if spell1id == 11 or spell2id == 11:
                 lane = "JUNGLE"
-            elif role == "DUO_SUPPORT" or role == "CARRY":
-                lane == "BOTTOM"
             else:
                 calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
                 frames = timeline_data['frames']
@@ -150,7 +197,7 @@ def getspec(info, Models):
             models = Models["GOLD"]
         scaler = StandardScaler()
         for tl in range(2, endtime+1):
-            if tl > 2: break
+            if tl > 45: break
             input_data = refined_timeline_npArr[:tl, :]
             input_data = scaler.fit_transform(input_data)
             timestamps, input_dim = input_data.shape
@@ -165,15 +212,19 @@ def getspec(info, Models):
         win_rates = list(win_rates)
         for ridx, win_rate in enumerate(win_rates):
             win_rates[ridx] = round(float(win_rate*100), 1)
+        feedbackOutline = getfboutline(win_rates)
+        feedbacks = feedbackOutline['feedback_num']
+        feedback_points = feedbackOutline['feedback_points']
         timelinespec = {
             "tier":userspec['tier'],
             "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
             "refined_timeline_data":refined_timeline_data,
             "gold_differences":gold_differences,
-            "win_rates":win_rates
+            "win_rates":win_rates,
+            "feedback_points":feedback_points
         }
         #timelinespecs.append(timelinespec)
-        db.reference("Analyses/{}/{}".format(summoner_name_db, game_id)).update({"timelinespec":timelinespec})
+        db.store_timelinespec(summoner_name_db, game_id, timelinespec)
         matchspec = {
             "game_id":game_id,
             "team":team, # blue: 0, red: 1
@@ -189,14 +240,14 @@ def getspec(info, Models):
             "role":role,
             "team_score":team_score,
             "duration":duration,
-            "feedbacks":[0, 0] # [# positives, # negatives]
+            "feedbacks":feedbacks # [# positives, # negatives]
         }
         matchspecs.append(matchspec)
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs # list<json>
     }
-    db.reference("Specs/"+summoner_name_db).update(spec)
+    db.store_spec(summoner_name_db, spec)
     return spec
 
 def getinfo(summoner_name, api_key):
