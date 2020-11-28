@@ -17,9 +17,9 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-01aff5e1-a515-4b3b-b504-fed4caaf5417"
-# 라이엇 계정 28일 20:46?
-# RGAPI-c9b82b6e-cbcb-4d0e-973d-6dfbd717b2fd
+api_key = "RGAPI-0a267978-eeaa-4e67-8130-3059d88d6d7d"
+# 라이엇 계정 29일 06:50
+# RGAPI-9456207e-2a7b-45ce-8787-fdec75a7038e
 
 mod = sys.modules[__name__]
 tiers = ["GOLD"]
@@ -78,7 +78,6 @@ def analysispage():
     summoner_name = request.args.get("name")
     game_id = request.args.get("game_id")
     summoner_name = processString(summoner_name)
-    print("summoner_name: {} / game_id: {}".format(summoner_name, game_id))
     timelinespec = spectoanalysis.getanalysis(summoner_name, game_id)
     del timelinespec['refined_timeline_data']
     return timelinespec

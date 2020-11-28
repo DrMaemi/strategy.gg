@@ -20,6 +20,10 @@ def tfphase_analysis(delta, dF):
         else:
             if dF['kills_total_towers'] > 0:
                 feedback.append("스플릿/백도어")
+        if dF['first_baron'] == 1:
+            feedback.append("첫 번째 바론 선점")
+        elif dF['total_baron'] == 1:
+            feedback.append("바론 처치")
         if dF['first_tower'] == 1:
             feedback.append("타워 선취점")
         elif dF['kills_total_towers'] > 0:
@@ -55,6 +59,10 @@ def tfphase_analysis(delta, dF):
         else:
             if dF['kills_total_towers'] > 0:
                 feedback.append("스플릿/백도어")
+        if dF['first_baron'] == 1:
+            feedback.append("첫 번째 바론 선점")
+        elif dF['total_baron'] == 1:
+            feedback.append("바론 처치")
         if dF['first_tower'] == 1:
             feedback.append("타워 선취점")
         elif dF['kills_total_towers'] > 0:
@@ -153,7 +161,6 @@ def transphase_analysis(t, delta, dF):
     return feedback
 
 def lanephase_analysis(delta, dF):
-    print(dF)
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
