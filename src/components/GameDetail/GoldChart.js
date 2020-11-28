@@ -4,11 +4,18 @@ import {
 } from 'recharts';
 
 
-let data = [];
-var check = 0;
-const gradientOffset = () => {
-    const dataMax = Math.max(...data.map(i => i.uv));
-    const dataMin = Math.min(...data.map(i => i.uv))
+
+
+
+
+const GoldChart = ({gold}) => {
+ 
+  
+  let data = [];
+  let check = 0;
+  const gradientOffset = () => {
+    let dataMax = Math.max(...data.map(i => i.uv));
+    let dataMin = Math.min(...data.map(i => i.uv))
     if (dataMax <= 0) {
       return 0;
     }
@@ -19,10 +26,6 @@ const gradientOffset = () => {
   return dataMax / (dataMax - dataMin);
 };
 
-
-
-const GoldChart = ({gold}) => {
-    
    console.log(gold);
     for(var i=0;i<gold.length;i++){
         if(check===0){
@@ -32,7 +35,7 @@ const GoldChart = ({gold}) => {
             check=1;
         }
     }
-    const off = gradientOffset();
+    let off = gradientOffset();
     return (
       <AreaChart
         width={700}

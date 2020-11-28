@@ -4,9 +4,10 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 
-const data = [];
-var check = 0;
+
 const WinRateChart = ({rate}) => {
+    let data = [];
+    let check = 0;
    
     for(var i=0;i<rate.length;i++){
         if(check==0){
