@@ -13,11 +13,11 @@ const SummonerDetailPage = ({ location : {state : {spec : {data}}}}) =>{
             <OtherGnb/>
             <div>
                 <Summoner info = {data.userspec}/>
-                <Game info = {data.matchspecs[0]}/>
-                <Game info = {data.matchspecs[1]}/>
-                <Game info = {data.matchspecs[2]}/>
-                <Game info = {data.matchspecs[3]}/>
-                <Game info = {data.matchspecs[4]}/>
+                <Game info = {data.matchspecs[0]} summonerName = {data.userspec.summoner_name}/>
+                <Game info = {data.matchspecs[1]} summonerName = {data.userspec.summoner_name}/>
+                <Game info = {data.matchspecs[2]} summonerName = {data.userspec.summoner_name}/>
+                <Game info = {data.matchspecs[3]} summonerName = {data.userspec.summoner_name}/>
+                <Game info = {data.matchspecs[4]} summonerName = {data.userspec.summoner_name}/>
 
             </div>
           

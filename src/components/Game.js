@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
 import  "./../firebase"
 import "./Game.css"
 import { storage } from './../firebase';
-import PieChart from "./PieChart";
-import MainSummonerInput from './MainSummonerInput.js';
+import PieChart from "./GameDetail/PieChart";
+import GameDetailWrapper from './GameDetail/GameDetailWrapper';
+import axios from 'axios';
+
 function ChIDToName(id)
 {
     switch(id){
@@ -162,7 +163,11 @@ case 142: return "Zoe"; break;
 case 143: return "Zyra"; break;
     }
 }
+var isGetMatchSpec = false;
 const Game = (props) => {
+    const [DropdownState, setDropdownState ] = useState("dropdown-disable");
+    let [matchSpec, setMatchSpec]= useState(null);
+
     /*챔피언*/
     const [ChampionImg,setChampionImg] = useState(null);
     const ChampionName = ChIDToName(props.info.champion_id);
@@ -217,7 +222,27 @@ const Game = (props) => {
     var sec = props.info.duration - min*60;
     const duration = min+'분 '+sec+'초';
 
+    const onClick = (event) => {
+        if(DropdownState === "dropdown-disable"){
+            setDropdownState("dropdown-able");
+            
+        }
+        else if(DropdownState === "dropdown-able"){
+            setDropdownState("dropdown-disable");
+        }
+        getMatchInfo();
+    }
+    const getMatchInfo = async() => {
+        
+        try{
+            const spec= await axios
+            .get(`http://61.99.75.232:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
+            setMatchSpec(spec.data);
+        }
+        catch{}
+    }
     return(
+    <div>
     <div className = "GameContainer">
         
         <img src = {ChampionImg} className = "Champion"/>
@@ -237,8 +262,13 @@ const Game = (props) => {
 
        
         <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-       
+        <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
     </div>
+    <div className = {DropdownState}>
+        <GameDetailWrapper info = {matchSpec}/>
+    </div>
+    </div>
+
     );
 }
 export default Game;

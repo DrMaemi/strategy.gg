@@ -36,7 +36,6 @@ const Example = () => {
         }
     }
     const off = gradientOffset();
-    console.log(data);
     return (
       <AreaChart
         width={700}
