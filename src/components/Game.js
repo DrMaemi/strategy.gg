@@ -167,6 +167,7 @@ var isGetMatchSpec = false;
 const Game = (props) => {
     const [DropdownState, setDropdownState ] = useState("dropdown-disable");
     let [matchSpec, setMatchSpec]= useState(null);
+    let [isLoading, setLoading] = useState(0);
 
     /*챔피언*/
     const [ChampionImg,setChampionImg] = useState(null);
@@ -223,6 +224,7 @@ const Game = (props) => {
     const duration = min+'분 '+sec+'초';
 
     const onClick = (event) => {
+        
         if(DropdownState === "dropdown-disable"){
             setDropdownState("dropdown-able");
             
@@ -232,6 +234,7 @@ const Game = (props) => {
         }
         getMatchInfo();
         
+        
     }
     const getMatchInfo = async() => {
         
@@ -239,6 +242,7 @@ const Game = (props) => {
             const spec= await axios
             .get(`http://61.99.75.232:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
             setMatchSpec(spec.data);
+            setLoading(1);
         }
         catch{}
     }
@@ -266,7 +270,8 @@ const Game = (props) => {
         <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
     </div>
     <div className = {DropdownState}>
-        <GameDetailWrapper info = {matchSpec}/>
+        {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
+        
     </div>
     </div>
 
