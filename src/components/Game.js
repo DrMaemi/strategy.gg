@@ -4,6 +4,8 @@ import "./Game.css"
 import { storage } from './../firebase';
 import PieChart from "./PieChart";
 import MainSummonerInput from './MainSummonerInput.js';
+import GameDetailWarpper from './GameDetailWarpper';
+
 function ChIDToName(id)
 {
     switch(id){
@@ -164,6 +166,7 @@ case 143: return "Zyra"; break;
 const Game = (props) => {
     /*챔피언*/
     const [ChampionImg,setChampionImg] = useState(null);
+    const [click, setClick] = useState(0);
     const ChampionName = ChIDToName(props.info.champion_id);
     const ChampionURL =  storage.ref().child('Champion/'+String(ChampionName)+'.png').getDownloadURL();
     ChampionURL.then(resolve=>{
@@ -216,6 +219,28 @@ const Game = (props) => {
     var sec = props.info.duration - min*60;
     const duration = min+'분 '+sec+'초';
 
+    const handdleClick= () =>{
+        console.log(click);
+        if(click === 0)setClick(1);
+        else{
+            setClick(0);
+        }
+    }
+    const a = () =>(
+        <div>123123213123123213123</div>
+    );
+    const makeGameDetail= () => {
+        if(click == 1){
+            return (
+                <div>
+                    <button>전략추천</button>
+                    <button>플레이스타일</button>
+                    <GameDetailWarpper/>
+                </div>
+            );
+                
+            }
+    }
     return(
     <div className = "GameContainer">
         
@@ -236,8 +261,9 @@ const Game = (props) => {
 
        
         <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-        <button className = "Analysis" width = "70px" height="70px"></button> 
-        
+        <button className = "Analysis" width = "70px" height="70px" onClick={handdleClick}></button>
+        {makeGameDetail()} 
+      
        
     </div>
     );
