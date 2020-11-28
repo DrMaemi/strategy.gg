@@ -4,9 +4,10 @@ import GoldChart from './GoldChart'
 import WinRateChart from './WinRateChart'
 
 const GameDetailWarpper = (props) =>{
+    console.log(props.info);
     return(
         <div className>
-            <GoldChart data = {props.info.gold_differences}/>
+            <GoldChart data = {props.info}/>
             <WinRateChart />
             <RibbonMenu />
         </div>

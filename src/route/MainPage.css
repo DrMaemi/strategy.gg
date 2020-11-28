@@ -12,14 +12,16 @@
 }    
 
 .centerLogo{
-    
-  
-    top : 30%;
-    width : 40%;
+    position : relative;
+
+    margin : 20px;
+    width : 50%;
     height:auto;
 }
 
 .center{
-    text-align: center;
+    text-align : center;
+    
+    
 }
 

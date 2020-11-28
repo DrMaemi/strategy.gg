@@ -231,6 +231,7 @@ const Game = (props) => {
             setDropdownState("dropdown-disable");
         }
         getMatchInfo();
+        
     }
     const getMatchInfo = async() => {
         

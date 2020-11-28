@@ -17,6 +17,8 @@ const MainSummonerInput = () =>{
   }
   const getSummonerInfo = async() => {
    
+    console.log(21312312);
+    
     try{
         const spec= await axios.get(`http://61.99.75.232:5000/specpage/?name=${users}`);
         console.log(spec);
