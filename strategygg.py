@@ -36,7 +36,7 @@ Models = {
 for tier in tiers:
     for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
-        print(eval("{}RNN{}".format(tier, tl)).summary())
+        #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
         print("{}RNN{} has been loaded".format(tier, tl))
 print("All model has been loaded !")
