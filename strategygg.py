@@ -78,7 +78,9 @@ def analysispage():
     summoner_name = request.args.get("name")
     game_id = request.args.get("game_id")
     summoner_name = processString(summoner_name)
-    timelinespec = spectoanalysis.getfeedback(summoner_name, game_id)
+    print("summoner_name: {} / game_id: {}".format(summoner_name, game_id))
+    timelinespec = spectoanalysis.getanalysis(summoner_name, game_id)
+    del timelinespec['refined_timeline_data']
     return timelinespec
 
 @app.route("/modeltest")

@@ -13,13 +13,15 @@ class Metadata:
                 ,'blueFirstTowerLane'\
                 ,'blueTowerKills','blueMidTowerKills','blueTopTowerKills','blueBotTowerKills'\
                 ,'blueInhibitor','blueFirstDragon','blueDragonType','blueDragon','blueRiftHeralds'\
+                ,'blueFirstBaron','blueBaron'
                 ,'redTotalGolds','redCurrentGolds','redTotalLevel'\
                 ,'redAvgLevel','redTotalMinionKills','redTotalJungleMinionKills'
                 ,'redFirstBlood','redKill','redDeath','redAssist'\
                 ,'redWardPlaced','redWardKills','redFirstTower','redFirstInhibitor'\
                 ,'redFirstTowerLane'\
                 ,'redTowerKills','redMidTowerKills','redTopTowerKills','redBotTowerKills'\
-                ,'redInhibitor','redFirstDragon','redDragnoType','redDragon','redRiftHeralds'
+                ,'redInhibitor','redFirstDragon','redDragonType','redDragon','redRiftHeralds'\
+                ,'redFirstBaron','redBaron'
         ]
         self.diff_columns = [
             "total_gold", # 0 numeric
@@ -43,16 +45,18 @@ class Metadata:
             "kills_bot_towers", # 18
             "kills_inhibitors", # 19
             "first_dragon", # 20
-            # "dragon_type", # 21, delete 해서 총 22개 남는다.
+            # "dragon_type", # 21, delete 해서 총 24개 남는다.
             "total_dragons", # 22
             "rift_heralds", # 23
+            "first_baron", # 24
+            "total_barons" # 25
         ]
 
 def refine_timeline_df(timeline_df):
     diff_columns = Metadata().diff_columns
-    refined_timeline_df = pd.DataFrame(columns=diff_columns)
     raw_columns = list(timeline_df.columns)
-    offset = 24
+    refined_timeline_df = pd.DataFrame(columns=diff_columns)
+    offset = 26
     place = 0
     for idx in range(offset):
         if idx != 14 and idx != 21: # first_tower_lane(:String), dragon_type(:String) 제외
@@ -186,7 +190,7 @@ def get_timeline_features(timeline_data, time):
                     elif events[x]['monsterType']== 'RIFTHERALD':
                         blue_rift += 1
                     elif events[x]['monsterType']== 'BARON_NASHOR':
-                        if red_baron ==0 and blue_dragon == 0:
+                        if red_baron == 0 and blue_baron == 0:
                                 blue_firstbaron += 1
                         else:
                             pass
@@ -204,7 +208,7 @@ def get_timeline_features(timeline_data, time):
                         red_rift += 1
 
                     elif events[x]['monsterType']== 'BARON_NASHOR':
-                        if red_baron ==0 and blue_dragon == 0:
+                        if red_baron == 0 and blue_baron == 0:
                                 red_firstbaron += 1
                         else:
                             pass
@@ -256,13 +260,13 @@ def get_timeline_features(timeline_data, time):
         ,blue_firstkill,blue_kill,blue_death,blue_assist,blue_wardplace,blue_wardkill\
         ,blue_firsttower,blue_firstinhibitor,blue_firsttowerlane,blue_tower\
         ,blue_midtower,blue_toptower,blue_bottower,blue_inhibitor,blue_firstdragon\
-        ,blue_dragontype,blue_dragon,blue_rift\
+        ,blue_dragontype,blue_dragon,blue_rift,blue_firstbaron,blue_baron\
         ,np.sum(redtotal_gold)\
         ,np.sum(redcurrent_gold),np.sum(redtotal_level),np.mean(redtotal_level)\
         ,np.sum(redtotal_minionkill),np.sum(redtotal_jungleminionkill)\
         ,red_firstkill,red_kill,red_death,red_assist,red_wardplace,red_wardkill\
         ,red_firsttower,red_firstinhibitor,red_firsttowerlane,red_tower\
         ,red_midtower,red_toptower,red_bottower,red_inhibitor,red_firstdragon\
-        ,red_dragontype,red_dragon,red_rift]
+        ,red_dragontype,red_dragon,red_rift,red_firstbaron,red_baron]
     timeline_features = pd.DataFrame(np.array([data_list]), columns=columns)
     return timeline_features

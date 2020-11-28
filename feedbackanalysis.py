@@ -111,7 +111,7 @@ def transphase_analysis(t, delta, dF):
             feedback.append("cs 격차")
         if jungles > 8:
             feedback.append("정글링 격차")
-        if dF['total_golds'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
     else:
         diff_columns = Metadata().diff_columns
@@ -148,11 +148,12 @@ def transphase_analysis(t, delta, dF):
             feedback.append("cs 격차")
         if jungles > 8:
             feedback.append("정글링 격차")
-        if dF['total_golds'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
     return feedback
 
 def lanephase_analysis(delta, dF):
+    print(dF)
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
@@ -188,7 +189,7 @@ def lanephase_analysis(delta, dF):
             feedback.append("cs 격차")
         if jungles > 4:
             feedback.append("정글링 격차")
-        if dF['total_golds'] > 25*minions+38*jungles+130 and not sthHappened:
+        if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
     else:
         diff_columns = Metadata().diff_columns
@@ -225,6 +226,6 @@ def lanephase_analysis(delta, dF):
             feedback.append("cs 격차")
         if jungles > 4:
             feedback.append("정글링 격차")
-        if dF['total_golds'] > 25*minions+38*jungles+130 and not sthHappened:
+        if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
     return feedback

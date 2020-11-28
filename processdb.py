@@ -7,9 +7,12 @@ firebase_admin.initialize_app(cred,{
 })
 
 def store_feedback(summoner_name, game_id, point, feedback):
-    db_path = "{}/{}/timelinespec/feedback_points/{}"
+    db_path = "Analyses/{}/{}/timelinespec/feedback_points/{}"
     ref = db.reference(db_path.format(summoner_name, game_id, point))
-    ref.child("feedback").update(feedback)
+    try:
+        ref.child("feedback").update(feedback)
+    except:
+        pass
 
 def store_timelinespec(summoner_name, game_id, timelinespec):
     ref = db.reference("Analyses/{}/{}".format(summoner_name, game_id))

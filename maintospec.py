@@ -30,7 +30,7 @@ def getfboutline(win_rates):
         feedback_points = 0
     else: # itvidx: interval index
         pFeedbackNum, nFeedbackNum = 0, 0
-        feedback_points = {} # key: 시간대 value: 긍정, 부정과 변화율
+        feedback_points = {} # key : point(timestamp)
         maxDifferentials = [] # 각 구간의 최고 변화율을 담는다.
         for itvidx in range(totalFeedbacks):
             if itvidx == 0:
@@ -65,20 +65,20 @@ def getfboutline(win_rates):
                 delta = round(targetInterval[point], 1)
                 if delta > 0:
                     feedback_points[str(point+lower+1)] = {
-                        "win_rate":win_rates[point+lower],
-                        "delta":delta
+                    "win_rate":win_rates[point+lower],
+                    "delta":delta
                     }
                     pFeedbackNum += 1
                 elif delta < 0:
                     feedback_points[str(point+lower+1)] = {
-                        "win_rate":win_rates[point+lower],
-                        "delta":delta
+                    "win_rate":win_rates[point+lower],
+                    "delta":delta
                     }
                     nFeedbackNum += 1
         feedback_num = [pFeedbackNum, nFeedbackNum]
     feedbackOutline = {
         "feedback_num":feedback_num,
-        "feedback_points":feedback_points # Json
+        "feedback_points":feedback_points # List<Json>
     }
     return feedbackOutline
 
