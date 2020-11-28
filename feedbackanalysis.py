@@ -42,6 +42,8 @@ def tfphase_analysis(delta, dF):
             feedback.append("cs 격차")
         if jungles > 14:
             feedback.append("정글링 격차")
+        if len(feedback) == 0:
+            feedback.append("귀환 후 정비 및 우세 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
@@ -81,6 +83,8 @@ def tfphase_analysis(delta, dF):
             feedback.append("cs 격차")
         if jungles > 14:
             feedback.append("정글링 격차")
+        if len(feedback) == 0:
+            feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
 def transphase_analysis(t, delta, dF):
@@ -121,6 +125,8 @@ def transphase_analysis(t, delta, dF):
             feedback.append("정글링 격차")
         if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
+        if len(feedback) == 0:
+            feedback.append("귀환 후 정비 및 우세 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
@@ -158,6 +164,8 @@ def transphase_analysis(t, delta, dF):
             feedback.append("정글링 격차")
         if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
+        if len(feedback) == 0:
+            feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
 def lanephase_analysis(delta, dF):
@@ -198,6 +206,8 @@ def lanephase_analysis(delta, dF):
             feedback.append("정글링 격차")
         if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
+        if len(feedback) == 0:
+            feedback.append("귀환 후 정비 및 우세 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
@@ -235,4 +245,6 @@ def lanephase_analysis(delta, dF):
             feedback.append("정글링 격차")
         if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
+        if len(feedback) == 0:
+            feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
