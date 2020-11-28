@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 
 
-const data = [];
+let data = [];
 var check = 0;
 const gradientOffset = () => {
     const dataMax = Math.max(...data.map(i => i.uv));
@@ -21,12 +21,9 @@ const gradientOffset = () => {
 
 
 
-const Example = () => {
-  const gold = [0, 0, 77, 677, -58, -89, 133, 100, -467, -664, 187,
-     258, 107, 906, -318, -898, -1261, -2348, -2647, -2115, -1007, 
-     -838, 134, -1807, -1791, -3251, -3462, -4223, -4966, -5607, -4752, 
-     -5601, -5174, -7821, -9467, -10118];
+const GoldChart = ({gold}) => {
     
+   console.log(gold);
     for(var i=0;i<gold.length;i++){
         if(check===0){
         data.push({name : i, uv: gold[i]});
@@ -58,4 +55,4 @@ const Example = () => {
       </AreaChart>
     );
   }
-  export default Example;
+  export default GoldChart;
