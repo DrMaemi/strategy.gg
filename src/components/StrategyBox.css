@@ -1,0 +1,20 @@
+.PositiveBox{
+    background-color : #65A2D9;
+    position : relative;
+    left : 3%;
+    width : 40%;
+    height : 100%;
+    margin : 20px;
+    padding : 20px;
+
+}
+.NegativeBox{
+    background-color :#FA5850;
+    
+    position : relative;
+    left:3%;
+    width : 40%;
+    height : 100%;
+    margin : 20px;
+    padding : 20px;
+}

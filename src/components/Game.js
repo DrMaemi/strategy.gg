@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
 import  "./../firebase"
 import "./Game.css"
 import { storage } from './../firebase';
@@ -236,8 +237,6 @@ const Game = (props) => {
 
        
         <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-        <button className = "Analysis" width = "70px" height="70px"></button> 
-        
        
     </div>
     );

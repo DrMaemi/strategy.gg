@@ -11,7 +11,7 @@ function MainPage(){
             <MainGnb/>
             <div className="center">
                 <img src={MainLogo} className="centerLogo" alt="MainLogo"/>
-                <MainSummonerInput/>
+                <MainSummonerInput />
             </div>
         </div>
     );

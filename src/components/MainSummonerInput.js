@@ -22,7 +22,6 @@ const MainSummonerInput = () =>{
     try{
         const spec= await axios.get(`http://61.99.75.232:5000/specpage/?name=${users}`);
         console.log(spec);
-        console.log(12312321);
         setUserSpec(spec);
         history.push({
           pathname: `/summoner/${users}`,

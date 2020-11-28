@@ -1,0 +1,57 @@
+.center{
+    position : absolute;
+    left : 20%;
+    display : inline
+}
+.content{
+    color : white;
+    background-color:#262626;
+    opacity : 0.46;
+    position : relative;
+    width : 78%;
+    height :100%;
+    padding-top : 40px;
+    padding-bottom : 20px;
+
+}
+.Selected{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREEB.TTF');
+
+    background-color:#262626;
+    opacity : 0.46;
+
+    border : none;
+    padding : 15px;
+    
+    font-size : 20px;
+    font-weight : bold;
+}
+.UnSelected{
+    color :#767171;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREEB.TTF');
+
+    background-color : black;
+    opacity : 0.46;
+
+    border : none;
+    padding: 15px;
+
+    font-size : 20px;
+    font-weight : bold;
+}
+.desc{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREEB.TTF');
+
+    position :relative;
+    left : 2%;
+    top : 50%;
+    margin-left:55px;
+   
+    font-size : 18px;
+    font-weight : bold;
+}

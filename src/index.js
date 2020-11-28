@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import GoldChart from './components/GoldChart'
+import RibbonMenu from './components/RibbonMenu';
 ReactDOM.render(
   <React.StrictMode>
-    <GoldChart />
+    <RibbonMenu />
   </React.StrictMode>,
   document.getElementById('root')
 );
