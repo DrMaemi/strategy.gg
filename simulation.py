@@ -173,13 +173,15 @@ def before8(tier, point, team_belongs_to, df, targetModel):
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
-    for _ in range(2): # 두 번만 반복, 가장 영향 높은 feature 두개 선정
+    dragon = False
+    while len(strategy) < 2: # 두 번만 반복, 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b8[twrIdx]
         if tf == "first_blood":
             strategy.append("선취점")
         elif tf == "first_dragon":
             strategy.append("첫 용 선점")
+            dragon = True
         elif tf == "kills":
             strategy.append("솔로킬 혹은 국지전 승리")
         elif tf == "kills_total_minion":
@@ -187,7 +189,8 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         elif tf == "kills_total_jungle_minion":
             strategy.append("정글링 격차")
         elif tf == "total_dragons":
-            strategy.append("용 처치")
+            if not dragon:
+                strategy.append("용 처치")
         elif tf == "tower_shield":
             strategy.append("공격로 압박 및 포탑 방패 철거")
         del winrate_var[twrIdx]
@@ -291,17 +294,18 @@ def before14(tier, point, team_belongs_to, df, targetModel):
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
-    for _ in range(2): # 가장 영향 높은 feature 두개 선정
+    dragon, tower = False, False
+    while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b14[twrIdx]
         if tf == "first_blood":
             strategy.append("선취점")
         elif tf == "first_dragon":
             strategy.append("첫 용 선점")
+            dragon = True
         elif tf == "first_tower":
-            strategy.append("첫 타워 파괴")
-        elif tf == "first_inhibitor":
-            strategy.append("첫 억제기 파괴")
+            strategy.append("공격로 압박 및 포탑 방패 제거, 첫 타워 파괴")
+            tower = True
         elif tf == "kills":
             strategy.append("솔로킬 혹은 국지전 승리")
         elif tf == "kills_total_minion":
@@ -309,17 +313,18 @@ def before14(tier, point, team_belongs_to, df, targetModel):
         elif tf == "kills_total_jungle_minion":
             strategy.append("정글링 격차")
         elif tf == "total_dragons":
-            strategy.append("용 처치")
+            if not dragon:
+                strategy.append("용 처치")
         elif tf == "kills_total_towers":
-            strategy.append("타워 파괴")
+            if not tower:
+                strategy.append("공격로 압박 및 포탑 방패 제거, 타워 파괴")
         elif tf == "rift_heralds":
             strategy.append("전령 처치")
-        elif tf == "kills_total_towers":
-            strategy.append("타워 파괴")
         elif tf == "total_level":
             strategy.append("성장, 레벨링")
         elif tf == "tower_shield":
-            strategy.append("공격로 압박 및 포탑 방패 철거")
+            if not tower:
+                strategy.append("공격로 압박 및 포탑 방패 철거")
         del winrate_var[twrIdx]
         del tf_b14[twrIdx]
     return strategy
@@ -442,17 +447,21 @@ def before20(tier, point, team_belongs_to, df, targetModel):
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
-    for _ in range(2): # 가장 영향 높은 feature 두개 선정
+    dragon, tower, inhibitor = False, False, False
+    while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b20[twrIdx]
         if tf == "first_blood":
             strategy.append("선취점")
         elif tf == "first_dragon":
             strategy.append("첫 용 선점")
+            dragon = True
         elif tf == "first_tower":
             strategy.append("첫 타워 파괴")
+            tower = True
         elif tf == "first_inhibitor":
             strategy.append("첫 억제기 파괴")
+            inhibitor = True
         elif tf == "kills":
             strategy.append("국지전 혹은 한타 승리")
         elif tf == "kills_total_minion":
@@ -460,11 +469,14 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         elif tf == "kills_total_jungle_minion":
             strategy.append("정글링 격차")
         elif tf == "total_dragons":
-            strategy.append("용 처치")
+            if not dragon:
+                strategy.append("용 처치")
         elif tf == "kills_total_towers":
-            strategy.append("타워 파괴")
+            if not tower:
+                strategy.append("타워 파괴")
         elif tf == "kills_inhibitors":
-            strategy.append("억제기 파괴")
+            if not inhibitor:
+                strategy.append("억제기 파괴")
         elif tf == "rift_heralds":
             strategy.append("전령 처치")
         elif tf == "total_level":
@@ -609,19 +621,24 @@ def after20(tier, point, team_belongs_to, df, targetModel):
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
-    for _ in range(2): # 가장 영향 높은 feature 두개 선정
+    dragon, tower, inhibitor, baron = False, False, False, False
+    while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_after[twrIdx]
         if tf == "first_blood":
             strategy.append("선취점")
         elif tf == "first_dragon":
             strategy.append("첫 용 선점")
+            dragon = True
         elif tf == "first_tower":
             strategy.append("첫 타워 파괴")
+            tower = True
         elif tf == "first_inhibitor":
             strategy.append("첫 억제기 파괴")
+            inhibitor = True
         elif tf == "first_baron":
             strategy.append("첫 바론 선점")
+            baron = True
         elif tf == "kills":
             strategy.append("스플릿 공격로 압도 혹은 한타 승리")
         elif tf == "kills_total_minion":
@@ -629,13 +646,17 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         elif tf == "kills_total_jungle_minion":
             strategy.append("정글링 격차")
         elif tf == "total_dragons":
-            strategy.append("용 처치")
+            if not dragon:
+                strategy.append("용 처치")
         elif tf == "kills_total_towers":
-            strategy.append("타워 파괴")
+            if not tower:
+                strategy.append("타워 파괴")
         elif tf == "kills_inhibitors":
-            strategy.append("억제기 파괴")
+            if not inhibitor:
+                strategy.append("억제기 파괴")
         elif tf == "total_barons":
-            strategy.append("바론 처치")
+            if not baron:
+                strategy.append("바론 처치")
         elif tf == "total_level":
             strategy.append("성장, 레벨링")
         elif tf == "place_wards":
