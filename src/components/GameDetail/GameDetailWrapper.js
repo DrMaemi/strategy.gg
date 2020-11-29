@@ -11,7 +11,7 @@ const GameDetailWarpper = ({info}) =>{
         <div className>
             <GoldChart gold = {info.gold_differences}/> 
             <WinRateChart rate = {info.win_rates}/>
-            <RibbonMenu />
+            <RibbonMenu data={info}/>
         </div>
     );
 
