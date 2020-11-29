@@ -55,6 +55,8 @@ def before5(tier, point, team_belongs_to, df, targetModel):
         varState['first_blood'] += statistics['first_blood']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -78,6 +80,8 @@ def before5(tier, point, team_belongs_to, df, targetModel):
             varState['kills_total_jungle_minion'] += statistics['kills_total_jungle_minion']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -116,6 +120,8 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         varState['first_blood'] += statistics['first_blood']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -130,6 +136,8 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         varState['total_dragons'] += statistics['first_dragon']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -159,6 +167,8 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         # 기대승률 분석
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -203,6 +213,8 @@ def before14(tier, point, team_belongs_to, df, targetModel):
         varState['first_blood'] += statistics['first_blood']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -217,6 +229,8 @@ def before14(tier, point, team_belongs_to, df, targetModel):
         varState['total_dragons'] += statistics['first_dragon']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -231,6 +245,8 @@ def before14(tier, point, team_belongs_to, df, targetModel):
         varState['kills_total_towers'] += statistics['first_tower']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -269,6 +285,8 @@ def before14(tier, point, team_belongs_to, df, targetModel):
         # 기대승률 분석
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -325,6 +343,8 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         varState['first_blood'] += statistics['first_blood']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -339,6 +359,8 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         varState['total_dragons'] += statistics['first_dragon']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -353,6 +375,8 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         varState['kills_total_towers'] += statistics['first_tower']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -367,6 +391,8 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         varState['kills_inhibitors'] += statistics['first_inhibitor']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -410,6 +436,8 @@ def before20(tier, point, team_belongs_to, df, targetModel):
         # 기대승률 분석
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -482,6 +510,8 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         varState['total_dragons'] += statistics['first_dragon']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -496,6 +526,8 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         varState['kills_total_towers'] += statistics['first_tower']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -510,6 +542,8 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         varState['kills_inhibitors'] += statistics['first_inhibitor']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -524,6 +558,8 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         varState['total_barons'] += statistics['first_baron']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
@@ -567,6 +603,8 @@ def after20(tier, point, team_belongs_to, df, targetModel):
         # 기대승률 분석
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
