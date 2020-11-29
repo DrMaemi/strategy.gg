@@ -18,7 +18,7 @@ class TargetFeatures:
             "first_blood", "first_dragon",
             "kills", "kills_total_minion", "kills_total_jungle_minion",
             "total_dragons",
-            "tower_shield"
+            "total_level", "tower_shield"
         ]
         self.tf_b14 = [
             "first_blood", "first_dragon", "first_tower",
@@ -161,6 +161,9 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         elif tf == "total_dragons": # 용 처치 횟수
             varState['total_gold'] += 25*statistics['total_dragons']
             varState['total_dragons'] += statistics['total_dragons']
+        elif tf == "total_level": # 성장, 레벨링
+            varState['total_level'] += statistics['total_level']
+            varState['avg_level'] += statistics['avg_level']
         elif tf == "tower_shield": # 라인압박. cs는 고려하지 않고 그냥 골드만 증가시켜봄
             if team == "blue": varState["total_gold"] += 200
             else: varState['total_gold'] -= 200
@@ -191,6 +194,8 @@ def before8(tier, point, team_belongs_to, df, targetModel):
         elif tf == "total_dragons":
             if not dragon:
                 strategy.append("용 처치")
+        elif tf == "total_level":
+            strategy.append("성장, 레벨링")
         elif tf == "tower_shield":
             strategy.append("공격로 압박 및 포탑 방패 철거")
         del winrate_var[twrIdx]
