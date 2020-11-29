@@ -3,10 +3,30 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
 } from 'recharts';
 
+
+
+
+
+
 const GoldChart = ({gold}) => {
+ 
   
   let data = [];
-  var check = 0;
+  let check = 0;
+  const gradientOffset = () => {
+    let dataMax = Math.max(...data.map(i => i.uv));
+    let dataMin = Math.min(...data.map(i => i.uv))
+    if (dataMax <= 0) {
+      return 0;
+    }
+    if (dataMin >= 0) {
+      return 1;
+    }
+
+  return dataMax / (dataMax - dataMin);
+};
+
+   console.log(gold);
     for(var i=0;i<gold.length;i++){
         if(check===0){
         data.push({name : i, uv: gold[i]});
@@ -15,18 +35,7 @@ const GoldChart = ({gold}) => {
             check=1;
         }
     }
-    const gradientOffset = () => {
-      const dataMax = Math.max(...data.map(i => i.uv));
-      const dataMin = Math.min(...data.map(i => i.uv))
-      if (dataMax <= 0) {
-        return 0;
-      }
-      if (dataMin >= 0) {
-        return 1;
-      }
-    return dataMax / (dataMax - dataMin);
-  };
-  const off = gradientOffset();
+    let off = gradientOffset();
     return (
       <AreaChart
         width={700}

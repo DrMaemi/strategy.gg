@@ -6,10 +6,10 @@ import './GameDetailWrapper'
 const GameDetailWrapper = ({info}) =>{
     
     return(
-        <div className = "Wrapper">
-            <GoldChart gold = {info.gold_differences} className = "Chart"/> 
-            <WinRateChart rate = {info.win_rates} className = "Chart"/>
-            <RibbonMenu feedback={info.feedback_points}/>
+        <div className>
+            <GoldChart gold = {info.gold_differences}/> 
+            <WinRateChart rate = {info.win_rates}/>
+            <RibbonMenu data={info}/>
         </div>
     );
 

@@ -5,10 +5,10 @@ import {
 } from 'recharts';
 
 
-
 const WinRateChart = ({rate}) => {
-  const data = [];
-  var check = 0;
+    let data = [];
+    let check = 0;
+   
     for(var i=0;i<rate.length;i++){
         if(check==0){
         data.push({name : i, value : rate[i]});

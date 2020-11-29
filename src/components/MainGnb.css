@@ -1,5 +1,6 @@
 .Topbar{
     background-color : black;
-    height : 100px;
+    height : 15%;
+    flex-grow : 1;
     position:sticky;
 }
