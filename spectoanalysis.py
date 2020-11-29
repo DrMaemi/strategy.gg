@@ -68,10 +68,10 @@ def getanalysis(summoner_name, game_id, Models):
             feedback = fba.transphase_analysis(point, win_rate, delta, deltaFeatures)
         else:
             feedback = fba.tfphase_analysis(win_rate, delta, deltaFeatures)
-        db.store_feedback(summoner_name, game_id, point, feedback)
         # 타 티어 전략 추천
         # strategies:List<e_strategy>, e_strategy:Json(modelTier:String, strategy:List)
         strategies = getstrategies(tier, point, team_belongs_to, df, Models)
+        db.store_feedback(summoner_name, game_id, point, feedback)
         db.store_strategies(summoner_name, game_id, point, strategies)
         feedback_points[str(point)]['feedback'] = feedback
         feedback_points[str(point)]['strategies'] = strategies
