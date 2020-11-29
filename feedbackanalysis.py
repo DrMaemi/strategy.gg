@@ -38,9 +38,9 @@ def tfphase_analysis(delta, dF):
             feedback.append("레벨 격차")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
-        if minions > 19:
+        if minions > 13:
             feedback.append("cs 격차")
-        if jungles > 14:
+        if jungles > 8:
             feedback.append("정글링 격차")
         if len(feedback) == 0:
             feedback.append("귀환 후 정비 및 우세 유지")
@@ -79,9 +79,9 @@ def tfphase_analysis(delta, dF):
             feedback.append("레벨 격차")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
-        if minions > 19:
+        if minions > 13:
             feedback.append("cs 격차")
-        if jungles > 14:
+        if jungles > 8:
             feedback.append("정글링 격차")
         if len(feedback) == 0:
             feedback.append("적의 귀환 후 정비 및 우세 유지")
@@ -121,9 +121,9 @@ def transphase_analysis(t, delta, dF):
         jungles = dF['kills_total_jungle_minion']
         if minions > 11:
             feedback.append("cs 격차")
-        if jungles > 8:
+        if jungles > 7:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 23*minions+40*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             feedback.append("귀환 후 정비 및 우세 유지")
@@ -160,9 +160,9 @@ def transphase_analysis(t, delta, dF):
         jungles = dF['kills_total_jungle_minion']
         if minions > 11:
             feedback.append("cs 격차")
-        if jungles > 8:
+        if jungles > 7:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 30*minions+43*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 23*minions+40*jungles+130 and not sthHappened and t < 15:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             feedback.append("적의 귀환 후 정비 및 우세 유지")
@@ -202,9 +202,9 @@ def lanephase_analysis(delta, dF):
         jungles = dF['kills_total_jungle_minion']
         if minions > 5:
             feedback.append("cs 격차")
-        if jungles > 4:
+        if jungles > 3:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
+        if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             feedback.append("귀환 후 정비 및 우세 유지")
@@ -241,9 +241,9 @@ def lanephase_analysis(delta, dF):
         jungles = dF['kills_total_jungle_minion']
         if minions > 5:
             feedback.append("cs 격차")
-        if jungles > 4:
+        if jungles > 3:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 25*minions+38*jungles+130 and not sthHappened:
+        if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             feedback.append("적의 귀환 후 정비 및 우세 유지")
