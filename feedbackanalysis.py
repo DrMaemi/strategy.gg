@@ -2,15 +2,12 @@ import pandas as pd
 import numpy as np
 from refinedata import Metadata
 
-def tfphase_analysis(delta, dF):
+def tfphase_analysis(win_rate, delta, dF):
     feedback = []
-    sthHappened = False
     if delta > 0:
         if dF['first_blood'] == 1:
             feedback.append("선취점")
-            sthHappened = True
         if dF['kills'] > 0:
-            sthHappened = True
             if dF['assists'] == 0:
                 feedback.append("스플릿 공격로 압도")
             elif dF['assists'] < 4:
@@ -32,7 +29,9 @@ def tfphase_analysis(delta, dF):
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
+        if dF['first_dragon'] == 1:
+            feedback.append("첫 번째 용 선점")
+        elif dF['total_dragons'] == 1:
             feedback.append("용 처치")
         if dF['total_level'] > 2:
             feedback.append("레벨 격차")
@@ -43,15 +42,18 @@ def tfphase_analysis(delta, dF):
         if jungles > 8:
             feedback.append("정글링 격차")
         if len(feedback) == 0:
-            feedback.append("귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리하고 승률이 증가
+                feedback.append("귀환 후 정비 및 우세 유지")
+            else: # 본인 팀이 지고 있는데 승률이 증가
+                feedback.append("귀환 후 정비 및 현상 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
         if dF['first_blood'] == 1:
             feedback.append("적의 선취점")
-            sthHappened = True
+            #sthHappened = True
         if dF['kills'] > 0:
-            sthHappened = True
+            #sthHappened = True
             if dF['assists'] == 0:
                 feedback.append("적의 스플릿 공격로 압도")
             elif dF['assists'] < 4:
@@ -73,7 +75,9 @@ def tfphase_analysis(delta, dF):
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
+        if dF['first_dragon'] == 1:
+            feedback.append("적의 첫 번째 용 선점")
+        elif dF['total_dragons'] == 1:
             feedback.append("적의 용 처치")
         if dF['total_level'] > 2:
             feedback.append("레벨 격차")
@@ -84,10 +88,13 @@ def tfphase_analysis(delta, dF):
         if jungles > 8:
             feedback.append("정글링 격차")
         if len(feedback) == 0:
-            feedback.append("적의 귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리한데 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 현상 유지")
+            else: # 본인 팀이 불리하고 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def transphase_analysis(t, delta, dF):
+def transphase_analysis(t, win_rate, delta, dF):
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
@@ -111,7 +118,9 @@ def transphase_analysis(t, delta, dF):
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
+        if dF['first_dragon'] == 1:
+            feedback.append("첫 번째 용 선점")
+        elif dF['total_dragons'] == 1:
             feedback.append("용 처치")
         if dF['rift_heralds'] == 1:
             feedback.append("전령 처치")
@@ -123,10 +132,13 @@ def transphase_analysis(t, delta, dF):
             feedback.append("cs 격차")
         if jungles > 7:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 23*minions+40*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 20*minions+40*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
-            feedback.append("귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리하고 승률이 증가
+                feedback.append("귀환 후 정비 및 우세 유지")
+            else: # 본인 팀이 지고 있는데 승률이 증가
+                feedback.append("귀환 후 정비 및 현상 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
@@ -150,10 +162,12 @@ def transphase_analysis(t, delta, dF):
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
-            feedback.append("용 처치")
+        if dF['first_dragon'] == 1:
+            feedback.append("적의 첫 번째 용 선점")
+        elif dF['total_dragons'] == 1:
+            feedback.append("적의 용 처치")
         if dF['rift_heralds'] == 1:
-            feedback.append("전령 처치")
+            feedback.append("적의 전령 처치")
         if dF['total_level'] > 2:
             feedback.append("레벨 격차")
         minions = dF['kills_total_minion']
@@ -162,13 +176,16 @@ def transphase_analysis(t, delta, dF):
             feedback.append("cs 격차")
         if jungles > 7:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 23*minions+40*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 20*minions+40*jungles+130 and not sthHappened and t < 15:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
-            feedback.append("적의 귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리한데 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 현상 유지")
+            else: # 본인 팀이 불리하고 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def lanephase_analysis(delta, dF):
+def lanephase_analysis(win_rate, delta, dF):
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
@@ -192,7 +209,9 @@ def lanephase_analysis(delta, dF):
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
+        if dF['first_dragon'] == 1:
+            feedback.append("첫 번째 용 처치")
+        elif dF['total_dragons'] == 1:
             feedback.append("용 처치")
         if dF['rift_heralds'] == 1:
             feedback.append("전령 처치")
@@ -207,7 +226,10 @@ def lanephase_analysis(delta, dF):
         if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
-            feedback.append("귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리하고 승률이 증가
+                feedback.append("귀환 후 정비 및 우세 유지")
+            else: # 본인 팀이 지고 있는데 승률이 증가
+                feedback.append("귀환 후 정비 및 현상 유지")
     else: # 지는 상황
         diff_columns = Metadata().diff_columns
         dF = pd.Series(map(lambda x:-x, dF), index=diff_columns)
@@ -231,10 +253,12 @@ def lanephase_analysis(delta, dF):
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
             feedback.append("억제기 파괴")
-        if dF['first_dragon'] == 1 or dF['total_dragons'] == 1:
-            feedback.append("용 처치")
+        if dF['first_dragon'] == 1:
+            feedback.append("적의 첫 번째 용 선점")
+        elif dF['total_dragons'] == 1:
+            feedback.append("적의 용 처치")
         if dF['rift_heralds'] == 1:
-            feedback.append("적이 전령 처치")
+            feedback.append("적의 전령 처치")
         if dF['total_level'] > 1:
             feedback.append("레벨 격차")
         minions = dF['kills_total_minion']
@@ -246,5 +270,8 @@ def lanephase_analysis(delta, dF):
         if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
-            feedback.append("적의 귀환 후 정비 및 우세 유지")
+            if win_rate > 50: # 본인 팀이 유리한데 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 현상 유지")
+            else: # 본인 팀이 불리하고 승률이 감소
+                feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback

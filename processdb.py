@@ -6,6 +6,17 @@ firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
 
+def bringStatistics(tier, point, team):
+    db_path = "Statistics/{}/{}/{}"
+    ref = db.reference(db_path.format(tier, point, team))
+    statistics = ref.get()
+    return statistics
+
+def store_strategies(summoner_name, game_id, point, strategies):
+    db_path = "Analyses/{}/{}/timelinespec/feedback_points/{}"
+    ref = db.reference(db_path.format(summoner_name, game_id, point))
+    ref.update({"strategies":strategies})
+
 def store_feedback(summoner_name, game_id, point, feedback):
     db_path = "Analyses/{}/{}/timelinespec/feedback_points/{}"
     ref = db.reference(db_path.format(summoner_name, game_id, point))

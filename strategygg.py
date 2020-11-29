@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 from preprocessfordb import processString
 from sklearn.preprocessing import StandardScaler
 
-import json, sys
+import json, sys, time
 from flask import Flask, request, jsonify, Response, abort
 from flask_cors import CORS
 from functools import wraps
@@ -22,17 +22,18 @@ api_key = "RGAPI-0a267978-eeaa-4e67-8130-3059d88d6d7d"
 # RGAPI-9456207e-2a7b-45ce-8787-fdec75a7038e
 
 mod = sys.modules[__name__]
-tiers = ["GOLD"]
+tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
 #["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
 Models = {
     "tiers":tiers,
-    "GOLD":[]
-    #"PLATINUM":[],
-    #"DIAMOND":[],
-    #"MASTER":[],
-    #"CHALLENGER":[]
+    "GOLD":[],
+    "PLATINUM":[],
+    "DIAMOND":[],
+    "MASTER":[],
+    "CHALLENGER":[]
 }
 # load models
+start_time = time.time()
 for tier in tiers:
     for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
@@ -40,6 +41,7 @@ for tier in tiers:
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
         print("{}RNN{} has been loaded".format(tier, tl))
 print("All model has been loaded !")
+print("Wait time: {} second(s)".format(time.time()-start_time))
 
 
 def as_json(f):
@@ -57,6 +59,7 @@ def route():
 @app.route("/specpage/")
 @as_json
 def specpage():
+    start_time = time.time()
     summoner_name = request.args.get("name") # ?name=<summoner_name>
     #print(type(summoner_name)) -> <class 'str'>
     summoner_name = processString(summoner_name)
@@ -70,16 +73,19 @@ def specpage():
     spec = maintospec.getspec(info, Models)
     if spec == 0: return abort(406)
     elif spec == 1: return abort(408)
+    print("Time taken: {} second(s)".format(time.time()-start_time))
     return spec
 
 @app.route("/analysis/")
 @as_json
 def analysispage():
+    start_time = time.time()
     summoner_name = request.args.get("name")
     game_id = request.args.get("game_id")
     summoner_name = processString(summoner_name)
-    timelinespec = spectoanalysis.getanalysis(summoner_name, game_id)
+    timelinespec = spectoanalysis.getanalysis(summoner_name, game_id, Models)
     del timelinespec['refined_timeline_data']
+    print("Time taken: {} second(s)".format(time.time()-start_time))
     return timelinespec
 
 @app.route("/modeltest")
