@@ -127,5 +127,6 @@
     display: none;
     position : relative;
     
+    z-index:1;
   }
   .dropdown-able .dropdown-disable {display: block;}

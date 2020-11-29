@@ -23,6 +23,7 @@ const Summoner = (props) => {
     TierURL.then(resolve=>{
         setTierimg(resolve);
     });
+
     
     if(tier === 'MASTER' || tier === 'CHALLENGER')
         rank= "";

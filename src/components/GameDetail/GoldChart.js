@@ -15,10 +15,6 @@ const GoldChart = ({gold}) => {
             check=1;
         }
     }
-    console.log("이건 data");
-    console.log(data);
-    console.log("이건 gold");
-    console.log(gold);
     const gradientOffset = () => {
       const dataMax = Math.max(...data.map(i => i.uv));
       const dataMin = Math.min(...data.map(i => i.uv))
@@ -28,8 +24,6 @@ const GoldChart = ({gold}) => {
       if (dataMin >= 0) {
         return 1;
       }
-      console.log(dataMax);
-      console.log(dataMin);
     return dataMax / (dataMax - dataMin);
   };
   const off = gradientOffset();

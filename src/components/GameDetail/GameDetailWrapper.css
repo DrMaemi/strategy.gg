@@ -1,4 +1,8 @@
-.container {
+.Wrapper {
+    position : relative;
+    left : 1.5%;
+    width : 870px;
+    height: 110px;
     flex-direction: row;
-    flex: 1
-  }
+    flex: 1;
+  } 
