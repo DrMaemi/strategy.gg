@@ -7,7 +7,9 @@ from refinedata import Metadata
 
 def getstrategies(tier, point, team_belongs_to, refined_timeline_df, Models):
     modelTiers = Models['tiers']
-    tierIdx = modelTiers.index(tier)
+    try: tierIdx = modelTiers.index(tier)
+    except ValueError:
+        tierIdx, tier = 0, "GOLD"
     strategies = []
     while True:
         try:

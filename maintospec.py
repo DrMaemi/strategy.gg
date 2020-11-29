@@ -199,44 +199,50 @@ def getspec(info, Models):
                 gold_differences[i] = int(gold)
             elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
                 gold_differences[i] = -int(gold)
-        # 모델을 이용해서 기대승률 그래프 생성
-        win_rates = [0.5] # at 1 minute, win rate is 50%
-        refined_timeline_npArr = np.array(refined_timeline_df)
-        model_tier = userspec['tier']
-        try:
-            models = Models[model_tier]
-        except KeyError:
-            models = Models["GOLD"]
-        scaler = StandardScaler()
-        for tl in range(2, endtime+1):
-            if tl > 45: break
-            input_data = refined_timeline_npArr[:tl, :]
-            input_data = scaler.fit_transform(input_data)
-            timestamps, input_dim = input_data.shape
-            input_data = input_data.reshape(1, timestamps, input_dim)
-            if team == 0: # 블루팀이 이길 확률 계산
-                win_rate = models[tl-2].predict(input_data)[0][0] # 2분 모델부터 0번 인덱스에 들어가 있다.
-            elif team == 1: # 레드팀이 이길 확률 계산
-                win_rate = models[tl-2].predict(input_data)[0][1]
-            win_rates.append(win_rate)
-        """피드백 개수도 알려줘야 하는데."""
-        refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
-        win_rates = list(win_rates)
-        for ridx, win_rate in enumerate(win_rates):
-            win_rates[ridx] = round(float(win_rate*100), 1)
-        feedbackOutline = getfboutline(win_rates)
-        feedbacks = feedbackOutline['feedback_num']
-        feedback_points = feedbackOutline['feedback_points']
-        timelinespec = {
-            "tier":userspec['tier'],
-            "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
-            "refined_timeline_data":refined_timeline_data,
-            "gold_differences":gold_differences,
-            "win_rates":win_rates,
-            "feedback_points":feedback_points
-        }
-        #timelinespecs.append(timelinespec)
-        db.store_timelinespec(summoner_name_db, game_id, timelinespec)
+        # 모델을 이용하기 전 timelinespec 데이터가 있는지 확인
+        timelinespec_db = db.load_timelinespec(summoner_name_db, game_id)
+        if timelinespec_db is None:
+            # 모델을 이용해서 기대승률 그래프 생성
+            win_rates = [0.5] # at 1 minute, win rate is 50%
+            refined_timeline_npArr = np.array(refined_timeline_df)
+            model_tier = userspec['tier']
+            try:
+                models = Models[model_tier]
+            except KeyError:
+                models = Models["GOLD"]
+            scaler = StandardScaler()
+            for tl in range(2, endtime+1):
+                if tl > 45: break
+                input_data = refined_timeline_npArr[:tl, :]
+                input_data = scaler.fit_transform(input_data)
+                timestamps, input_dim = input_data.shape
+                input_data = input_data.reshape(1, timestamps, input_dim)
+                if team == 0: # 블루팀이 이길 확률 계산
+                    win_rate = models[tl-2].predict(input_data)[0][0] # 2분 모델부터 0번 인덱스에 들어가 있다.
+                elif team == 1: # 레드팀이 이길 확률 계산
+                    win_rate = models[tl-2].predict(input_data)[0][1]
+                win_rates.append(win_rate)
+            """피드백 개수도 알려줘야 하는데."""
+            refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
+            win_rates = list(win_rates)
+            for ridx, win_rate in enumerate(win_rates):
+                win_rates[ridx] = round(float(win_rate*100), 1)
+            feedbackOutline = getfboutline(win_rates)
+            feedbacks = feedbackOutline['feedback_num']
+            feedback_points = feedbackOutline['feedback_points']
+            timelinespec = {
+                "tier":userspec['tier'],
+                "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
+                "refined_timeline_data":refined_timeline_data,
+                "gold_differences":gold_differences,
+                "win_rates":win_rates,
+                "feedback_points":feedback_points
+            }
+            db.store_timelinespec(summoner_name_db, game_id, timelinespec)
+        else: # timelinespec_db is not None. db에 데이터가 있었음
+            win_rates = timelinespec_db['win_rates']
+            feedbackOutline = getfboutline(win_rates)
+            feedbacks = feedbackOutline['feedback_num']
         matchspec = {
             "game_id":game_id,
             "team":team, # blue: 0, red: 1

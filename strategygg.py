@@ -17,9 +17,9 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-0a267978-eeaa-4e67-8130-3059d88d6d7d"
-# 라이엇 계정 29일 06:50
-# RGAPI-9456207e-2a7b-45ce-8787-fdec75a7038e
+api_key = "RGAPI-bce871b0-acb6-4971-b768-2605bcb81be6"
+# 라이엇 계정 31일 08:53
+# RGAPI-2bc3647e-56fb-47a3-816f-03ca2263163a
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -87,6 +87,19 @@ def analysispage():
     del timelinespec['refined_timeline_data']
     print("Time taken: {} second(s)".format(time.time()-start_time))
     return timelinespec
+
+@app.route("/refresh/")
+@as_json
+def refresh():
+    start_time = time.time()
+    summoner_name = request.args.get("name")
+    summoner_name = processString(summoner_name)
+    info = maintospec.getinfo(summoner_name, api_key)
+    spec = maintospec.getspec(info, Models)
+    if spec == 0: return abort(406)
+    elif spec == 1: return abort(408)
+    print("Time taken: {} second(s)".format(time.time()-start_time))
+    return spec
 
 @app.route("/modeltest")
 def modeltest():
