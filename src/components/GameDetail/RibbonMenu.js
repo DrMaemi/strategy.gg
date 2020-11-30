@@ -1,6 +1,10 @@
 import React, {useState} from 'react'
 import "./RibbonMenu.css"
 import StrategyInfoBox from "./StrategyInfoBox"
+import ComboboxStrategy from './ComboBox'
+import MyDropDown from './MyDropDown';
+import 'react-dropdown/style.css';
+
 
 const RibbonMenu = ({data}) =>{
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
@@ -39,19 +43,25 @@ const RibbonMenu = ({data}) =>{
     //     "17": {"delta": 22.7, "win_rate": 55.1, "feedback": ["국지전 승리", "타워 파괴", "용 처치", "레벨 격차", "cs 격차"]}, 
     //     "21": {"delta": 26.9, "win_rate": 58.6, "feedback": ["스플릿 공격로 압도", "레벨 격차"]}}}];
     return(
-    <div className = "Center">
-        <button onClick = {F_onClick} className = {FeedbackBTN}>Feedback</button>
-        <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
-        <div className = "content">
-              <text className = "desc" > 시점</text>
-              <text className = "desc"> 최대승률변화</text> 
-              <text className = "desc"> 기대승률</text>
-              <text className = "desc"> 원인</text>
-
-              
+      <div>
+      <button onClick = {F_onClick} className = {FeedbackBTN}>Feedback</button>
+      <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
+      <div className = "ribon-container">
+        <div>
+            <text className = "desc"  >시점   &nbsp;&nbsp;&nbsp;&nbsp;</text>
+            <text className = "desc" > &nbsp;&nbsp;최대승률변화&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</text> 
+            <text className = "desc" > 기대승률&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</text>
+            <text className = "desc" > 원인&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</text>
+            <text className = "desc" > 전략추천</text>
             {find(i)}
+               
         </div>
-    </div>
+        <div>
+          <ComboboxStrategy/>
+        </div>
+      </div>
+  </div>
+  
     );
 }
 export default RibbonMenu;

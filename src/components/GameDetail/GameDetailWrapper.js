@@ -3,6 +3,7 @@ import RibbonMenu from './RibbonMenu'
 import GoldChart from './GoldChart'
 import WinRateChart from './WinRateChart'
 
+
 const GameDetailWarpper = ({info}) =>{
     console.log("GameDetailWarpper에서 받은정보");
     console.log(info);
@@ -12,6 +13,7 @@ const GameDetailWarpper = ({info}) =>{
             <GoldChart gold = {info.gold_differences}/> 
             <WinRateChart rate = {info.win_rates}/>
             <RibbonMenu data={info}/>
+            
         </div>
     );
 

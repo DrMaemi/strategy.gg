@@ -1,9 +1,12 @@
-.center{
-    position : absolute;
-    left : 20%;
-    display : inline
+.ribon-container{
+   
+   
+    display: flex;
+    
 }
+
 .content{
+    
     color : white;
     background-color:#262626;
     opacity : 0.46;
@@ -12,6 +15,7 @@
     height :100%;
     padding-top : 40px;
     padding-bottom : 20px;
+  
 
 }
 .Selected{
@@ -47,11 +51,13 @@
     font-family: '나눔스퀘어';
     src : url('../common/NANUMSQUAREEB.TTF');
 
-    position :relative;
-    left : 2%;
-    top : 50%;
-    margin-left:55px;
    
     font-size : 18px;
     font-weight : bold;
+}
+
+
+.inlinesss{
+    display: inline;
+    width: 20px;
 }
