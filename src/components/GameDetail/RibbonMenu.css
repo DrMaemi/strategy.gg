@@ -1,15 +1,16 @@
-.center{
-    position : absolute;
-    left : 20%;
-    display : inline
+.hihi{
+    color : white;
+    background-color:rgb(38,38,38,0.46);
+    padding-top : 40px;
+    padding-bottom : 20px;
+
 }
 .Selected{
     color : white;
     font-family: '나눔스퀘어';
     src : url('../common/NANUMSQUAREEB.TTF');
 
-    background-color:#262626;
-    opacity : 0.46;
+    background-color:rgb(38,38,38,0.46);
 
     border : none;
     padding : 15px;
@@ -22,8 +23,7 @@
     font-family: '나눔스퀘어';
     src : url('../common/NANUMSQUAREEB.TTF');
 
-    background-color : black;
-    opacity : 0.46;
+    background-color : rgb(0,0,0,0.46);
 
     border : none;
     padding: 15px;

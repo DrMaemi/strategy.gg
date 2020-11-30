@@ -247,40 +247,40 @@ const Game = (props) => {
         catch{}
     }
     return(
-    <div>
-    <div className = "GameContainer">
-        <div className = "near">
-        <div className="column">    
-        <img src = {ChampionImg} className = "Champion"/>   
-        <b className = "Level">Lv {level}</b>
-        </div>
+        <div>
+        <div className = "GameContainer">
+            <div className = "near">
+                <div className="column">    
+                    <img src = {ChampionImg} className = "Champion"/>   
+                    <b className = "Level">Lv {level}</b>
+                 </div>
 
-        <div className="column"> 
-        <img src = {Spell1Img} className = "Spell1"/>        
-        <img src = {Spell2Img} className = "Spell2"/>
-        </div>
-        </div>
-        <div className="column"> 
-        <b className = "KDA">{KDA}</b>
-        <b className = "AVG">{AVG}</b>
-        </div>
+                <div className="column"> 
+                    <img src = {Spell1Img} className = "Spell1"/>        
+                    <img src = {Spell2Img} className = "Spell2"/>
+                </div>
+            </div>
+            <div className="column"> 
+                <b className = "KDA">{KDA}</b>
+                <b className = "AVG">{AVG}</b>
+            </div>
 
-        <img src = {LaneImg} className = "Lane"/>
+            <img src = {LaneImg} className = "Lane"/>
 
-        <div className="column">
-        <b className = "TeamScore">{TeamScore}</b>
-        <b className = {Win}>{Win}</b>
+            <div className="column">
+                <b className = "TeamScore">{TeamScore}</b>
+                <b className = {Win}>{Win}</b>
+            </div>
+
+            <b className = "Duration">{duration}</b>
+            <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
+            <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
         </div>
-
-        <b className = "Duration">{duration}</b>
-        <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-        <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
-    </div>
-    <div className = {DropdownState}>
-        {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
+        <div className = {DropdownState}>
+            {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
         
-    </div>
-    </div>
+        </div>
+        </div>
 
     );
 }

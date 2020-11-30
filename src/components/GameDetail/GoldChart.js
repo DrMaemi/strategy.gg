@@ -38,11 +38,11 @@ const GoldChart = ({gold}) => {
     let off = gradientOffset();
     return (
       <AreaChart
-        width={700}
-        height={400}
+        width={1000}
+        height={300}
         data={data}
         margin={{
-          top: 10, right: 30, left: 0, bottom: 0,
+          top: 10,  left: 30, right : 30, bottom:20
         }}
       >
         <XAxis dataKey="name" />

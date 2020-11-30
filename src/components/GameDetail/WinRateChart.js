@@ -20,11 +20,11 @@ const WinRateChart = ({rate}) => {
     
     return (
       <LineChart
-        width={800}
-        height={300}
+        width={1000}
+        height={200}
         data={data}
         margin={{
-          top: 5, right: 30, left: 20, bottom: 5,
+          top: 10, right: 30, left: 30, bottom: 20,
         }}>
         <XAxis dataKey="name" />
         <YAxis />

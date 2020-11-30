@@ -1,3 +1,9 @@
+.AboutOneGame{
+    display: flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items: center;
+}
 .GameContainer{
     background-color:#3B3838;
     display: flex;
@@ -101,8 +107,5 @@
 
   .dropdown-disable {
     display: none;
-    position : relative;
-    
-    z-index:1;
   }
   .dropdown-able .dropdown-disable {display: block;}
