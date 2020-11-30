@@ -30,17 +30,18 @@ const Summoner = (props) => {
     return(
         <div className="ProfileContainer">
             <img src =  {Profileimg} alt="Profileicon" className = "ProfileIcon"/> 
+            <div className = "nameNbtn">
             <b className = "SummonerName">{summoner_name}</b>
             <button className = "UpdateButton">전적갱신</button>
-                
+            </div>
             <img src = {Tierimg} alt="TierIcon" className = "TierIcon"/>
 
+            <div className = "tierNlp">
             <b className = "TierName">{tier} {rank}</b>
-            
-            <br></br>
             <b className = "LP">{league_point}LP</b>
+            </div>
 
-        </div>
+        </div>  
         
     );
 

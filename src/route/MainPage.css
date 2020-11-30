@@ -14,20 +14,18 @@ html, body {
     background-repeat: no-repeat;
     overflow: scroll;
 
-    display : flex;
-    flex-direction : column;
-    align-content : center;
 }    
 
 .centerLogo{
     margin : 20px;
-    width : 70%;
+    width : 450px;
     height:auto;
 }
 
 .center{
-    top : 100px;
-    width : 50%;
+    top : 130px;
+    right : 250px;
+    width : 500px;
     margin : 0 auto;
     display: flex;
     flex-direction : column;

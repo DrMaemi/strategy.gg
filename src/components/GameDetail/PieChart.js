@@ -29,17 +29,18 @@ const Example = (props) => {
     data[0].value = props.feedback[0];
     data[1].value = props.feedback[1];
     return (
-        <PieChart width = {400} height = {400} className="inline">
+        <PieChart width = {100} height = {100} className="inline">
           <Pie
             data={data}
-            cx={60}
-            cy={60}
+            cx={50}
+            cy={50}
             labelLine={false}
             label={renderCustomizedLabel}
-            outerRadius={40}
+            outerRadius={35}
             fill="#8884D8"
             dataKey="value"
             className="inline"
+            
           >
             {
               data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)

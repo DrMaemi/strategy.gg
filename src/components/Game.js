@@ -249,23 +249,30 @@ const Game = (props) => {
     return(
     <div>
     <div className = "GameContainer">
-        
-        <img src = {ChampionImg} className = "Champion"/>
-        
-        <h5 className = "Level">Lv {level}</h5>
-       
-        <img src = {Spell1Img} className = "Spell1"/>
-        
-        <img src = {Spell2Img} className = "Spell2"/>
-        
-        <h3 className = "KDA">{KDA}</h3>
-        <h5 className = "AVG">{AVG}</h5>
-        <img src = {LaneImg} className = "Lane"/>
-        <h3 className = "TeamScore">{TeamScore}</h3>
-        <h5 className = "Win">{Win}</h5>
-        <h3 className = "Duration">{duration}</h3>
+        <div className = "near">
+        <div className="column">    
+        <img src = {ChampionImg} className = "Champion"/>   
+        <b className = "Level">Lv {level}</b>
+        </div>
 
-       
+        <div className="column"> 
+        <img src = {Spell1Img} className = "Spell1"/>        
+        <img src = {Spell2Img} className = "Spell2"/>
+        </div>
+        </div>
+        <div className="column"> 
+        <b className = "KDA">{KDA}</b>
+        <b className = "AVG">{AVG}</b>
+        </div>
+
+        <img src = {LaneImg} className = "Lane"/>
+
+        <div className="column">
+        <b className = "TeamScore">{TeamScore}</b>
+        <b className = {Win}>{Win}</b>
+        </div>
+
+        <b className = "Duration">{duration}</b>
         <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
         <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
     </div>
