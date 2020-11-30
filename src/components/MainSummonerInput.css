@@ -1,33 +1,25 @@
 .form{
-  width : 350px;
-  display : inline;
-  margin : 0px;
+  margin-left : 30px;
+  width : 400px;
 }
-
 .search{
-    margin-left : 60px;
-    width : 350px;
-    height : 45px;
-    border-radius: 5px;
-    padding-left : 10px;
-    box-shadow: 5px 5px 5px #2B2929;
+  width : 350px;
+  height : 45px;
+  padding-left : 4px;
 }
 .searchButton{
     background-image: url('/src/img/SearchButton.png');
     background-color: transparent;
     background-repeat: no-repeat;
-
     position : relative;
     top : 15px;
     right : 50px;
     width : 40px;
     height : 40px;
-
     padding : 0px;
     border : none;
     cursor : pointer;
 }
-/*
 .loading {
     display: inline-block;
     width: 50px;
@@ -44,4 +36,4 @@
   @-webkit-keyframes spin {
     to { -webkit-transform: rotate(360deg); }
   } 
-@media (max-width: 100px) {}*/
+@media (max-width: 100px) {}

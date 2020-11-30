@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import './Summoner.css'
-import {useHistory, useLocation} from 'react-router-dom';
 import  "./../firebase"
 import { storage } from './../firebase';
     
