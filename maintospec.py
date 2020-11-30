@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 from preprocessfordb import processString
 import processdb as db
-from refinedata import get_timeline_features, refine_timeline_df
+from refinedata import get_timeline_features, refine_timeline_df, Metadata
 
 def getanalysis(summoner_name, game_id):
     timelinespec = db.load_timelinespec(summoner_name, game_id)
@@ -141,31 +141,46 @@ def getspec(info, Models):
         spell1id, spell2id = targetParticipant['spell1Id'], targetParticipant['spell2Id']
         role = outline['role']
         lane = outline['lane']
-        if lane == "NONE":
-            if spell1id == 11 or spell2id == 11:
-                lane = "JUNGLE"
-            else:
-                calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
-                frames = timeline_data['frames']
-                frames = frames[3:11]
-                try:
-                    for frame in frames:
-                        participantFrames = frame['participantFrames']
-                        for pfidx in range(1, 11):
-                            pf = participantFrames[str(pfidx)]
-                            if pf['participantId'] == targetId:
-                                x, y = pf['position']['x'], pf['position']['y']
-                                if (x<4000 and y>4000) or (x<11000 and y>11000):
-                                    calPositions['TOP'] += 1
-                                elif (x>4000 and y<4000) or (x>11000 and y<11000):
-                                    calPositions['BOTTOM'] += 1
-                                else:
-                                    calPositions['MID'] += 1
-                                break
-                    posVals = list(calPositions.values())
-                    posKeys = list(calPositions.keys())
-                    lane = posKeys[posVals.index(max(posVals))]
-                except: pass
+        #if lane == "NONE":
+        if spell1id == 11 or spell2id == 11:
+            lane = "JUNGLE"
+        else:
+            calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
+            frames = timeline_data['frames']
+            frames = frames[3:11]
+            try:
+                for frame in frames:
+                    participantFrames = frame['participantFrames']
+                    for pfidx in range(1, 11):
+                        pf = participantFrames[str(pfidx)]
+                        if pf['participantId'] == targetId:
+                            x, y = pf['position']['x'], pf['position']['y']
+                            if (x<4000 and y>4000) or (x<11000 and y>11000):
+                                calPositions['TOP'] += 1
+                            elif (x>4000 and y<4000) or (x>11000 and y<11000):
+                                calPositions['BOTTOM'] += 1
+                            else:
+                                calPositions['MID'] += 1
+                            break
+                posVals = list(calPositions.values())
+                posKeys = list(calPositions.keys())
+                lane = posKeys[posVals.index(max(posVals))]
+            except: pass
+            if lane == "BOTTOM":
+                csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
+                if team == 0: # target 유저가 블루팀인 경우
+                    for pidx in range(5):
+                        ptcp = matchinfo['participants'][pidx]
+                        csKilled = ptcp['stats']['totalMinionsKilled']
+                        csList.append(csKilled)
+                else: # target 유저가 레드팀인 경우
+                    for pidx in range(5, 10):
+                        ptcp = matchinfo['participants'][pidx]
+                        csKilled = ptcp['stats']['totalMinionsKilled']
+                        csList.append(csKilled)
+                supporterId = csList.index(min(csList))+1
+                if team == 1: supporterId += 5
+                if targetId == supporterId: lane = "SUPPORTER"
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
         death = stats['deaths']
@@ -187,10 +202,18 @@ def getspec(info, Models):
             team_score = "{}:{}".format(redKills, blueKills)
         duration = matchinfo['gameDuration']
         endtime = ceil(duration/60) # 해당 게임이 끝난 시간(분)
+        timeline_json = db.load_timeline_dataframe(game_id)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
-        for time in range(1, endtime+1):
-            timeline_features = get_timeline_features(timeline_data, time*60000)
-            timeline_df = pd.concat([timeline_df, timeline_features])
+        if timeline_json is None: # 타임라인 데이터프레임이 저장되어있지 않음
+            for time in range(1, endtime+1):
+                timeline_features = get_timeline_features(timeline_data, time*60000)
+                timeline_df = pd.concat([timeline_df, timeline_features])
+            db.store_timeline_dataframe(game_id, timeline_df)
+        else: # 타임라인 데이터프레임이 저장되어 있는 경우
+            raw_columns = Metadata().raw_columns
+            for tldata in timeline_json:
+                df_row = pd.DataFrame([tldata], columns=raw_columns)
+                timeline_df = pd.concat([timeline_df, df_row])
         refined_timeline_df = refine_timeline_df(timeline_df)
         gold_differences = refined_timeline_df['total_gold'].tolist()
         for i in range(len(gold_differences)):

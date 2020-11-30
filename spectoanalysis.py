@@ -5,7 +5,7 @@ import feedbackanalysis as fba
 import simulation as simul
 from refinedata import Metadata
 
-def getstrategies(tier, point, team_belongs_to, refined_timeline_df, Models):
+def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df, Models):
     modelTiers = Models['tiers']
     try: tierIdx = modelTiers.index(tier)
     except ValueError:
@@ -21,15 +21,15 @@ def getstrategies(tier, point, team_belongs_to, refined_timeline_df, Models):
         targetModel = models[point-1]
         # Simulationing code
         if point < 5:
-            strategy = simul.before5(tier, point, team_belongs_to, sliced_df, targetModel)
+            strategy = simul.before5(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 8:
-            strategy = simul.before8(tier, point, team_belongs_to, sliced_df, targetModel)
+            strategy = simul.before8(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 14:
-            strategy = simul.before14(tier, point, team_belongs_to, sliced_df, targetModel)
+            strategy = simul.before14(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 20:
-            strategy = simul.before20(tier, point, team_belongs_to, sliced_df, targetModel)
+            strategy = simul.before20(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
         else:
-            strategy = simul.after20(tier, point, team_belongs_to, sliced_df, targetModel)
+            strategy = simul.after20(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
         e_strategy = {
             "model_tier":modelTier,
             "strategy":strategy
@@ -48,13 +48,21 @@ def getanalysis(summoner_name, game_id, Models):
     except: pass
     team_belongs_to = timelinespec['team_belongs_to']
     tier = timelinespec['tier']
-    diff_columns = Metadata().diff_columns
+    metadata = Metadata()
+    diff_columns = metadata.diff_columns
     df = pd.DataFrame()
     refined_timeline_data = timelinespec['refined_timeline_data']
     for tldata in refined_timeline_data:
         df_row = pd.DataFrame([tldata], columns=diff_columns)
         df = pd.concat([df, df_row])
     # df = refined_timeline_df has been made
+    timeline_json = db.load_timeline_dataframe(game_id)
+    raw_columns = metadata.raw_columns
+    timeline_df = pd.DataFrame()
+    for tldata in timeline_json:
+        df_row = pd.DataFrame([tldata], columns=raw_columns)
+        timeline_df = pd.concat([timeline_df, df_row])
+    # timeline_df has been made
     for point in points: # npArr[k] = k+1분의 상황 데이터
         # 원인(피드백) 조사
         # npArr[point]: (point+1)분의 상황
@@ -72,7 +80,7 @@ def getanalysis(summoner_name, game_id, Models):
             feedback = fba.tfphase_analysis(win_rate, delta, deltaFeatures)
         # 타 티어 전략 추천
         # strategies:List<e_strategy>, e_strategy:Json(modelTier:String, strategy:List)
-        strategies = getstrategies(tier, point, team_belongs_to, df, Models)
+        strategies = getstrategies(tier, point, team_belongs_to, timeline_df, df, Models)
         db.store_feedback(summoner_name, game_id, point, feedback)
         db.store_strategies(summoner_name, game_id, point, strategies)
         feedback_points[str(point)]['feedback'] = feedback

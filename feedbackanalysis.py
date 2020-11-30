@@ -22,9 +22,9 @@ def tfphase_analysis(win_rate, delta, dF):
         elif dF['total_barons'] == 1:
             feedback.append("바론 처치")
         if dF['first_tower'] == 1:
-            feedback.append("타워 선취점")
+            feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -68,9 +68,9 @@ def tfphase_analysis(win_rate, delta, dF):
         elif dF['total_barons'] == 1:
             feedback.append("적의 바론 처치")
         if dF['first_tower'] == 1:
-            feedback.append("적의 타워 선취점")
+            feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -111,9 +111,9 @@ def transphase_analysis(t, win_rate, delta, dF):
             feedback.append("아군의 솔로킬")
             sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("타워 선취점")
+            feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -155,9 +155,9 @@ def transphase_analysis(t, win_rate, delta, dF):
             feedback.append("적의 솔로킬")
             sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("적의 타워 선취점")
+            feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -202,9 +202,9 @@ def lanephase_analysis(win_rate, delta, dF):
             feedback.append("아군의 솔로킬")
             sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("타워 선취점")
+            feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -246,9 +246,9 @@ def lanephase_analysis(win_rate, delta, dF):
             feedback.append("적의 솔로킬")
             sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("적의 타워 선취점")
+            feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("타워 파괴")
+            feedback.append("포탑 파괴")
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:

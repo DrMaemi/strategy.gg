@@ -39,3 +39,13 @@ def load_spec(summoner_name):
     ref = db.reference("Specs/"+summoner_name)
     spec = ref.get()
     return spec
+
+def store_timeline_dataframe(game_id, timeline_df):
+    timeline_json = eval(timeline_df.to_json(orient="records"))
+    ref = db.reference("Timeline DataFrames")
+    ref.update({str(game_id):timeline_json})
+
+def load_timeline_dataframe(game_id):
+    ref = db.reference("Timeline DataFrames/{}".format(game_id))
+    timeline_json = ref.get()
+    return timeline_json
