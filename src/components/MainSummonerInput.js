@@ -35,7 +35,7 @@ const MainSummonerInput = () =>{
   
   return(
     
-    <form onSubmit={handleSubmit} >
+    <form onSubmit={handleSubmit} className="form">
        <input 
          type = "text" 
          name = "users"

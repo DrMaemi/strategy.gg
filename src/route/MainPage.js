@@ -14,7 +14,6 @@ function MainPage(){
                 <MainSummonerInput />
             </div>
         </div>
-        
     );
 }
 

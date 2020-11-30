@@ -3,6 +3,7 @@ import GnbStrategyLogo from './common/GnbStrategyLogo.js';
 import GnbModelLogo from './common/GnbModelLogo.js';
 import './MainSummonerInput.css';
 import './OtherGnb.css'
+import './MainGnb.css'
 import MainSummonerInput from './MainSummonerInput.js';
 
 function OtherGnb(){
@@ -11,9 +12,9 @@ function OtherGnb(){
           <GnbStrategyLogo/>
           <GnbModelLogo/>
 
-        <span className = "otherInput">
+        <div className = "otherInput">
          <MainSummonerInput/>
-         </span>
+         </div>
          
 
     </div>

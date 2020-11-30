@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 function GnbStrategyLogo(){
     return(
         <Link to="/MainPage">
-        <img src={GnbStLogo} className = "StrategyLogo"/>
+        <img src={GnbStLogo} className = "Logo"/>
        </Link>
     );
 }

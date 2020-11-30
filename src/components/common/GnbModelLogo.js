@@ -6,7 +6,7 @@ import './GnbLogo.css';
 function GnbModelLogo(){
     return(
         <Link to="/ModelPage">
-        <img src={GnbMoLogo} className = "ModelLogo"/>
+        <img src={GnbMoLogo} className = "Logo"/>
         </Link>
     );
 }

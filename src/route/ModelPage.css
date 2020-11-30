@@ -2,38 +2,29 @@
     width: 960px;
     margin: 0 auto;
     overflow: hidden;
-    background-color: black;
  }
  
  .explane{
-     margin-top: 10px;
-     margin-left: 10px;
-     margin-right: 10px;
-     margin-bottom: 10px;
+     margin : 30px ;
      padding: 20px;
-     border: 1px solid white;
      border-radius: 20px;
+     background-color : #1e1e1f;
+     box-shadow: 0 7px 15px black;
+     z-index : 1;
  }
- 
  .title{
+     position : relative;
      color: cornflowerblue;
+     z-index : 2;
  }
  
  .contents{
+     position : relative;
      color: white;
+     z-index : 2;
  }
  
  .button{
      text-align: center;
  }
  
- .back{
-     position: relative;
-     padding-top: 0.75rem;
-     padding-bottom:  0.75rem;
-     margin-left: 0.25rem;
-     margin-right: 00.25rem;
-     min-width: 150px;
-     border-radius: 50px;
-     background-color: white;
- }

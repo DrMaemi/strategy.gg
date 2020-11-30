@@ -8,10 +8,10 @@ function ExceptPage(){
     return(
         <div className="container" >
             <OtherGnb/>
-            <div>
-                <img src = {Question} alt="NoUser" className = "uestionImg"></img>
-                <h1 className = "NotFoundMsg">Summoner not found</h1>
-            </div>
+            <div className = "NotFoundMsg">Summoner not found</div>
+            <div className = "Again">Please try again</div>
+            
+            
         </div>
     );
 }

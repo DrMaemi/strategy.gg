@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom';
 const ModelPage = () => {
     return(
         <div className="container" >
-            <OtherGnb/>
+            <OtherGnb />
             <div>
             <section className='main'>
               <article className='explane'>
@@ -36,11 +36,7 @@ const ModelPage = () => {
               </article>
             </section>
           </div>
-          <div className='button'>
-            <Link to='/MainPage'>
-              <button className='back'>메인 페이지</button>
-            </Link>
-          </div>*/
+        
         </div>
     );
 }
