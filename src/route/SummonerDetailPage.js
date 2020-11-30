@@ -9,7 +9,7 @@ const SummonerDetailPage = ({ location : {state : {spec : {data}}}}) =>{
     
     console.log(data);
     return(
-        <div className="container">
+        <div className="SummonerDetailPageContainer">
             <OtherGnb/>
             <div className="Boxs">
                 <Summoner info = {data.userspec}/>

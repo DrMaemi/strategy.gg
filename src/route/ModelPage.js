@@ -1,43 +1,39 @@
 import React from 'react';
 import OtherGnb from './../components/OtherGnb.js'
-import './MainPage.css';
-import './ModelPage.css';
-import {Link} from 'react-router-dom';
 
+import './ModelPage.css';
 const ModelPage = () => {
     return(
-        <div className="container" >
+        <div className="ModelPageContainer" >
             <OtherGnb />
-            <div>
             <section className='main'>
-              <article className='explane'>
-                <h1 className='title'>Model(x)</h1>
-                <p className='contents'>
+              <div className='explane'>
+                <div className='modelName'>Model(x)</div>
+                <div className='contents'>
                   Mode(x)는 ~~~~~이러한 모델입니다.
-                </p>
-              </article>
-              <article className="explane">
-                <h1 className='title'>ST(X)</h1>
-                <p className='contents'>
+                </div>
+              </div>
+              <div className="explane">
+                <div className='modelName'>ST(x)</div>
+                <div className='contents'>
                   ST(x)는 ~~~~~한 모델입니다. 
-                </p>
-              </article>
-              <article className='explane'>
-                <h1 className='title'>PS(x)</h1>
-                <p className='contents'>
+                </div>
+              </div>
+              <div className='explane'>
+                <div className='modelName'>PS(x)</div>
+                <div className='contents'>
                   PS (X)는 ~~~~한 모델입니다.
-                </p>
-              </article>
-              <article className='explane'>
-                <h1 className='title'>DATA</h1>
-                <p className='contents'>
+                </div>
+              </div>
+              <div className='explane'>
+                <div className='modelName'>DATA</div>
+                <div className='contents'>
                   저희 데이터는 ~~~한 방법으로 수집하였습니다. 
-                </p>
-              </article>
+                </div>
+              </div>
             </section>
-          </div>
-        
         </div>
+      
     );
 }
 
