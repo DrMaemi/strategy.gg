@@ -249,14 +249,14 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
     tf_b14 = TargetFeatures().tf_b14
     if team_belongs_to == 0: # blue team
         team = "blue"
-        topTowerKills = timeline_df['blueTopTowerKills']
-        midTowerKills = timeline_df['blueMidTowerKills']
-        botTowerKills = timeline_df['blueBotTowerKills']
+        topTowerKills = list(timeline_df['blueTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['blueMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['blueBotTowerKills'])[point-1]
     else:
         team = "red"
-        topTowerKills = timeline_df['redTopTowerKills']
-        midTowerKills = timeline_df['redMidTowerKills']
-        botTowerKills = timeline_df['redBotTowerKills']
+        topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
     statistics = processdb.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
@@ -441,14 +441,14 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
     tf_b20 = TargetFeatures().tf_b20
     if team_belongs_to == 0: # blue team
         team = "blue"
-        topTowerKills = timeline_df['blueTopTowerKills']
-        midTowerKills = timeline_df['blueMidTowerKills']
-        botTowerKills = timeline_df['blueBotTowerKills']
+        topTowerKills = list(timeline_df['blueTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['blueMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['blueBotTowerKills'])[point-1]
     else:
         team = "red"
-        topTowerKills = timeline_df['redTopTowerKills']
-        midTowerKills = timeline_df['redMidTowerKills']
-        botTowerKills = timeline_df['redBotTowerKills']
+        topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
     statistics = processdb.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
@@ -667,14 +667,14 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
     tf_after = TargetFeatures().tf_after
     if team_belongs_to == 0: # blue team
         team = "blue"
-        topTowerKills = timeline_df['blueTopTowerKills']
-        midTowerKills = timeline_df['blueMidTowerKills']
-        botTowerKills = timeline_df['blueBotTowerKills']
+        topTowerKills = list(timeline_df['blueTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['blueMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['blueBotTowerKills'])[point-1]
     else:
         team = "red"
-        topTowerKills = timeline_df['redTopTowerKills']
-        midTowerKills = timeline_df['redMidTowerKills']
-        botTowerKills = timeline_df['redBotTowerKills']
+        topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
+        midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
+        botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
     statistics = processdb.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
