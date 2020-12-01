@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 from refinedata import Metadata
 
-def tfphase_analysis(win_rate, delta, dF):
+def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
     feedback = []
     if delta > 0:
         if dF['first_blood'] == 1:
             feedback.append("선취점")
         if dF['kills'] > 0:
             if dF['assists'] == 0:
-                feedback.append("스플릿 공격로 압도")
+                feedback.append("스플릿 공격로 압도:{}킬".format(dF['kills']))
             elif dF['assists'] < 4:
                 feedback.append("국지전 승리")
             else:
@@ -24,7 +24,44 @@ def tfphase_analysis(win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -70,7 +107,44 @@ def tfphase_analysis(win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("아군의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -94,7 +168,7 @@ def tfphase_analysis(win_rate, delta, dF):
                 feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def transphase_analysis(t, win_rate, delta, dF):
+def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
@@ -113,7 +187,44 @@ def transphase_analysis(t, win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -157,7 +268,44 @@ def transphase_analysis(t, win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("아군의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -176,7 +324,7 @@ def transphase_analysis(t, win_rate, delta, dF):
             feedback.append("cs 격차")
         if jungles > 7:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 20*minions+40*jungles+130 and not sthHappened and t < 15:
+        if dF['total_gold'] > 20*minions+40*jungles+100 and not sthHappened and t < 15:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             if win_rate > 50: # 본인 팀이 유리한데 승률이 감소
@@ -185,7 +333,7 @@ def transphase_analysis(t, win_rate, delta, dF):
                 feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def lanephase_analysis(win_rate, delta, dF):
+def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
     feedback = []
     sthHappened = False
     if delta > 0: # 이기는 상황
@@ -204,7 +352,44 @@ def lanephase_analysis(win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -248,7 +433,44 @@ def lanephase_analysis(win_rate, delta, dF):
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
         elif dF['kills_total_towers'] > 0:
-            feedback.append("포탑 파괴")
+            if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
+                topTowerList = list(timeline_df['blueTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['blueMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['blueBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            else: # 유저가 레드팀, 상대팀은 블루팀
+                topTowerList = list(timeline_df['redTopTowerKills'])
+                topTowerKills = topTowerList[t]-topTowerList[t-1]
+                midTowerList = list(timeline_df['redMidTowerKills'])
+                midTowerKills = midTowerList[t]-midTowerList[t-1]
+                botTowerList = list(timeline_df['redBotTowerKills'])
+                botTowerKills = botTowerList[t]-botTowerKills[t-1]
+            content = []
+            if topTowerKills != 0:
+                if topTowerList[t-1] == 0:
+                    content.append("탑 1차")
+                elif topTowerList[t-1] == 1:
+                    content.append("탑 2차")
+                else:
+                    content.append("탑 3차")
+            if midTowerKills != 0:
+                if midTowerList[t-1] == 0:
+                    content.append("미드 1차")
+                elif midTowerList[t-1] == 1:
+                    content.append("미드 2차")
+                else:
+                    content.append("미드 3차")
+            if botTowerKills != 0:
+                if botTowerList[t-1] == 0:
+                    content.append("봇 1차")
+                elif botTowerList[t-1] == 1:
+                    content.append("봇 2차")
+                else:
+                    content.append("봇 3차")
+            content = str(content).replace("'", "")
+            feedback.append("아군의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
@@ -267,7 +489,7 @@ def lanephase_analysis(win_rate, delta, dF):
             feedback.append("cs 격차")
         if jungles > 3:
             feedback.append("정글링 격차")
-        if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
+        if dF['total_gold'] > 17*minions+35*jungles+100 and not sthHappened:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
             if win_rate > 50: # 본인 팀이 유리한데 승률이 감소

@@ -41,6 +41,8 @@ def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df
 def getanalysis(summoner_name, game_id, Models):
     timelinespec = db.load_timelinespec(summoner_name, game_id)
     feedback_points = timelinespec['feedback_points']
+    if feedback_points == 0: # 게임 진행x. 피드백할 것이 없음
+        return timelinespec
     points = list(map(int, feedback_points.keys()))
     try:
         feedback = feedback_points[str(points[0])]['feedback']
@@ -73,11 +75,11 @@ def getanalysis(summoner_name, game_id, Models):
         delta = feedback_points[str(point)]['delta']
         win_rate = feedback_points[str(point)]['win_rate']
         if point < 11: # lane phase, 1 ~ 10 minute
-            feedback = fba.lanephase_analysis(win_rate, delta, deltaFeatures)
+            feedback = fba.lanephase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df)
         elif point < 21: # transition phase, 11 ~ 20 minute
-            feedback = fba.transphase_analysis(point, win_rate, delta, deltaFeatures)
+            feedback = fba.transphase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df)
         else:
-            feedback = fba.tfphase_analysis(win_rate, delta, deltaFeatures)
+            feedback = fba.tfphase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df)
         # 타 티어 전략 추천
         # strategies:List<e_strategy>, e_strategy:Json(modelTier:String, strategy:List)
         strategies = getstrategies(tier, point, team_belongs_to, timeline_df, df, Models)

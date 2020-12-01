@@ -831,8 +831,15 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 tower = True
         elif tf == "first_inhibitor":
             if not inhibitor:
-                strategy.append("첫 억제기 파괴")
-                inhibitor = True
+                targetInhibitors = []
+                if topTowerKills > 1: targetInhibitors.append("탑")
+                if midTowerKills > 1: targetInhibitors.append("미드")
+                if botTowerKills > 1: targetInhibitors.append("봇")
+                if len(targetInhibitors) != 0:
+                    targetInhibitors = str(targetInhibitors).replace(", ", " or ")
+                    targetInhibitors = targetInhibitors.replace("'", "")
+                    strategy.append("첫 억제기 파괴, 대상:{}".format(targetInhibitors))
+                    inhibitor = True
         elif tf == "first_baron":
             if not baron:
                 strategy.append("첫 바론 선점")

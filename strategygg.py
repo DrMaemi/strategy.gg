@@ -18,7 +18,7 @@ app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
 api_key = "RGAPI-8300df8f-9aa4-4b25-a02e-151839d61008"
-# 라이엇 계정 31일 08:53
+# 라이엇 계정 2일 08:53
 # RGAPI-4b642383-a8e2-4768-8b4f-f15e56615529
 
 mod = sys.modules[__name__]
