@@ -267,7 +267,7 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
             sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
-        elif dF['kills_total_towers'] > 0:
+        if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
                 topTowerList = list(timeline_df['redTopTowerKills'])
                 topTowerKills = topTowerList[t]-topTowerList[t-1]
@@ -351,7 +351,7 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
             sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
-        elif dF['kills_total_towers'] > 0:
+        if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
                 topTowerList = list(timeline_df['blueTopTowerKills'])
                 topTowerKills = topTowerList[t]-topTowerList[t-1]
@@ -432,7 +432,7 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
             sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
-        elif dF['kills_total_towers'] > 0:
+        if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
                 topTowerList = list(timeline_df['redTopTowerKills'])
                 topTowerKills = topTowerList[t]-topTowerList[t-1]
