@@ -21,12 +21,10 @@ const renderCustomizedLabel = ({
   );
 };
 const Example = (props) => {
-  console.log(props.feedback);
   let data = [];
   data.push({name : "Good", value : props.feedback[0]});
   data.push({name : "Bad", value : props.feedback[1]});
 
-    console.log(data);
     return (
         <PieChart width = {100} height = {100} className="inline">
           

@@ -4,8 +4,6 @@ import {
 } from 'recharts';
 
 const GoldChart = ({gold}) => {
- 
-  
   let data = [];
   let check = 0;
   const gradientOffset = () => {

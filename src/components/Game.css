@@ -94,6 +94,13 @@
     width : 200px;
     height: 200px;
 }
+.descPieChart{
+    margin-left : 13px;
+    font-size : 15px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color : white;
+}
 .Analysis{
     background-image: url('../img//Anaysis.png');
     background-repeat: no-repeat;
@@ -105,7 +112,7 @@
     background-repeat: no-repeat;
     cursor : pointer;
 }
-.Analysis:active{
+.Analysis:hover{
     transform: scale(1.1);
 }
 

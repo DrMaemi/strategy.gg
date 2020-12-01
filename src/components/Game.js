@@ -224,7 +224,6 @@ const Game = (props) => {
     const duration = min+'분 '+sec+'초';
 
     const onClick = (event) => {
-        
         if(DropdownState === "dropdown-disable"){
             setDropdownState("dropdown-able");
             
@@ -246,7 +245,10 @@ const Game = (props) => {
         catch{}
     }
     return(
+
         <div>
+            
+        {console.log({DropdownState})}
         <div className = "GameContainer">
             <div className = "near">
                 <div className="column">    
@@ -272,7 +274,10 @@ const Game = (props) => {
             </div>
 
             <b className = "Duration">{duration}</b>
-            <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
+            <div className="column">
+                <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
+                <b className = "descPieChart">피드백 개수</b>
+            </div>
             <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
         </div>
         <div className = {DropdownState}>
