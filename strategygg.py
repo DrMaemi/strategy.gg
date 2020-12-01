@@ -101,6 +101,11 @@ def refresh():
     print("Time taken: {} second(s)".format(time.time()-start_time))
     return spec
 
+@app.route("/key/<new_key>")
+def regenerate_key(new_key):
+    api_key = new_key
+    return "True"
+
 if __name__ == "__main__":
     app.run(host_addr, port=5000, threaded=True)
     #app.run()
