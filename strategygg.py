@@ -17,9 +17,9 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-bce871b0-acb6-4971-b768-2605bcb81be6"
+api_key = "RGAPI-8300df8f-9aa4-4b25-a02e-151839d61008"
 # 라이엇 계정 31일 08:53
-# RGAPI-2bc3647e-56fb-47a3-816f-03ca2263163a
+# RGAPI-4b642383-a8e2-4768-8b4f-f15e56615529
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -100,18 +100,6 @@ def refresh():
     elif spec == 1: return abort(408)
     print("Time taken: {} second(s)".format(time.time()-start_time))
     return spec
-
-@app.route("/modeltest")
-def modeltest():
-    tier = request.args.get("tier") # ?tier=<summoner_name>
-    modelTier = tier
-    print("type(Models): {}".format(type(Models)))
-    print("Models[modelTier][0].summary:")
-    print(Models[modelTier][0].summary())
-    #print("type(Models): {}".format(type(Models)))
-    #print("Models['GOLD'][0].summary:")
-    #print(Models['GOLD'][0].summary())
-    return "True"
 
 if __name__ == "__main__":
     app.run(host_addr, port=5000, threaded=True)
