@@ -17,11 +17,9 @@ const GoldChart = ({gold}) => {
     if (dataMin >= 0) {
       return 1;
     }
-
   return dataMax / (dataMax - dataMin);
-};
+  };
 
-   console.log(gold);
     for(var i=0;i<gold.length;i++){
         if(check===0){
           if(i%5==0){
@@ -36,6 +34,7 @@ const GoldChart = ({gold}) => {
         }
     }
     let off = gradientOffset();
+    console.log(off);
     return (
       <AreaChart
         width={1000}
@@ -46,7 +45,7 @@ const GoldChart = ({gold}) => {
         }}
       >
         <XAxis dataKey="name" />
-        <YAxis />
+        <YAxis /> 
         <Tooltip />
         <defs>
           <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">

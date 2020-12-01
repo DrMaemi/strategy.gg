@@ -1,16 +1,12 @@
 import React, { PureComponent } from 'react';
 import {
-  PieChart, Pie, Sector, Cell,
+  PieChart, Pie, Sector, Cell, Tooltip
 } from 'recharts';
 import './PieChart.css';
-const data = [
-  { name: 'Group A', value: 5 },
-  { name: 'Group B', value: 3 },
-];
-
 const COLORS = ['#0070D6', '#db4444'];
 
 const RADIAN = Math.PI / 180;
+
 const renderCustomizedLabel = ({
   cx, cy, midAngle, innerRadius, outerRadius, value, index,
 }) => {
@@ -24,12 +20,16 @@ const renderCustomizedLabel = ({
     </text>
   );
 };
-
 const Example = (props) => {
-    data[0].value = props.feedback[0];
-    data[1].value = props.feedback[1];
+  console.log(props.feedback);
+  let data = [];
+  data.push({name : "Good", value : props.feedback[0]});
+  data.push({name : "Bad", value : props.feedback[1]});
+
+    console.log(data);
     return (
         <PieChart width = {100} height = {100} className="inline">
+          
           <Pie
             data={data}
             cx={50}
@@ -46,6 +46,7 @@ const Example = (props) => {
               data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
             }
           </Pie>
+          <Tooltip />
         </PieChart>
       );
   }
