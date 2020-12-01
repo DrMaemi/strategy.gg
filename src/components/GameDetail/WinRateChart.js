@@ -11,8 +11,8 @@ const WinRateChart = ({rate}) => {
    
     for(var i=0;i<rate.length;i++){
         if(check==0){
-          if(i%5==0){
-            data.push({name : i, win_rate : rate[i]});
+          if(i%4==0 ){
+            data.push({name : i+1, win_rate : rate[i]});
           }
           else{
             data.push({name : "", win_rate : rate[i]});
@@ -34,7 +34,7 @@ const WinRateChart = ({rate}) => {
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey="win_rate" stroke="#f7b64d" activeDot={{ r: 8 }} />
+        <Line type="monotone" dataKey="win_rate" stroke="#F5A21B" activeDot={{ r: 8 }} />
       </LineChart>
     );
 }

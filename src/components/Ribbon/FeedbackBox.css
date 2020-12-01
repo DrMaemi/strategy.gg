@@ -1,0 +1,30 @@
+.FeedbackBox{
+    display:flex;
+    flex-direction : column;
+}
+.시점기대승률최대승률변화_Container{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding : 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.feedback_content{
+    color : black;
+    font-family: '나눔스퀘어';
+    src : url('../common/NANUMSQUAREEB.TTF');
+}
+.원인_Container{
+    display : flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.Positive_One .시점기대승률최대승률변화_Container{background-color:#67A4DB;}
+.Positive_Two .원인_Container{background-color: #C5DCF1;}
+
+.Negative_One .시점기대승률최대승률변화_Container{background-color:#FD9E91;}
+.Negative_Two .원인_Container{background-color: #C5DCF1;}

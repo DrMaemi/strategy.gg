@@ -8,7 +8,7 @@ const data = [
   { name: 'Group B', value: 3 },
 ];
 
-const COLORS = ['#0088FE', '#FF5050'];
+const COLORS = ['#0070D6', '#db4444'];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -33,7 +33,7 @@ const Example = (props) => {
           <Pie
             data={data}
             cx={50}
-            cy={50}
+            cy={45}
             labelLine={false}
             label={renderCustomizedLabel}
             outerRadius={35}

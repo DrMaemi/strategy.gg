@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RibbonMenu from './RibbonMenu'
+import RibbonMenu from '../Ribbon/RibbonMenu'
 import GoldChart from './GoldChart'
 import WinRateChart from './WinRateChart'
 import './GameDetailWrapper.css'

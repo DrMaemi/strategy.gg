@@ -1,24 +1,31 @@
 .form{
-  margin-left : 30px;
+  margin-left : 40px;
   width : 400px;
 }
 .search{
-  width : 350px;
-  height : 45px;
-  padding-left : 4px;
+  font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+  width : 330px;
+  height : 40px;
+  padding-left : 14px;
+  border-radius: 5px;
 }
 .searchButton{
     background-image: url('/src/img/SearchButton.png');
     background-color: transparent;
     background-repeat: no-repeat;
+    background-size : contain;
     position : relative;
-    top : 15px;
-    right : 50px;
-    width : 40px;
-    height : 40px;
+    top : 10px;
+    right : 45px;
+    width : 30px;
+    height : 30px;
     padding : 0px;
     border : none;
     cursor : pointer;
+}
+.searchButton:active{
+  transform: scale(1.1);
 }
 .loading {
     display: inline-block;

@@ -233,8 +233,6 @@ const Game = (props) => {
             setDropdownState("dropdown-disable");
         }
         getMatchInfo();
-        
-        
     }
     const getMatchInfo = async() => {
         
@@ -242,6 +240,7 @@ const Game = (props) => {
             const spec= await axios
             .get(`http://61.99.75.232:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
             setMatchSpec(spec.data);
+            
             setLoading(1);
         }
         catch{}

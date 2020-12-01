@@ -1,11 +1,10 @@
 import React, {useState} from 'react'
 import "./RibbonMenu.css"
 import Feedback from './Feedback'
-import StrategyInfoBox from './StrategyInfoBox'
 const RibbonMenu = ({data}) =>{
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
-    let i =0;
+    /*let i =0;
      let arr = [];
      const find = (i) => {
         for (i; i < 120; i++) {
@@ -18,7 +17,7 @@ const RibbonMenu = ({data}) =>{
       return (arr.map(feed => (<StrategyInfoBox key={i} feedBack={data.feedback_points[feed]} timestamp={feed}/>)))
     //여기 겹치나?
       };
-
+*/
     const F_onClick = (event) => {
         if(FeedbackBTN === "UnSelected"){
             setFeedbackBTN("Selected");
@@ -38,13 +37,8 @@ const RibbonMenu = ({data}) =>{
           <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
         </div>
         <div className = "hihi">
-              <text className = "desc" > 시점</text>
-              <text className = "desc"> 최대승률변화</text> 
-              <text className = "desc"> 기대승률</text>
-              <text className = "desc"> 원인</text>
-
-              
-            {find(i)}
+          <Feedback feedback={data.feedback_points} />            
+            
         </div>
     </div>
     );
