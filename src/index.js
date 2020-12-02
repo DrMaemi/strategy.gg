@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import Ribbon from './components/Ribbon/RibbonMenu';
 ReactDOM.render(
   <React.StrictMode>
     <App />

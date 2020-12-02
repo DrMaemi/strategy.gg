@@ -1,10 +1,8 @@
-import React, {useState} from 'react';
-import  "./../firebase"
-import "./Game.css"
-import { storage } from './../firebase';
-import PieChart from "./GameDetail/PieChart";
-import GameDetailWrapper from './GameDetail/GameDetailWrapper';
-import axios from 'axios';
+import React, { useState } from 'react';
+import BarChart from './BarChart'
+import './PlayStyle.css'
+import  "../../firebase"
+import { storage } from  "../../firebase";
 function ChIDToName(id)
 {
     switch(id){
@@ -162,131 +160,59 @@ case 142: return "Zoe"; break;
 case 143: return "Zyra"; break;
     }
 }
-var isGetMatchSpec = false;
-const Game = (props) => {
-    const [DropdownState, setDropdownState ] = useState("dropdown-disable");
-    let [matchSpec, setMatchSpec]= useState(null);
-    let [isLoading, setLoading] = useState(0);
 
-    /*챔피언*/
-    const [ChampionImg,setChampionImg] = useState(null);
-    const ChampionName = ChIDToName(props.info.champion_id);
-    const ChampionURL =  storage.ref().child('Champion/'+String(ChampionName)+'.png').getDownloadURL();
-    ChampionURL.then(resolve=>{
-        setChampionImg(resolve);
-    });
-    /* 레벨*/
-    const level = props.info.level;
-    /*스펠1*/
-    const [Spell1Img, setSpell1Img] = useState(null);
-    const Spell1URL = storage.ref().child('Spell/'+String(props.info.spell_id[0])+'.png').getDownloadURL();
-    Spell1URL.then(resolve=>{
-        setSpell1Img(resolve);
-    });
-    /*스펠2*/
-    const [Spell2Img, setSpell2Img] = useState(null);
-    const Spell2URL = storage.ref().child('Spell/'+String(props.info.spell_id[1])+'.png').getDownloadURL();
-    Spell2URL.then(resolve=>{
-        setSpell2Img(resolve);
-    });
-
-    /*KDA,AVG*/
-    const KDA = props.info.kill+' / '+props.info.death+' / '+props.info.assist;
-    var AVG = '평점 '+props.info.avg;
-    if(AVG !== "Perfect"){
-        AVG += ' : 1';
-    }
-    /*lane*/
-
-    const [LaneImg, setLaneImg] = useState(null);
-    var Lane = props.info.lane;
-    if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_CARRY"){
-        Lane = "AD";
-    }
-    else if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_SUPPORT"){
-        Lane = "SUPPORTER";
-    }
-    const LaneURL = storage.ref().child('Lane/'+String(Lane)+'.png').getDownloadURL();
-    LaneURL.then(resolve=>{
-        setLaneImg(resolve);
-    });
-    /*TeamScore*/
-    const TeamScore = props.info.team_score;
-    /*win*/
-    var Win = "승리";
-    if(props.info.win === 0){
-        Win = "패배";   
-    }
-    /*duration*/
-    var min = parseInt(props.info.duration/60);
-    var sec = props.info.duration - min*60;
-    const duration = min+'분 '+sec+'초';
-
-    const onClick = (event) => {
-        if(DropdownState === "dropdown-disable"){
-            setDropdownState("dropdown-able");
-            
-        }
-        else if(DropdownState === "dropdown-able"){
-            setDropdownState("dropdown-disable");
-        }
-        getMatchInfo();
-    }
-    const getMatchInfo = async() => {
+const PlayStyle = () =>{
+    function getChampImg(id){
+        var ChampionName = ChIDToName(id);
+        var ChampionURL =  storage.ref().child('Champion/'+String(ChampionName)+'.png').getDownloadURL();
         
-        try{
-            const spec= await axios
-            .get(`http://61.99.75.232:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
-            setMatchSpec(spec.data);
-            
-            setLoading(1);
-        }
-        catch{}
+        ChampionURL.then(resolve=>{
+            return resolve;
+        });
     }
-    return(
-
-        <div>
-            
-        {console.log({DropdownState})}
-        <div className = "GameContainer">
-            <div className = "near">
-                <div className="column">    
-                    <img src = {ChampionImg} className = "Champion"/>   
-                    <b className = "Level">Lv {level}</b>
-                 </div>
-
-                <div className="column"> 
-                    <img src = {Spell1Img} className = "Spell1"/>        
-                    <img src = {Spell2Img} className = "Spell2"/>
+    var playstyle = "공격 안정형";
+    var data = {'공격': 4, '시야': 4, '군중제어': 4, '성장': 4};
+    var explain = ['높은 cs 처치로 성장을 잘했으며 시야 장악을 잘했습니다. ', 
+    '상대에게 군중제어를 건 시간이 가장 깁니다.','상대에게 준 피해량이 가장 높습니다.'];
+    var todo =  '이렇게 플레이 한다면 티어를 올릴 수 있을 겁니다';
+    var recommend = [54, 98, 164];
+    var counter = [14, 10, 74];
+    console.log(data);
+    
+    return (
+        <div className = "PlayStyle_Container">
+            <div className = "playstyle">{playstyle}</div>
+            <div className = "barChart">
+                <BarChart data = {data}/></div>
+            <div className = "explain">
+                <div className = "설명공략추천카운터">설명</div>
+                <div className = "explain_box">
+                    {explain.map(x=><div className="explain_content">{x}</div>)}
                 </div>
             </div>
-            <div className="column"> 
-                <b className = "KDA">{KDA}</b>
-                <b className = "AVG">{AVG}</b>
+            <div className = "explain">
+                <div className = "설명공략추천카운터">공략</div>
+                <div className = "explain_box">
+                    <div className="explain_content">{todo}</div>
+                </div>
             </div>
-
-            <img src = {LaneImg} className = "Lane"/>
-
-            <div className="column">
-                <b className = "TeamScore">{TeamScore}</b>
-                <b className = {Win}>{Win}</b>
+            <div className = "recommend">
+                <div className = "설명공략추천카운터">추천</div>
+                <div className = "champ_container">
+                    {recommend.map(x=>
+                    <img src = {getChampImg(x)} className = "champImg"/>)}
+                </div>
             </div>
+            <div className = "recommend">
+                <div className = "설명공략추천카운터">카운터</div>
+                <div className = "champ_container">
+                {counter.map(x=>
+                    <img src = {getChampImg(x)} className = "champImg"/>)}
 
-            <b className = "Duration">{duration}</b>
-            <div className="column">
-                <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-                <b className = "descPieChart">피드백 개수</b>
+                </div>
             </div>
-            <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
-             
-            
         </div>
-        <div className = {DropdownState}>
-            {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
-        
-        </div>
-        </div>
-
     );
+
 }
-export default Game;
+export default PlayStyle;
