@@ -170,13 +170,14 @@ const PlayStyle = () =>{
     const [cou_champ2,setcou_champ2]=useState(null);
     const [cou_champ3,setcou_champ3]=useState(null);
    
-    var playstyle = "공격 안정형";
-    var data = {'공격': 4, '시야': 4, '군중제어': 4, '성장': 4};
-    var explain = ['높은 cs 처치로 성장을 잘했으며 시야 장악을 잘했습니다. ', 
-    '상대에게 군중제어를 건 시간이 가장 깁니다.','상대에게 준 피해량이 가장 높습니다.'];
-    var todo =  '이렇게 플레이 한다면 티어를 올릴 수 있을 겁니다';
+    var playstyle = "무난형";
+    var data = {'공격': 2, '시야': 2, '군중제어': 2, '성장': 3};
+    var explain = ['받은 피해량이 적은 것으로 보아 상대방과의 딜교환에서 많은 이득을 보았습니다.', 
+    '상대에가 준 피해량이 보통입니다.'];
+    var todo =  ['와드를 좀 더 많이 설치해 갱킹에 당하지 않도록 조심하세요.',
+    '피해량을 올리기 위해 공격적으로 플레이 해보세요.'];
 
-    var recommend = [54, 98, 164];
+    var recommend = [42, 131, 201];
 
     var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(recommend[0]))+'.png').getDownloadURL();
     ChampionURL1.then(resolve=>{
@@ -191,7 +192,7 @@ const PlayStyle = () =>{
         setrec_champ3(resolve);
     }); 
 
-    var counter = [14, 10, 74];
+    var counter = [51, 1, 12];
     var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(counter[0]))+'.png').getDownloadURL();
     ChampionURL1.then(resolve=>{
         setcou_champ1(resolve);
@@ -207,7 +208,7 @@ const PlayStyle = () =>{
 
     return (
         <div className = "PlayStyle_Container">
-            <div className = "playstyle">{playstyle}</div>
+            <div className = "playstyle">"{playstyle}"</div>
             <div className = "barChart">
                 <BarChart data = {data}/></div>
             <div className = "explain">
@@ -219,7 +220,7 @@ const PlayStyle = () =>{
             <div className = "explain">
                 <div className = "설명공략추천카운터">&nbsp;공략</div>
                 <div className = "explain_box">
-                    <div className="explain_content">{todo}</div>
+                    {todo.map(x=><div className="explain_content">{x}</div>)}
                 </div>
             </div>
             <div className = "recommend">

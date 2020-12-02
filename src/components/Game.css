@@ -118,10 +118,6 @@
 .Analysis:hover{
     transform: scale(1.1);
 }
-  .dropdown-disable {
-    display: none;
-  }
-  .dropdown-able .dropdown-disable {
-      display: block;
-
+#dropdown{
+    display:none;
 }

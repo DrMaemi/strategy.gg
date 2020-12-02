@@ -162,9 +162,8 @@ case 142: return "Zoe"; break;
 case 143: return "Zyra"; break;
     }
 }
-var isGetMatchSpec = false;
+
 const Game = (props) => {
-    const [DropdownState, setDropdownState ] = useState("dropdown-disable");
     let [matchSpec, setMatchSpec]= useState(null);
     let [isLoading, setLoading] = useState(0);
 
@@ -221,14 +220,15 @@ const Game = (props) => {
     var min = parseInt(props.info.duration/60);
     var sec = props.info.duration - min*60;
     const duration = min+'분 '+sec+'초';
-
+    
     const onClick = (event) => {
-        if(DropdownState === "dropdown-disable"){
-            setDropdownState("dropdown-able");
-            
+        var x = document.getElementById("dropdown");
+        console.log(x);
+        if(x.style.display==="none"){
+            x.style.display="block";
         }
-        else if(DropdownState === "dropdown-able"){
-            setDropdownState("dropdown-disable");
+        else{
+            x.style.display="none";
         }
         getMatchInfo();
     }
@@ -247,7 +247,6 @@ const Game = (props) => {
 
         <div>
             
-        {console.log({DropdownState})}
         <div className = "GameContainer">
             <div className = "near">
                 <div className="column">    
@@ -281,12 +280,12 @@ const Game = (props) => {
              
             
         </div>
-        <div className = {DropdownState}>
+        <div id="dropdown">
+            
             {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
-        
         </div>
         </div>
-
+       
     );
 }
 export default Game;

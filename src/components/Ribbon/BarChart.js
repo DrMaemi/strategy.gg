@@ -5,6 +5,7 @@ import {
 
 const Example= (props) =>{
     var data = [];
+
     Object.keys(props.data).map(x=>
         data.push({name : x, value : props.data[x]}))
     return (
