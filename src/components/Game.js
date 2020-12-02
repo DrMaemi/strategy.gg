@@ -285,17 +285,24 @@ const Game = (props) => {
             <div>
                 {console.log("최종1번실행됨?")}
                 <div className = "GameContainer">
-        
+                <div className = "near">
+                <div className="column"> 
                 <img src = {ChampionImg} className = "Champion"/>
         
-                <h5 className = "Level">Lv {copyInfo.info.level}</h5>
-       
+                <b className = "Level">Lv {copyInfo.info.level}</b>
+                
+                </div>
+                <div className="column">
                 <img src = {Spell1Img} className = "Spell1"/>
         
                 <img src = {Spell2Img} className = "Spell2"/>
-        
-                <h3 className = "KDA">{copyInfo.info.kill+' / '+copyInfo.info.death+' / '+copyInfo.info.assist}</h3>
-                <h5 className = "AVG">{'평점 '+copyInfo.info.avg}</h5>
+                </div>
+                </div>
+                <div className="column">
+                <b className = "KDA">{copyInfo.info.kill+' / '+copyInfo.info.death+' / '+copyInfo.info.assist}</b>
+                <b className = "AVG">{'평점 '+copyInfo.info.avg}</b>
+                </div>
+                
                 <img src = {LaneImg} className = "Lane"/>
                 <div className="column">
                     <h3 className = "TeamScore">{copyInfo.info.team_score}</h3>

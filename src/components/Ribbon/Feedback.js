@@ -1,6 +1,7 @@
 import React from 'react'
 import './Feedback.css'
 import BoxContainers from './BoxContainers'
+import ComboboxStrategy from './ComboBox'
 const Feedback = (props) =>{
     var feedbackArr = Object.keys(props.feedback);
     return(
@@ -12,6 +13,8 @@ const Feedback = (props) =>{
                     <div className = "기대승률">기대승률</div>
                     <div className = "최대승률변화량">최대승률변화량</div>
                     <div className = "전략">전략</div>
+                    
+
                 </div>
                 {feedbackArr.map(x=>(
                     <BoxContainers time = {x} feedback={props.feedback[x]}/>

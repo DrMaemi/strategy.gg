@@ -2,18 +2,10 @@ import React, { useState } from 'react';
 import RibbonMenu from '../Ribbon/RibbonMenu'
 import GoldChart from './GoldChart'
 import WinRateChart from './WinRateChart'
-<<<<<<< HEAD
 import './GameDetailWrapper.css'
+
 const GameDetailWrapper = ({info}) =>{
-    
-=======
-
-
-const GameDetailWarpper = ({info}) =>{
-    console.log("GameDetailWarpper에서 받은정보");
-    console.log(info);
-    //이부분 두번 api 호출
->>>>>>> 8cd139166f6f5957540699ef7785e7a28ba034f6
+    console.log("GameDetailWrapper");
     return(
         <div className = "Wrapper">
             <div className = "title">
@@ -30,12 +22,8 @@ const GameDetailWarpper = ({info}) =>{
             </div>
             <div className = "ribbon">
             <RibbonMenu data={info}/>
-<<<<<<< HEAD
             </div>
 
-=======
-            
->>>>>>> 8cd139166f6f5957540699ef7785e7a28ba034f6
         </div>
     );
 

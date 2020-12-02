@@ -130,9 +130,10 @@ const Summoner = ({info}) => {
             </div>
             <img src = {Tierimg} alt="TierIcon" className = "TierIcon"/>
 
-            <b className = "TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
+            
             
             <div className = "tierNlp">
+            <b className = "TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
             <b className = "LP">{copyInfo.userspec.league_point}LP</b>
             </div>
         </div>

@@ -7,6 +7,7 @@ import 'react-dropdown/style.css';
 
 
 const RibbonMenu = ({data}) =>{
+    console.log("리본메뉴 위치");
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
     let i =0;

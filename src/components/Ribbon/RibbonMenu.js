@@ -3,6 +3,7 @@ import "./RibbonMenu.css"
 import Feedback from './Feedback'
 import PlayStyle from './PlayStyle'
 const RibbonMenu = ({data}) =>{
+    console.log(data);
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
     console.log(data);
@@ -24,9 +25,8 @@ const RibbonMenu = ({data}) =>{
           <button onClick = {F_onClick} className = {FeedbackBTN}>Feedback</button>
           <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
         </div>
-        <div className = "hihi">
-          <PlayStyle />           
-            
+        <div>
+            <Feedback feedback={data.feedback_points}/>   
         </div>
     </div>
     );
