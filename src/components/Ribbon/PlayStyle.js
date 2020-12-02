@@ -162,57 +162,106 @@ case 143: return "Zyra"; break;
 }
 
 const PlayStyle = () =>{
-    function getChampImg(id){
-        var ChampionName = ChIDToName(id);
-        var ChampionURL =  storage.ref().child('Champion/'+String(ChampionName)+'.png').getDownloadURL();
-        
-        ChampionURL.then(resolve=>{
-            return resolve;
-        });
-    }
+    const [rec_champ1,setrec_champ1]=useState(null);
+    const [rec_champ2,setrec_champ2]=useState(null);
+    const [rec_champ3,setrec_champ3]=useState(null);
+
+    const [cou_champ1,setcou_champ1]=useState(null);
+    const [cou_champ2,setcou_champ2]=useState(null);
+    const [cou_champ3,setcou_champ3]=useState(null);
+   
     var playstyle = "공격 안정형";
     var data = {'공격': 4, '시야': 4, '군중제어': 4, '성장': 4};
     var explain = ['높은 cs 처치로 성장을 잘했으며 시야 장악을 잘했습니다. ', 
     '상대에게 군중제어를 건 시간이 가장 깁니다.','상대에게 준 피해량이 가장 높습니다.'];
     var todo =  '이렇게 플레이 한다면 티어를 올릴 수 있을 겁니다';
+
     var recommend = [54, 98, 164];
+
+    var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(recommend[0]))+'.png').getDownloadURL();
+    ChampionURL1.then(resolve=>{
+        setrec_champ1(resolve);
+    }); 
+    var ChampionURL2 =  storage.ref().child('Champion/'+String(ChIDToName(recommend[1]))+'.png').getDownloadURL();
+    ChampionURL2.then(resolve=>{
+        setrec_champ2(resolve);
+    }); 
+    var ChampionURL3 =  storage.ref().child('Champion/'+String(ChIDToName(recommend[2]))+'.png').getDownloadURL();
+    ChampionURL3.then(resolve=>{
+        setrec_champ3(resolve);
+    }); 
+
     var counter = [14, 10, 74];
-    console.log(data);
-    
+    var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(counter[0]))+'.png').getDownloadURL();
+    ChampionURL1.then(resolve=>{
+        setcou_champ1(resolve);
+    }); 
+    var ChampionURL2 =  storage.ref().child('Champion/'+String(ChIDToName(counter[1]))+'.png').getDownloadURL();
+    ChampionURL2.then(resolve=>{
+        setcou_champ2(resolve);
+    }); 
+    var ChampionURL3 =  storage.ref().child('Champion/'+String(ChIDToName(counter[2]))+'.png').getDownloadURL();
+    ChampionURL3.then(resolve=>{
+        setcou_champ3(resolve);
+    }); 
+
     return (
         <div className = "PlayStyle_Container">
             <div className = "playstyle">{playstyle}</div>
             <div className = "barChart">
                 <BarChart data = {data}/></div>
             <div className = "explain">
-                <div className = "설명공략추천카운터">설명</div>
+                <div className = "설명공략추천카운터">&nbsp;설명</div>
                 <div className = "explain_box">
                     {explain.map(x=><div className="explain_content">{x}</div>)}
                 </div>
             </div>
             <div className = "explain">
-                <div className = "설명공략추천카운터">공략</div>
+                <div className = "설명공략추천카운터">&nbsp;공략</div>
                 <div className = "explain_box">
                     <div className="explain_content">{todo}</div>
                 </div>
             </div>
             <div className = "recommend">
-                <div className = "설명공략추천카운터">추천</div>
+                <div className = "설명공략추천카운터">&nbsp;추천</div>
+
                 <div className = "champ_container">
-                    {recommend.map(x=>
-                    <img src = {getChampImg(x)} className = "champImg"/>)}
+                    <div className="chmp_info">
+                        <img src = {rec_champ1} className = "champImg"/>
+                        <div>{ChIDToName(recommend[0])}</div>
+                    </div>
+            
+                    <div className="chmp_info">
+                        <img src = {rec_champ2} className = "champImg"/>
+                        <div>{ChIDToName(recommend[1])}</div>
+                    </div>
+                
+                    <div className="chmp_info">
+                        <img src = {rec_champ3} className = "champImg"/>
+                        <div>{ChIDToName(recommend[2])}</div>
+                    </div>
                 </div>
             </div>
             <div className = "recommend">
                 <div className = "설명공략추천카운터">카운터</div>
                 <div className = "champ_container">
-                {counter.map(x=>
-                    <img src = {getChampImg(x)} className = "champImg"/>)}
-
+                    <div className="chmp_info">
+                        <img src = {cou_champ1} className = "champImg"/>
+                        <div>{ChIDToName(counter[0])}</div>
+                    </div>
+            
+                    <div className="chmp_info">
+                        <img src = {cou_champ2} className = "champImg"/>
+                        <div>{ChIDToName(counter[1])}</div>
+                    </div>
+                
+                    <div className="chmp_info">
+                        <img src = {cou_champ3} className = "champImg"/>
+                        <div>{ChIDToName(counter[2])}</div>
+                    </div>
                 </div>
             </div>
         </div>
     );
-
 }
 export default PlayStyle;

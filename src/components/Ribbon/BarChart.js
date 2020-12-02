@@ -4,11 +4,9 @@ import {
 } from 'recharts';
 
 const Example= (props) =>{
-    const data = [];
-    console.log(props.data);
+    var data = [];
     Object.keys(props.data).map(x=>
         data.push({name : x, value : props.data[x]}))
-    console.log(data);
     return (
       <BarChart
         width={500}
@@ -21,7 +19,7 @@ const Example= (props) =>{
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
-        <Bar dataKey="value" fill="#8884d8" />
+        <Bar dataKey="value" fill="#8884d8"/>
       </BarChart>
     );
   
