@@ -51,8 +51,10 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")
@@ -134,8 +136,10 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")
@@ -214,8 +218,10 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")
@@ -295,8 +301,10 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")
@@ -379,8 +387,10 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")
@@ -460,8 +470,10 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                     content.append("미드 1차")
                 elif midTowerList[t-1] == 1:
                     content.append("미드 2차")
-                else:
+                elif midTowerList[t-1] == 2:
                     content.append("미드 3차")
+                else:
+                    content.append("넥서스")
             if botTowerKills != 0:
                 if botTowerList[t-1] == 0:
                     content.append("봇 1차")

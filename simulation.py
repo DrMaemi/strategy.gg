@@ -332,7 +332,7 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
         elif tf == "kills_mid_towers" : # 미드 포탑 파괴 횟수
-            if midTowerKills != 3:
+            if midTowerKills != 5:
                 varState['total_gold'] += 450*statistics[tf]
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
@@ -540,7 +540,7 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
         elif tf == "kills_mid_towers" : # 미드 포탑 파괴 횟수
-            if midTowerKills != 3:
+            if midTowerKills != 5:
                 varState['total_gold'] += 450*statistics[tf]
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
@@ -631,8 +631,10 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         elif tf == "kills_mid_towers":
             if midTowerKills == 0:
                 strategy.append("중단 공격로 1차 포탑 파괴")
-            else:
+            elif midTowerKills == 1 or midTowerKills == 2:
                 strategy.append("중단 공격로 2, 3차 포탑 파괴")
+            else:
+                strategy.append("넥서스 포탑 파괴")
             tower = True
         elif tf == "kills_bot_towers":
             if botTowerKills == 0:
@@ -780,7 +782,7 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
         elif tf == "kills_mid_towers" : # 미드 포탑 파괴 횟수
-            if midTowerKills != 3:
+            if midTowerKills != 5:
                 varState['total_gold'] += 450*statistics[tf]
                 varState['kills_total_towers'] += statistics[tf]
                 varState[tf] += statistics[tf]
@@ -875,8 +877,10 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         elif tf == "kills_mid_towers":
             if midTowerKills == 0:
                 strategy.append("중단 공격로 1차 포탑 파괴")
-            else:
+            elif midTowerKills == 1 or midTowerKills == 2:
                 strategy.append("중단 공격로 2, 3차 포탑 파괴")
+            else:
+                strategy.append("넥서스 포탑 파괴")
             tower = True
         elif tf == "kills_bot_towers":
             if botTowerKills == 0:

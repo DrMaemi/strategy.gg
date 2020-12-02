@@ -9,7 +9,10 @@ def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df
     modelTiers = Models['tiers']
     try: tierIdx = modelTiers.index(tier)
     except ValueError:
-        tierIdx, tier = 0, "GOLD"
+        if tier == "GRANDMASTER":
+            tierIdx, tier = 4, "CHALLENGER"
+        else:
+            tierIdx, tier = 0, "GOLD"
     strategies = []
     while True:
         try:
@@ -45,7 +48,8 @@ def getanalysis(summoner_name, game_id, Models):
         return timelinespec
     points = list(map(int, feedback_points.keys()))
     try:
-        feedback = feedback_points[str(points[0])]['feedback']
+        for point in points:
+            feedback = feedback_points[str(point)]['feedback']
         return timelinespec
     except: pass
     team_belongs_to = timelinespec['team_belongs_to']

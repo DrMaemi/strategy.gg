@@ -122,6 +122,8 @@ def getspec(info, Models):
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
     for idx, outline in enumerate(outlines['matches']):
         game_id = outline['gameId']
+        whenGamePlayed = int(str(outline['timestamp'])[:11])/10
+        time_passed = ceil(round(time.time(), 1)-whenGamePlayed)
         matchinfo = matchinfos[idx]
         timeline_data = timelines[idx]['timeline_data'] # 해당 게임의 시간대 데이터
         # find particiapnt id for this player
@@ -270,6 +272,7 @@ def getspec(info, Models):
             feedbacks = feedbackOutline['feedback_num']
         matchspec = {
             "game_id":game_id,
+            "time_passed":time_passed,
             "team":team, # blue: 0, red: 1
             "win":win, # int: lose: 0, win: 1
             "champion_id":outline['champion'], # int
