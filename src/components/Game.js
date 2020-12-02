@@ -255,6 +255,19 @@ const Game = (props) => {
     var sec = props.info.duration - min*60;
     const duration = min+'분 '+sec+'초';
     
+    var time_passed;
+    if(props.info.time_passed<60){//1분 이내
+        time_passed = props.info.time_passed +'초';
+    }
+    else if(props.info.time_passed<3600){//1시간 이내
+        time_passed = parseInt(props.info.time_passed/60) + '분 ' + parseInt(props.info.time_passed%60) + '초';
+    }
+    else if(props.info.time_passed<86400){//하루 이내
+        time_passed = parseInt(props.info.time_passed/3600)+'시간 ' + parseInt(props.info.time_passed%3600/60)+'분';
+    }
+    else{
+        time_passed = parseInt(props.info.time_passed/86400)+'일'
+    }
     const onClick = (event) => {
         if(DropdownState === "dropdown-disable"){
             setDropdownState("dropdown-able");
@@ -271,7 +284,7 @@ const Game = (props) => {
             const spec= await axios
             .get(`http://61.99.75.232:5000/analysis/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
             
-            
+            console.log(spec);
             setMatchSpec(spec.data);
             setLoading(1);
         }
@@ -287,6 +300,7 @@ const Game = (props) => {
             <div>
             {console.log("최종1번실행됨?")}
             <div className = "GameContainer">
+            <div className = "timePassed">{time_passed}</div>
             <div className = "near">
             <div className="column"> 
             <img src = {ChampionImg} className = "Champion"/>

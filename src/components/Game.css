@@ -14,6 +14,13 @@
     box-shadow : 5px 5px 15px #212121;
     margin : 20px;
     padding : 10px;
+    padding-left : 0px;
+}
+.timePassed{
+    font-size : 13px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color :white;
 }
 .near{
     display : flex;
