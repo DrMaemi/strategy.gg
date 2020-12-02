@@ -1,5 +1,5 @@
 .size{
-    width: 30%;
-    flex : 1;
+    display: inline;
+    flex-wrap: wrap;
     
 }
