@@ -17,11 +17,9 @@ const MainSummonerInput = () =>{
   }
   const getSummonerInfo = async() => {
    
-    console.log(21312312);
-    
     try{
         const spec= await axios.get(`http://61.99.75.232:5000/specpage/?name=${users}`);
-        console.log(spec);
+        
         setUserSpec(spec);
         history.push({
           pathname: `/summoner/${users}`,
@@ -35,7 +33,7 @@ const MainSummonerInput = () =>{
   
   return(
     
-    <form onSubmit={handleSubmit} className="form">
+    <form onSubmit={handleSubmit} >
        <input 
          type = "text" 
          name = "users"

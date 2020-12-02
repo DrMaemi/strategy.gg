@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import  "./../firebase"
 import "./Game.css"
 import { storage } from './../firebase';
 import PieChart from "./GameDetail/PieChart";
 import GameDetailWrapper from './GameDetail/GameDetailWrapper';
 import axios from 'axios';
+
 function ChIDToName(id)
 {
     switch(id){
@@ -164,129 +165,158 @@ case 143: return "Zyra"; break;
 }
 var isGetMatchSpec = false;
 const Game = (props) => {
+
+    
     const [DropdownState, setDropdownState ] = useState("dropdown-disable");
-    let [matchSpec, setMatchSpec]= useState(null);
-    let [isLoading, setLoading] = useState(0);
-
-    /*챔피언*/
-    const [ChampionImg,setChampionImg] = useState(null);
-    const ChampionName = ChIDToName(props.info.champion_id);
-    const ChampionURL =  storage.ref().child('Champion/'+String(ChampionName)+'.png').getDownloadURL();
-    ChampionURL.then(resolve=>{
-        setChampionImg(resolve);
-    });
-    /* 레벨*/
-    const level = props.info.level;
-    /*스펠1*/
-    const [Spell1Img, setSpell1Img] = useState(null);
-    const Spell1URL = storage.ref().child('Spell/'+String(props.info.spell_id[0])+'.png').getDownloadURL();
-    Spell1URL.then(resolve=>{
-        setSpell1Img(resolve);
-    });
-    /*스펠2*/
-    const [Spell2Img, setSpell2Img] = useState(null);
-    const Spell2URL = storage.ref().child('Spell/'+String(props.info.spell_id[1])+'.png').getDownloadURL();
-    Spell2URL.then(resolve=>{
-        setSpell2Img(resolve);
-    });
-
-    /*KDA,AVG*/
-    const KDA = props.info.kill+' / '+props.info.death+' / '+props.info.assist;
-    var AVG = '평점 '+props.info.avg;
-    if(AVG !== "Perfect"){
-        AVG += ' : 1';
-    }
-    /*lane*/
+    const [copyInfo, setCopyInfo] = useState(props);
+    const [isPageLoading, setIsPageLoading] = useState(0);
+    const [isLoading, setLoading] = useState(0);
+    const [matchSpec,setMatchSpec]=useState(0);
+    console.log(isPageLoading);
 
     const [LaneImg, setLaneImg] = useState(null);
-    var Lane = props.info.lane;
-    if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_CARRY"){
-        Lane = "AD";
+    const [Spell1Img, setSpell1Img] = useState(null);
+    const [Spell2Img, setSpell2Img] = useState(null);
+    const [ChampionImg,setChampionImg] = useState(null);
+  
+    useEffect(()=>{
+        if(isPageLoading === 0){getUrlnfo();}
+        console.log("getUrlnfo 실행함!!")
+    
+    },[isLoading,isPageLoading])
+    // if(props.summonerName !== copyInfo.info.summonerName){
+    //     setCopyInfo(props);
+    // }
+    // const [ChampionName, setChampionName] = useState(ChIDToName(props.info.champion_id));
+  
+    
+
+  
+    const getUrlnfo = async() => {
+        let ChampionURL,Spell1URL,Spell2URL,LaneURL = 0;
+        let Lane = copyInfo.info.lane ;
+        if(copyInfo.info.lane === "BOTTOM" && copyInfo.info.role ==="DUO_CARRY"){
+            Lane = "AD";
+        }
+        else if(copyInfo.info.lane === "BOTTOM" && copyInfo.info.role ==="DUO_SUPPORT"){
+            Lane = "SUPPORTER";
+        }
+
+        const championURL = ()=> {
+            ChampionURL =  storage.ref().child('Champion/'+String(ChIDToName(copyInfo.info.champion_id))+'.png').getDownloadURL();
+        }
+        const spell1URL = () => {
+            Spell1URL = storage.ref().child('Spell/'+String(copyInfo.info.spell_id[0])+'.png').getDownloadURL();
+        }
+        const spell2URL = () => {
+            Spell2URL = storage.ref().child('Spell/'+String(copyInfo.info.spell_id[1])+'.png').getDownloadURL();
+        }
+        const laneURL = () => {
+            LaneURL = storage.ref().child('Lane/'+String(Lane)+'.png').getDownloadURL();
+      
+        }
+
+        try{
+            await championURL();
+            await ChampionURL.then(resolve=>{
+            setChampionImg(resolve);
+            });
+        }
+        catch{}
+
+        try{
+            await spell1URL();
+            await Spell1URL.then(resolve=>{
+            setSpell1Img(resolve);
+            });
+        }
+        catch{}
+
+        try{
+            await spell2URL();
+            await Spell2URL.then(resolve=>{
+            setSpell2Img(resolve);
+            });
+        }
+        catch{}
+        
+        try{
+            await laneURL();
+            await LaneURL.then(resolve=>{
+            setLaneImg(resolve);
+            });
+        }
+        catch{}
+
+        setIsPageLoading(1);
     }
-    else if(props.info.lane === "BOTTOM" && props.info.role ==="DUO_SUPPORT"){
-        Lane = "SUPPORTER";
-    }
-    const LaneURL = storage.ref().child('Lane/'+String(Lane)+'.png').getDownloadURL();
-    LaneURL.then(resolve=>{
-        setLaneImg(resolve);
-    });
-    /*TeamScore*/
-    const TeamScore = props.info.team_score;
-    /*win*/
-    var Win = "승리";
-    if(props.info.win === 0){
-        Win = "패배";   
-    }
-    /*duration*/
-    var min = parseInt(props.info.duration/60);
-    var sec = props.info.duration - min*60;
-    const duration = min+'분 '+sec+'초';
 
     const onClick = (event) => {
+        
         if(DropdownState === "dropdown-disable"){
             setDropdownState("dropdown-able");
+            getMatchInfo();
             
         }
         else if(DropdownState === "dropdown-able"){
             setDropdownState("dropdown-disable");
         }
-        getMatchInfo();
+    
     }
     const getMatchInfo = async() => {
         
         try{
             const spec= await axios
-            .get(`http://61.99.75.232:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
-            setMatchSpec(spec.data);
+            .get(`http://61.99.75.232:5000/analysis/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
             
+            
+            setMatchSpec(spec.data);
             setLoading(1);
         }
         catch{}
     }
-    return(
 
-        <div>
+    if(isPageLoading === 0){
+        return <div>로딩중입니다!</div>
+    }
+    else{
+        return(
             
-        {console.log({DropdownState})}
-        <div className = "GameContainer">
-            <div className = "near">
-                <div className="column">    
-                    <img src = {ChampionImg} className = "Champion"/>   
-                    <b className = "Level">Lv {level}</b>
-                 </div>
-
-                <div className="column"> 
-                    <img src = {Spell1Img} className = "Spell1"/>        
-                    <img src = {Spell2Img} className = "Spell2"/>
-                </div>
-            </div>
-            <div className="column"> 
-                <b className = "KDA">{KDA}</b>
-                <b className = "AVG">{AVG}</b>
-            </div>
-
-            <img src = {LaneImg} className = "Lane"/>
-
-            <div className="column">
-                <b className = "TeamScore">{TeamScore}</b>
-                <b className = {Win}>{Win}</b>
-            </div>
-
-            <b className = "Duration">{duration}</b>
-            <div className="column">
-                <PieChart className = "PieChart" feedback = {props.info.feedbacks}/>
-                <b className = "descPieChart">피드백 개수</b>
-            </div>
-            <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
-             
-            
-        </div>
-        <div className = {DropdownState}>
-            {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
+            <div>
+                {console.log("최종1번실행됨?")}
+                <div className = "GameContainer">
         
-        </div>
+                <img src = {ChampionImg} className = "Champion"/>
+        
+                <h5 className = "Level">Lv {copyInfo.info.level}</h5>
+       
+                <img src = {Spell1Img} className = "Spell1"/>
+        
+                <img src = {Spell2Img} className = "Spell2"/>
+        
+                <h3 className = "KDA">{copyInfo.info.kill+' / '+copyInfo.info.death+' / '+copyInfo.info.assist}</h3>
+                <h5 className = "AVG">{'평점 '+copyInfo.info.avg}</h5>
+                <img src = {LaneImg} className = "Lane"/>
+                <div className="column">
+                    <h3 className = "TeamScore">{copyInfo.info.team_score}</h3>
+                    {copyInfo.info.win ===0 ?  <h5 className = "패배">패배</h5> : <h5 className = "승리">승리</h5> }
+                </div>
+                <h3 className = "Duration">{parseInt(copyInfo.info.duration/60)+'분 ' + (copyInfo.info.duration - (parseInt(copyInfo.info.duration/60))*60)+'초'}</h3>
+
+                <div className="column">
+                    <PieChart className = "PieChart" feedback = {copyInfo.info.feedbacks}/>
+                    <b className = "descPieChart">피드백 개수</b>
+                    </div>
+                    <button className = "Analysis" width = "70px" height="70px" onClick={onClick}></button>
+                    
+                    </div>
+            <div className = {DropdownState}>
+                {isLoading === 0 ? null : <GameDetailWrapper info = {matchSpec}/>}
+        
+            </div>
         </div>
 
-    );
+        );
+    }
 }
 export default Game;
