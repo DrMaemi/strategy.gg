@@ -74,12 +74,14 @@
     margin-bottom : 7px;
 }
 .승리 {
+    margin-top : 5px;
     font-size : 18px;
     font-family: '나눔스퀘어';
     src : url('./common/NANUMSQUAREL.TTF');
     color :#0088FE;
 }
 .패배 {
+    margin-top : 5px;
     font-size : 18px;
     font-family: '나눔스퀘어';
     src : url('./common/NANUMSQUAREL.TTF');
@@ -93,7 +95,7 @@
 }
 .PieChart{
     width : 200px;
-    height: 200px;
+    height: 180px;
 }
 .descPieChart{
     margin-left : 13px;
@@ -118,6 +120,10 @@
 .Analysis:hover{
     transform: scale(1.1);
 }
-#dropdown{
-    display:none;
+  .dropdown-disable {
+    display: none;
+  }
+  .dropdown-able .dropdown-disable {
+      display: block;
+
 }

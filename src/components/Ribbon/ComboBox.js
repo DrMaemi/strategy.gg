@@ -11,7 +11,7 @@ class ComboboxStrategy extends React.Component {
     // let [goldST, setGoldST] = useState(null);
   constructor(...args) {
     super(...args)
-    this.state = { value: 'orange' }
+    this.state = { value: '티어를 고르세요' }
   }
   
   printf(){    
@@ -39,7 +39,7 @@ class ComboboxStrategy extends React.Component {
         onChange={value => this.setState({ value })}
         className="size"
       />
-      {this.printf()}
+      {this.printf()} 
       </>
     )
   }

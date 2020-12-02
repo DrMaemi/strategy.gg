@@ -5,17 +5,23 @@ import PlayStyle from './PlayStyle'
 const RibbonMenu = ({data}) =>{
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
+    const [FeedbackComp, setFeedbackComp] = useState("show");
+    const [PlayStyleComp, setPlayStyleComp] = useState("hidden");
     console.log(data);
     const F_onClick = (event) => {
         if(FeedbackBTN === "UnSelected"){
             setFeedbackBTN("Selected");
             setPlayStyleBTN("UnSelected");
+            setFeedbackComp("show");
+            setPlayStyleComp("hidden");
         }
     }
     const PS_onClick = (event) => {
         if(PlayStyleBTN === "UnSelected"){
             setFeedbackBTN("UnSelected");
             setPlayStyleBTN("Selected");
+            setFeedbackComp("hidden");
+            setPlayStyleComp("show");
         }
     }
     return(
@@ -25,8 +31,12 @@ const RibbonMenu = ({data}) =>{
           <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
         </div>
         <div className = "hihi">
-          <PlayStyle />           
-            
+            <div className = {FeedbackComp}>
+            <Feedback feedback={data.feedback_points}/> 
+            </div>
+            <div className = {PlayStyleComp}>
+            <PlayStyle className = {PlayStyleComp} />
+            </div>
         </div>
     </div>
     );
