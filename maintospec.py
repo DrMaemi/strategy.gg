@@ -209,8 +209,8 @@ def getspec(info, Models):
         timeline_json = db.load_timeline_dataframe(game_id)
         timeline_df = pd.DataFrame() # 가공한 시간대 데이터를 넣을 리스트 준비, 리스트의 최종 shape = (진행시간, #features)
         if timeline_json is None: # 타임라인 데이터프레임이 저장되어있지 않음
-            for time in range(1, endtime+1):
-                timeline_features = get_timeline_features(timeline_data, time*60000)
+            for tl in range(1, endtime+1):
+                timeline_features = get_timeline_features(timeline_data, tl*60000)
                 timeline_df = pd.concat([timeline_df, timeline_features])
             db.store_timeline_dataframe(game_id, timeline_df)
         else: # 타임라인 데이터프레임이 저장되어 있는 경우
