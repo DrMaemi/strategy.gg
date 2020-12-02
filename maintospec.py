@@ -167,20 +167,22 @@ def getspec(info, Models):
                 lane = posKeys[posVals.index(max(posVals))]
             except: pass
             if lane == "BOTTOM":
-                csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
-                if team == 0: # target 유저가 블루팀인 경우
-                    for pidx in range(5):
-                        ptcp = matchinfo['participants'][pidx]
-                        csKilled = ptcp['stats']['totalMinionsKilled']
-                        csList.append(csKilled)
-                else: # target 유저가 레드팀인 경우
-                    for pidx in range(5, 10):
-                        ptcp = matchinfo['participants'][pidx]
-                        csKilled = ptcp['stats']['totalMinionsKilled']
-                        csList.append(csKilled)
-                supporterId = csList.index(min(csList))+1
-                if team == 1: supporterId += 5
-                if targetId == supporterId: lane = "SUPPORTER"
+                if role == "DUO_SUPPORT": lane = "SUPPORTER"
+                else:
+                    csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
+                    if team == 0: # target 유저가 블루팀인 경우
+                        for pidx in range(5):
+                            ptcp = matchinfo['participants'][pidx]
+                            csKilled = ptcp['stats']['totalMinionsKilled']
+                            csList.append(csKilled)
+                    else: # target 유저가 레드팀인 경우
+                        for pidx in range(5, 10):
+                            ptcp = matchinfo['participants'][pidx]
+                            csKilled = ptcp['stats']['totalMinionsKilled']
+                            csList.append(csKilled)
+                    supporterId = csList.index(min(csList))+1
+                    if team == 1: supporterId += 5
+                    if targetId == supporterId: lane = "SUPPORTER"
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
         death = stats['deaths']
