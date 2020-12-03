@@ -136,7 +136,7 @@ class PlayStyle:
                     '상대방에게 많은 피해량을 주었습니다'],
         'todo':['많이 죽은 경우가 있으므로 조그만 조심해 주세요'],
         'champion': {'id':[142,7 ,69]},
-        'counter': {'id':[10, 90]}
+        'counter': {'id':[10, 90, 84]}
         }
         self.DIAMONDMIDPS3  ={"playstyle":"스턴형",
         "stats": {'공격': 2, '시야': 3, '군중제어': 4, '성장':3 },
@@ -163,7 +163,7 @@ class PlayStyle:
                     ],
         'todo':['군중 제어를 잘 걸 수 있는 챔피언으로 선택하세요'],
         'champion': {'id':[202, 81,22]},
-        'counter': {'id':[50]}
+        'counter': {'id':[50, 18, 81]}
         }
         self.DIAMONDBOTTOMPS2 ={"playstyle":"세체원형",
         "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장': 4},
@@ -181,8 +181,8 @@ class PlayStyle:
                 '시야를 좀 더 잡아주세요',
                 '성장을 위해 cs를 잘 먹어보세요',
                 '군중제어를 걸 수 있는 챔피언을 선택하여 아군을 도와주세요'],
-        'champion': {'id':[22,236]},
-        'counter': {'id':[18,202]}
+        'champion': {'id':[22, 236, 110]},
+        'counter': {'id':[18, 202, 157]}
         }
         self.DIAMONDSUPPORTERPS0 = {"playstyle":"완벽형",
         "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장': 3},
@@ -190,8 +190,8 @@ class PlayStyle:
                     '적절한 군중제어와 성장을 하였습니다',
                     '공격적이었습니다'],
         'todo':['서포터로써 매우 완벽합니다'],
-        'champion': {'id':[89,412]},
-        'counter': {'id':[35,57]}
+        'champion': {'id':[89,412,53]},
+        'counter': {'id':[35,57,161]}
         }
         self.DIAMONDSUPPORTERPS1 = {"playstyle":"보디가드형",
         "stats": {'공격': 3, '시야': 4, '군중제어': 4, '성장': 3},
@@ -200,7 +200,7 @@ class PlayStyle:
         'todo':['좀 덜 죽어보세요',
                 '생존기가 있는 서폿형 챔피언을 선택하세요'],
         'champion': {'id':[89,412,201]},
-        'counter': {'id':[35]}
+        'counter': {'id':[35, 180, 350]}
         }
         self.DIAMONDSUPPORTERPS2 = {"playstyle":"시야형",
         "stats": {'공격': 2, '시야':3 , '군중제어': 2, '성장': 3},
@@ -208,8 +208,8 @@ class PlayStyle:
                     '군중제어가 좀 약합니다'],
         'todo':['군중제어를 걸 수 있는 챔피언을 선택해 보세요',
                 '시야를 좀더 많이 점령해보세요'],
-        'champion': {'id':[89,201]},
-        'counter': {'id':[35]}
+        'champion': {'id':[89, 201, 555]},
+        'counter': {'id':[35, 412, 53]}
         }
         self.DIAMONDSUPPORTERPS3 = {"playstyle":"캐리형",
         "stats": {'공격': 1, '시야': 1, '군중제어': 1, '성장': 4},
@@ -217,6 +217,6 @@ class PlayStyle:
                     '시야점수가 좋지 않습니다'],
         'todo':['성장을 추구하는 플레이도 좋지만 좀 더 팀원을 지켜야합니다',
                 '와드를 좀더 설치해야 합니다'],
-        'champion': {'id':[80,101,35]},
-        'counter': {'id':[154,40]}
+        'champion': {'id':[80, 101, 35]},
+        'counter': {'id':[154, 40, 89]}
         }
