@@ -908,7 +908,7 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
             if not baron:
                 isBaronAlive, toWait = True, 0
                 baronList = list(df[-7:]['total_barons'])
-                for idx in range(5):
+                for idx in range(6):
                     if baronList[idx] != baronList[idx+1]:
                         isBaronAlive = False
                         toWait = idx+1
