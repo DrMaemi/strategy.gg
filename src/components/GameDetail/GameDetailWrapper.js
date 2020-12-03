@@ -5,9 +5,7 @@ import WinRateChart from './WinRateChart'
 import './GameDetailWrapper.css'
 
 const GameDetailWrapper = ({info}) =>{
-    console.log("GameDetailWarpper에서 받은정보");
-    console.log(info);
-    //이부분 두번 api 호출
+    console.log("GameDetailWrapper");
     return(
         <div className = "Wrapper">
             <div className = "title">
@@ -24,8 +22,8 @@ const GameDetailWrapper = ({info}) =>{
             </div>
             <div className = "ribbon">
             <RibbonMenu data={info}/>
-            
-        </div>
+            </div>
+
         </div>
     );
 

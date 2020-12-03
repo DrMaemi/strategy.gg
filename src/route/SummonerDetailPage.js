@@ -14,7 +14,6 @@ const SummonerDetailPage = ({ location : {state : {spec : {data}}}}) =>{
             <div className="Boxs">
                 <Summoner info = {data}/>
             </div>
-          
         </div>
     );
 

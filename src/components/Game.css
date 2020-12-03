@@ -134,3 +134,23 @@
       display: block;
 
 }
+
+    
+.loading {
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s ease-in-out infinite;
+    -webkit-animation: spin 1.5s ease-in-out infinite;
+    border : 0px;
+    background-color: transparent;  
+    margin-top:60px;
+    margin-bottom:60px;
+    margin-left:45vw;
+  }
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  } 

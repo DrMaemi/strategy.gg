@@ -3,6 +3,7 @@ import "./RibbonMenu.css"
 import Feedback from './Feedback'
 import PlayStyle from './PlayStyle'
 const RibbonMenu = ({data}) =>{
+    console.log(data);
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
     const [FeedbackComp, setFeedbackComp] = useState("show");

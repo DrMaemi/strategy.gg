@@ -24,7 +24,7 @@
  .modelName{
     font-family: '나눔스퀘어';
     src : url('../components/common/NANUMSQUAREEB.TTF');
-    font-weight: bold ;
+    font-weight: bolder ;
     font-size : 30px;
     color: cornflowerblue;
 
@@ -33,7 +33,7 @@
  
  .contents{
      color: white;
-     
+     line-height:35px;
  }
  
  .button{
