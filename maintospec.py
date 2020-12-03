@@ -10,15 +10,6 @@ import processforps as ps
 import processdb as db
 from refinedata import get_timeline_features, refine_timeline_df, Metadata
 
-def getanalysis(summoner_name, game_id):
-    timelinespec = db.load_timelinespec(summoner_name, game_id)
-    analysis = {
-        "gold_differences":timelinespec['gold_differences'],
-        "win_rates":timelinespec['win_rates'],
-        "feedback_points":timelinespec['feedback_points']
-    }
-    return analysis
-
 def getfboutline(win_rates):
     # 우선 매 분마다 win_rates의 변화도를 구한다
     length = len(win_rates)

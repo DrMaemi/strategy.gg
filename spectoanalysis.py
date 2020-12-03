@@ -25,19 +25,12 @@ def getplaystyle(summoner_name, game_id, psModels):
     targetModel = psModels[tier][psModels["lanes"].index(lane)]
     # scale code #
     scaleData = pd.read_csv("Playstyle Origin Data/{0}/{0}{1}.csv".format(tier, lane))
-    print("scaleData.shape: {}".format(scaleData.shape))
-    print("ps_df: {}".format(ps_df))
-    
     scaleData = pd.concat([scaleData, ps_df])
     scaleData = scaleData.reset_index(drop=True)
     scaleData = scale(scaleData)
-    print("scaleData: {}".format(scaleData[-5:]))
     data = [scaleData[len(scaleData)-1]]
-    print("final data: {}".format(data))
     classResult = targetModel.predict(np.array(data))
-    print("classResult: {}".format(classResult))
     playstyle = eval("ps.PlayStyle().{}{}PS{}".format(tier, lane, classResult[0]))
-    print("playstyle: {}".format(playstyle))
     #db.store_playstyle(summoner_name, game_id, playstyle)
     return playstyle
 
