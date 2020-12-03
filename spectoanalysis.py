@@ -1,9 +1,45 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import scale
+
+import processforps as ps
 import processdb as db
 import feedbackanalysis as fba
 import simulation as simul
 from refinedata import Metadata
+
+def getplaystyle(summoner_name, game_id, psModels):
+    playstyle = db.load_playstyle(summoner_name, game_id)
+    if playstyle is not None:
+        return playstyle
+    PlayStyle = ps.PlayStyle()
+    ps_json = db.load_ps_json(summoner_name, game_id)
+    tier = ps_json['tier']
+    tier = "DIAMOND"
+    lane = ps_json['lane']
+    data = ps_json['ps_json']
+    targetData = []
+    for value in data[0].values():
+        targetData.append(value)
+    ps_df = pd.DataFrame([targetData], columns=PlayStyle.ps_features)
+    targetModel = psModels[tier][psModels["lanes"].index(lane)]
+    # scale code #
+    scaleData = pd.read_csv("Playstyle Origin Data/{0}/{0}{1}.csv".format(tier, lane))
+    print("scaleData.shape: {}".format(scaleData.shape))
+    print("ps_df: {}".format(ps_df))
+    
+    scaleData = pd.concat([scaleData, ps_df])
+    scaleData = scaleData.reset_index(drop=True)
+    scaleData = scale(scaleData)
+    print("scaleData: {}".format(scaleData[-5:]))
+    data = [scaleData[len(scaleData)-1]]
+    print("final data: {}".format(data))
+    classResult = targetModel.predict(np.array(data))
+    print("classResult: {}".format(classResult))
+    playstyle = eval("ps.PlayStyle().{}{}PS{}".format(tier, lane, classResult[0]))
+    print("playstyle: {}".format(playstyle))
+    #db.store_playstyle(summoner_name, game_id, playstyle)
+    return playstyle
 
 def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df, Models):
     modelTiers = Models['tiers']

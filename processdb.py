@@ -6,6 +6,28 @@ firebase_admin.initialize_app(cred,{
     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
 })
 
+def load_playstyle(summoner_name, game_id):
+    db_path = "Playstyles/{}/{}"
+    ref = db.reference(db_path.format(summoner_name, game_id))
+    playstyle = ref.get()
+    return playstyle
+
+def store_playstyle(summoner_name, game_id, playstyle):
+    db_path = "Playstyles/{}"
+    ref = db.reference(db_path.format(summoner_name))
+    ref.update({str(game_id):playstyle})
+
+def load_ps_json(summoner_name, game_id):
+    db_path = "ps_jsons/{}/{}"
+    ref = db.reference(db_path.format(summoner_name, game_id))
+    ps_json = ref.get()
+    return ps_json
+
+def store_ps_json(summoner_name, game_id, ps_json):
+    db_path = "ps_jsons/{}"
+    ref = db.reference(db_path.format(summoner_name))
+    ref.update({str(game_id):ps_json})
+
 def bringStatistics(tier, point, team):
     db_path = "Statistics/{}/{}/{}"
     ref = db.reference(db_path.format(tier, point, team))

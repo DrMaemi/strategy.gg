@@ -6,6 +6,7 @@ from math import ceil
 from sklearn.preprocessing import StandardScaler
 
 from preprocessfordb import processString
+import processforps as ps
 import processdb as db
 from refinedata import get_timeline_features, refine_timeline_df, Metadata
 
@@ -185,6 +186,24 @@ def getspec(info, Models):
                     supporterId = csList.index(min(csList))+1
                     if team == 1: supporterId += 5
                     if targetId == supporterId: lane = "SUPPORTER"
+        # lane이 정해졌으면, 플레이스타일용 데이터도 저장
+        ps_db_features = ps.PlayStyle().ps_db_features
+        ps_features = ps.PlayStyle().ps_features
+        ps_df = pd.json_normalize(targetParticipant)
+        ps_df = ps_df[ps_features]
+        ps_npArr = np.array(ps_df)
+        ps_Arr = []
+        for rpsnparr in ps_npArr:
+            ps_Arr.append(list(map(float, rpsnparr)))
+        ps_df = pd.DataFrame(ps_Arr, columns=ps_db_features)
+        ps_json = eval(ps_df.to_json(orient="records"))
+        print("ps_json: {}".format(ps_json))
+        ps_json_db = {
+            "tier":targetLeagueInfo['tier'],
+            "lane":lane,
+            "ps_json":ps_json
+        }
+        db.store_ps_json(summoner_name_db, game_id, ps_json_db) # 저장 끝
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
         death = stats['deaths']
@@ -239,7 +258,7 @@ def getspec(info, Models):
                 models = Models["GOLD"]
             scaler = StandardScaler()
             for tl in range(2, endtime+1):
-                if tl > 45: break
+                if tl > 2: break
                 input_data = refined_timeline_npArr[:tl, :]
                 input_data = scaler.fit_transform(input_data)
                 timestamps, input_dim = input_data.shape

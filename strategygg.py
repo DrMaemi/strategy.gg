@@ -4,6 +4,7 @@ import pandas as pd
 from tensorflow.keras.models import load_model
 from preprocessfordb import processString
 from sklearn.preprocessing import StandardScaler
+from sklearn.externals import joblib
 
 import json, sys, time
 from flask import Flask, request, jsonify, Response, abort
@@ -17,9 +18,9 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-f374eaf3-66d4-4a83-b41a-243f1cc00a39"
-# 라이엇 계정 2일 09:23
-# RGAPI-10016222-d5b4-4784-82cf-02c087a810e5
+api_key = "RGAPI-e34f5389-833c-4ad5-8ece-569e03d2682b"
+# 라이엇 계정 4일 09:24
+# RGAPI-526addb1-41eb-40d7-8f05-530faf03899d 09:25
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -32,15 +33,36 @@ Models = {
     "MASTER":[],
     "CHALLENGER":[]
 }
-# load models
+# load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 46):
+    for tl in range(2, 3):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
         print("{}RNN{} has been loaded".format(tier, tl))
-print("All model has been loaded !")
+print("All RNN models have been loaded !")
+print("Wait time: {} second(s)".format(time.time()-start_time))
+
+
+psModels = {
+    "tiers":["DIAMOND"],
+    "lanes":["TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORTER"],
+    "GOLD":[],
+    "PLATINUM":[],
+    "DIAMOND":[],
+    "MASTER":[],
+    "CHALLENGER":[]
+}
+# load playstyle clustering models
+start_time = time.time()
+for tier in psModels['tiers']:
+    for lane in psModels['lanes']:
+        setattr(mod, "PS_{}{}".format(tier, lane), joblib.load("Playstyle Classifiers/{0}/{0}{1}.pkl".format(tier, lane)))
+        eval("psModels['{}']".format(tier)).append(eval("PS_{}{}".format(tier, lane)))
+        print(eval("PS_{}{}".format(tier,lane)))
+        print("PS_{}{} has been loaded".format(tier, lane))
+print("All PS models have been loaded !")
 print("Wait time: {} second(s)".format(time.time()-start_time))
 
 
@@ -87,6 +109,17 @@ def analysispage():
     del timelinespec['refined_timeline_data']
     print("Time taken: {} second(s)".format(time.time()-start_time))
     return timelinespec
+
+@app.route("/playstyle/")
+@as_json
+def playstylepage():
+    start_time = time.time()
+    summoner_name = request.args.get("name")
+    game_id = request.args.get("game_id")
+    summoner_name = processString(summoner_name)
+    playstyle = spectoanalysis.getplaystyle(summoner_name, game_id, psModels)
+    print("Time taken: {} second(s)".format(time.time()-start_time))
+    return playstyle
 
 @app.route("/refresh/")
 @as_json
