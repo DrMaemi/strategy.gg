@@ -1,7 +1,7 @@
 .BoxContainer{
     display : flex;
     flex-direction: row;
-    width : 900px;
+    width : 550px;
     justify-content: space-evenly;
     margin-top : 30px;
     margin-bottom: 30px;

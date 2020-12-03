@@ -12,7 +12,7 @@ const BoxContainers = (props) =>{
             delta = {props.feedback.delta}
             feedback = {props.feedback.feedback}
             win_rate = {props.feedback.win_rate}/>
-            <StrategyBox strategy={props.feedback.strategies}/>
+            {/* <StrategyBox strategy={props.feedback.strategies}/> */}
             
         </div>
     );

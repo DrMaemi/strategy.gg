@@ -26,7 +26,7 @@ const RibbonMenu = ({data}) =>{
           <button onClick = {PS_onClick} className = {PlayStyleBTN}>PlayStyle</button>
         </div>
         <div>
-            <Feedback feedback={data.feedback_points}/>   
+            <Feedback feedback={data.feedback_points} summonerTier={data.tier}/>   
         </div>
     </div>
     );

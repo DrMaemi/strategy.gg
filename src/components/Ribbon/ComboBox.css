@@ -3,3 +3,24 @@
     flex-wrap: wrap;
     
 }
+
+.StrategyBoxContainer{
+    display : flex;
+    flex-direction: column;
+    width : 550px;
+    justify-content: space-evenly;
+    margin-top : 30px;
+    margin-bottom: 30px;
+    margin-bottom : 15px;
+}
+.StrategyBox{
+    display:flex;
+    flex-direction : column;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(209, 61%, 86%);
+    border-radius: 20px;
+    padding : 10px;
+    width : 350px;
+    margin-left : 40px;
+}

@@ -4,6 +4,7 @@
     
 }
 .원인{
+    flex : 1;
     color : white;
     font-family: '나눔스퀘어';
     src : url('../common/NANUMSQUAREEB.TTF');
@@ -14,6 +15,7 @@
     margin-top : 110px;
 }
 .others{
+    flex : 3;
     display : flex;
     flex-direction: column;
     align-items: flex-start;
@@ -36,5 +38,11 @@
     margin-left : 40px;
 }
 .전략{
-    margin-left : 270px;
+    flex : 3;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('../common/NANUMSQUAREEB.TTF');
+    font-size : 18px;
+    font-weight:bold;
+  
 }
