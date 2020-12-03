@@ -2,7 +2,8 @@
     display:flex;
     flex-direction : column;
 }
-.시점기대승률최대승률변화_Container{
+
+.Negative{
     display:flex;
     flex-direction: row;
     justify-content: space-around;
@@ -11,7 +12,18 @@
     border-top-right-radius: 20px;
     padding-top : 3px;
     padding-bottom:3px;
-    background-color:#67A4DB;
+    background-color:#fcacac;
+}
+.Positive {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding-top : 3px;
+    padding-bottom:3px;
+    background-color:#8db1fc;
 }
 .feedback_content{
     color : black;
@@ -33,7 +45,7 @@
 
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
-    background-color: #C5DCF1;
+    background-color: #d1cfcf;
 
     color : black;
     font-family: '나눔스퀘어';

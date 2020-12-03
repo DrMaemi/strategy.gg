@@ -98,57 +98,66 @@ const Summoner = ({ info }) => {
     if (isRefetching === 1) {
         return (
             <div className="ProfileContainer">
-                <img src={Profileimg} alt="Profileicon" className="ProfileIcon" />
-                <b className="SummonerName">{copyInfo.userspec.summoner_name}</b>
-                <button className="UpdateButton refetching"></button>
+                <img src =  {Profileimg} alt="Profileicon" className = "ProfileIcon"/> 
+                <div className = "nameNbtn">
+                <b className = "SummonerName">{copyInfo.userspec.summoner_name}</b>
+                <button className = "UpdateButton refetching"></button>
+                </div>
 
-                <img src={Tierimg} alt="TierIcon" className="TierIcon" />
+                <img src = {Tierimg} alt="TierIcon" className = "TierIcon"/>
 
-                <div className="tierNlp">
-                    <b className="TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
-                    <b className="LP">{copyInfo.userspec.league_point}LP</b>
+                <div className = "tierNlp">
+                    <b className = "TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
+                    <b className = "LP">{copyInfo.userspec.league_point}LP</b>
                 </div>
 
             </div>
 
         );
     }
-    else {
-        if (isLoading === 1) {
+    else{
+        if(isLoading === 1 ){
 
-            if (info.userspec.summoner_name === copyInfo.userspec.summoner_name) {
-                return (
-
-
+            if(info.userspec.summoner_name === copyInfo.userspec.summoner_name){
+                return(
+        
+        
                     <>
                         {console.log("랜더링 됐냐???")}
                         <div className="ProfileContainer">
-                            <img src={Profileimg} alt="Profileicon" className="ProfileIcon" />
-                            <div className="nameNbtn">
-                                <b className="SummonerName">{copyInfo.userspec.summoner_name}</b>
-                                <button className="UpdateButton" onClick={refetchInfo}>전적갱신</button>
-                            </div>
-                            <img src={Tierimg} alt="TierIcon" className="TierIcon" />
-                            <div className="tierNlp">
-                                <b className="TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
-                                <b className="LP">{copyInfo.userspec.league_point}LP</b>
-                            </div>
+                            <img src =  {Profileimg} alt="Profileicon" className = "ProfileIcon"/> 
+                            <div className = "nameNbtn">
+                            <b className = "SummonerName">{copyInfo.userspec.summoner_name}</b>
+                            <button className = "UpdateButton" onClick={refetchInfo}>전적갱신</button>
+            
                         </div>
-                        <Game info={copyInfo.matchspecs[0]} summonerName={copyInfo.userspec.summoner_name} />
-                        <Game info={copyInfo.matchspecs[1]} summonerName={copyInfo.userspec.summoner_name} />
-                        <Game info={copyInfo.matchspecs[2]} summonerName={copyInfo.userspec.summoner_name} />
-                        <Game info={copyInfo.matchspecs[3]} summonerName={copyInfo.userspec.summoner_name} />
-                        <Game info={copyInfo.matchspecs[4]} summonerName={copyInfo.userspec.summoner_name} />
+                        <img src = {Tierimg} alt="TierIcon" className = "TierIcon"/>
+
+            
+            
+                        <div className = "tierNlp">
+                            <b className = "TierName">{copyInfo.userspec.tier} {copyInfo.userspec.rank}</b>
+                            <b className = "LP">{copyInfo.userspec.league_point}LP</b>
+                        </div>
+                        </div>
+   
+                            <Game info = {copyInfo.matchspecs[0]} summonerName = {copyInfo.userspec.summoner_name}/>
+                            <Game info = {copyInfo.matchspecs[1]} summonerName = {copyInfo.userspec.summoner_name}/>
+                            <Game info = {copyInfo.matchspecs[2]} summonerName = {copyInfo.userspec.summoner_name}/>
+                            <Game info = {copyInfo.matchspecs[3]} summonerName = {copyInfo.userspec.summoner_name}/>
+                            <Game info = {copyInfo.matchspecs[4]} summonerName = {copyInfo.userspec.summoner_name}/>
+
                     </>
                 );
-            }
-            else {
-                return <img src = {loading}></img>
+            }   
+            else{
+                return <div></div>
             }
         }
 
-        else {
-            return <img src = {loading}></img>
+
+        else{
+            return <div></div>
         }
     }
 

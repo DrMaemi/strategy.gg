@@ -172,7 +172,9 @@ const Game = (props) => {
     const [isPageLoading, setIsPageLoading] = useState(0);
     const [isLoading, setLoading] = useState(0);
     const [matchSpec, setMatchSpec] = useState(0);
-    console.log(isPageLoading);
+
+    const [PlayStyleInfo, setPlayStyleInfo] = useState(null);
+    //console.log(isPageLoading);
 
     const [LaneImg, setLaneImg] = useState(null);
     const [Spell1Img, setSpell1Img] = useState(null);
@@ -181,16 +183,13 @@ const Game = (props) => {
 
     useEffect(() => {
         if (isPageLoading === 0) { getUrlnfo(); }
-        console.log("getUrlnfo 실행함!!")
+        //console.log("getUrlnfo 실행함!!")
 
     }, [isLoading, isPageLoading])
     // if(props.summonerName !== copyInfo.info.summonerName){
     //     setCopyInfo(props);
     // }
     // const [ChampionName, setChampionName] = useState(ChIDToName(props.info.champion_id));
-
-
-
 
     const getUrlnfo = async () => {
         let ChampionURL, Spell1URL, Spell2URL, LaneURL = 0;
@@ -283,14 +282,19 @@ const Game = (props) => {
         try {
             const spec = await axios
                 .get(`http://61.99.75.232:5000/analysis/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
-
-            console.log(spec);
+            const PS_spec = await axios
+            .get(`http://61.99.75.232:5000/playstyle/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
+            console.log("여기 game");
+            console.log(PS_spec.data);
+            setPlayStyleInfo(PS_spec.data); 
+            console.log(PlayStyleInfo);
             setMatchSpec(spec.data);
+            
             setLoading(1);
         }
         catch { }
     }
-
+    
     if (isPageLoading === 0) {
         return <img src={loading} className="loading"></img>
     }
@@ -298,7 +302,6 @@ const Game = (props) => {
         return (
 
             <div>
-                {console.log("최종1번실행됨?")}
                 <div className="GameContainer">
                     <div className="timePassed">{time_passed}</div>
                     <div className="near">
@@ -328,7 +331,7 @@ const Game = (props) => {
                     <button className="Analysis" width="70px" height="70px" onClick={onClick}></button>
                 </div>
                 <div className={DropdownState}>
-                    {isLoading === 0 ? null : <GameDetailWrapper info={matchSpec} />}
+                    {isLoading === 0 ? null : <GameDetailWrapper info={matchSpec} ps={PlayStyleInfo} />}
 
                 </div>
             </div>

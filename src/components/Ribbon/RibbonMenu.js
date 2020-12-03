@@ -2,13 +2,13 @@ import React, {useState} from 'react'
 import "./RibbonMenu.css"
 import Feedback from './Feedback'
 import PlayStyle from './PlayStyle'
-const RibbonMenu = ({data}) =>{
-    console.log(data);
+const RibbonMenu = ({feedback, playstyle }) =>{
+    
     const [FeedbackBTN, setFeedbackBTN] = useState("Selected");
     const [PlayStyleBTN, setPlayStyleBTN] = useState("UnSelected");
     const [FeedbackComp, setFeedbackComp] = useState("show");
     const [PlayStyleComp, setPlayStyleComp] = useState("hidden");
-    console.log(data);
+    
     const F_onClick = (event) => {
         if(FeedbackBTN === "UnSelected"){
             setFeedbackBTN("Selected");
@@ -33,10 +33,10 @@ const RibbonMenu = ({data}) =>{
         </div>
         <div className = "hihi">
             <div className = {FeedbackComp}>
-            <Feedback feedback={data.feedback_points}/> 
+            <Feedback feedback={feedback.feedback_points} summonerTier={feedback.tier}/>  
             </div>
             <div className = {PlayStyleComp}>
-            <PlayStyle className = {PlayStyleComp} />
+            <PlayStyle info={playstyle} />
             </div>
         </div>
     </div>

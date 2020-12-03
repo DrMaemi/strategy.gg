@@ -161,7 +161,9 @@ case 143: return "Zyra"; break;
     }
 }
 
-const PlayStyle = () =>{
+const PlayStyle = ({info}) =>{
+   
+    console.log(info);
     const [rec_champ1,setrec_champ1]=useState(null);
     const [rec_champ2,setrec_champ2]=useState(null);
     const [rec_champ3,setrec_champ3]=useState(null);
@@ -170,14 +172,12 @@ const PlayStyle = () =>{
     const [cou_champ2,setcou_champ2]=useState(null);
     const [cou_champ3,setcou_champ3]=useState(null);
    
-    var playstyle = "무난형";
-    var data = {'공격': 2, '시야': 2, '군중제어': 2, '성장': 3};
-    var explain = ['받은 피해량이 적은 것으로 보아 상대방과의 딜교환에서 많은 이득을 보았습니다.', 
-    '상대에가 준 피해량이 보통입니다.'];
-    var todo =  ['와드를 좀 더 많이 설치해 갱킹에 당하지 않도록 조심하세요.',
-    '피해량을 올리기 위해 공격적으로 플레이 해보세요.'];
+    var playstyle = info.playstyle;
+    var data = info.stats;
+    var explain = info.explain;
+    var todo = info.todo;
 
-    var recommend = [42, 131, 201];
+    var recommend = info.champion.id;
 
     var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(recommend[0]))+'.png').getDownloadURL();
     ChampionURL1.then(resolve=>{
@@ -192,7 +192,7 @@ const PlayStyle = () =>{
         setrec_champ3(resolve);
     }); 
 
-    var counter = [51, 1, 12];
+    var counter = info.counter.id;
     var ChampionURL1 =  storage.ref().child('Champion/'+String(ChIDToName(counter[0]))+'.png').getDownloadURL();
     ChampionURL1.then(resolve=>{
         setcou_champ1(resolve);

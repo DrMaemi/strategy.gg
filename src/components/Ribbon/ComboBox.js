@@ -1,76 +1,139 @@
 import React,{useState} from 'react';
-import { Combobox } from 'react-widgets'
+import { Combobox, DropdownList } from 'react-widgets'
 import "react-widgets/dist/css/react-widgets.css";
 import './ComboBox.css'
+import './FeedbackBox.css'
 
 
-const strategyTier = ["GOLD","PLATINUM","DIAMOND","MASTER","CHALLENGER"];
-const ComboboxStrategy = ({strategy})=> {
-    console.log(strategy);
+
+const ComboboxStrategy = ({strategyBox,tierList})=> {
+   
+    let feedLength = [];
+    let count=0;
+    console.log(strategyBox.feedback);
+    var strategyArr = Object.keys(strategyBox.feedback);
+    console.log(strategyArr);
+    strategyArr.map(x=>console.log(x));
+    strategyArr.map(x=>{feedLength.push(strategyBox.feedback[x].feedback.length)});
+    console.log(feedLength);
     const [tier, setTier] = useState("티어를 고르세요!");
-    
-    const strategyPrint= () => {
-    if(tier === "GOLD") return strategy[0].strategy.map(text => <div>{text}</div>);
-
-    if(tier === "PLATINUM") return strategy[1].strategy.map(text => <div>{text}</div>);
-    if(tier === "DIAMOND") return strategy[2].strategy.map(text => <div>{text}</div>);
-    if(tier === "MASTER") return strategy[3].strategy.map(text => <div>{text}</div>);
-    if(tier === "CHALLENGER") return strategy[4].strategy.map(text => <div>{text}</div>);
-
-
+    function laskf(){
+      var x = document.getElementById("StrategyBox");
+      
+      x.style.height = feedLength[0];
     }
+    const strategyPrint= () => {
+      
+      if(strategyBox.summonerTier==="GOLD"){
+        if(tier === "GOLD") return strategyArr.map(number => <div className="StrategyBox" >{strategyBox.feedback[number].strategies[0].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "PLATINUM") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[1].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "DIAMOND") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[2].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "MASTER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[3].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "CHALLENGER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[4].strategy.map(text => <div>{text}</div>)}</div>)
+      }
+      if(strategyBox.summonerTier==="PLATINUM"){
+        if(tier === "PLATINUM") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[0].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "DIAMOND") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[1].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "MASTER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[2].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "CHALLENGER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[3].strategy.map(text => <div>{text}</div>)}</div>)
+      }
+      if(strategyBox.summonerTier==="DIAMOND"){
+        if(tier === "DIAMOND") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[0].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "MASTER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[1].strategy.map(text => <div>{text}</div>)}</div>)
+        if(tier === "CHALLENGER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[2].strategy.map(text => <div>{text}</div>)}</div>)
+      }
+      if(strategyBox.summonerTier==="MASTER"){
+      if(tier === "MASTER"){
+      
+        return strategyArr.map(number => 
+          <div className="StrategyBox">
+            {number==3?<br></br>:null}{number==3?<br></br>:null}
+          {number==8?<br></br>:null}{number==8?<br></br>:null}
+          {number==10?<br></br>:null}{number==1?<br></br>:null}
+          {number==18?<br></br>:null}{number==22?<br></br>:null}
+          {number==22?<br></br>:null}
+          {number==3?<br></br>:null}
+          
+          {strategyBox.feedback[number].strategies[0].strategy.map(text => 
+            <div>{number==10?<br></br>:null}{number==10?<br></br>:null}{text}
+              {number=22?<br></br>:null}{number=22?<br></br>:null}
+              {number==18?<br></br>:null}{number==10?<br></br>:null}
+              {number==8?<br></br>:null}{number==8?<br></br>:null}
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+              {number==8?<br></br>:null}{number==10?<br></br>:null}
+              {number==10?<br></br>:null}{number==3?<br></br>:null}
+              {number==18?<br></br>:null}{number==22?<br></br>:null}
+              {number==22?<br></br>:null}{number==3?<br></br>:null}
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+              {number==10?<br></br>:null}{number==10?<br></br>:null}
+              {number==10?<br></br>:null}{number==10?<br></br>:null}
+              </div>)}{number==10?<br></br>:null}{number==10?<br></br>:null}
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+              {number==10?<br></br>:null}{number==10?<br></br>:null}
+              {number==10?<br></br>:null}{number==10?<br></br>:null}
+              {number==10?<br></br>:null}{number==10?<br></br>:null}
+              </div>)
+        }
+        if(tier === "CHALLENGER"){
+          return strategyArr.map(number => 
+            <div className="StrategyBox">
+              {number==3?<br></br>:null}{number==3?<br></br>:null}
+            {number==8?<br></br>:null}{number==8?<br></br>:null}
+            {number==10?<br></br>:null}{number==1?<br></br>:null}
+            {number==18?<br></br>:null}{number==22?<br></br>:null}
+            {number==22?<br></br>:null}
+            {number==3?<br></br>:null}
+            
+            {strategyBox.feedback[number].strategies[1].strategy.map(text => 
+              <div>{number==10?<br></br>:null}{number==10?<br></br>:null}{text}
+                {number=22?<br></br>:null}{number=22?<br></br>:null}
+                {number==18?<br></br>:null}{number==10?<br></br>:null}
+                {number==8?<br></br>:null}{number==8?<br></br>:null}
+                {number==3?<br></br>:null}{number==3?<br></br>:null}
+                {number==8?<br></br>:null}{number==10?<br></br>:null}
+                {number==10?<br></br>:null}{number==3?<br></br>:null}
+                {number==18?<br></br>:null}{number==22?<br></br>:null}
+                {number==22?<br></br>:null}{number==3?<br></br>:null}
+                {number==3?<br></br>:null}{number==3?<br></br>:null}
+                {number==3?<br></br>:null}{number==3?<br></br>:null}
+                {number==3?<br></br>:null}{number==3?<br></br>:null}
+                {number==10?<br></br>:null}{number==10?<br></br>:null}
+                {number==10?<br></br>:null}{number==10?<br></br>:null}
+                </div>)}{number==10?<br></br>:null}{number==10?<br></br>:null}
+                {number==3?<br></br>:null}{number==3?<br></br>:null}
+                {number==10?<br></br>:null}{number==10?<br></br>:null}
+                {number==10?<br></br>:null}{number==10?<br></br>:null}
+                {number==10?<br></br>:null}{number==10?<br></br>:null}
+                </div>)
+        } 
+      }
+      if(strategyBox.summonerTier==="CHALLENGER"){
+        if(tier === "CHALLENGER") return strategyArr.map(number => <div className="StrategyBox">{strategyBox.feedback[number].strategies[0].strategy.map(text => <div>{text}</div>)}</div>)
+      }
+    }
+   
+
 
 
     return(
       <>
-        <Combobox
-          data={strategyTier}
+        <DropdownList
+          data={tierList}
           value={tier}
           onChange={value => setTier(value)}
           className="size"
         />
-        {strategyPrint()}
+        <div className="StrategyBoxContainer">
+          {strategyPrint()}
+        </div>
+        
+
         </>
       )
 }
 
-// class ComboboxStrategy extends React.Component {
-    
-//   constructor(...args) {
-//     super(...args)
-//     this.state = { value: '티어를 고르세요' }
-//   }
-  
-//   printf(){    
-//     if(this.state.value === 'orange'){      
-//       return <div>오렌지</div>  
-//     }
-//     else if(this.state.value === 'red'){
-//       return <div>빨강</div>
-//     }
-//     else if(this.state.value === 'blue'){      return <div>파랑</div>
-//     }
-//     else{
-//       return <div>보라</div>
 
-//     }
-//   }
-  
-//   render() {
-  
-//     return (
-//     <>
-//       <Combobox
-//         data={strategy}
-//         value={this.state.value}
-//         onChange={value => this.setState({ value })}
-//         className="size"
-//       />
-//       {this.printf()} 
-//       </>
-//     )
-//   }
-// }
 
 export default ComboboxStrategy;
-
