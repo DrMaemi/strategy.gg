@@ -392,7 +392,7 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
                 isDragonAlive, toWait = True, 0
-                for idx in range(4):
+                for idx in range(5):
                     if dragonList[idx] != dragonList[idx+1]:
                         isDragonAlive = False
                         toWait = idx+1
@@ -401,6 +401,8 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     strategy.append("즉시 용 처치 시도")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                elif toWait == 3:
+                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
@@ -612,7 +614,7 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
                 isDragonAlive, toWait = True, 0
-                for idx in range(4):
+                for idx in range(5):
                     if dragonList[idx] != dragonList[idx+1]:
                         isDragonAlive = False
                         toWait = idx+1
@@ -621,6 +623,8 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     strategy.append("즉시 용 처치 시도")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                elif toWait == 3:
+                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
@@ -858,7 +862,7 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
                 isDragonAlive, toWait = True, 0
-                for idx in range(4):
+                for idx in range(5):
                     if dragonList[idx] != dragonList[idx+1]:
                         isDragonAlive = False
                         toWait = idx+1
@@ -867,6 +871,8 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     strategy.append("즉시 용 처치 시도")
                 elif toWait < 3: # 기다려야되는 시간이 2분 미만
                     strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                elif toWait == 3:
+                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
@@ -911,6 +917,8 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     strategy.append("즉시 바론 처치 시도")
                 elif toWait < 3:
                     strategy.append("1분 뒤 생성될 바론 처치를 위한 정비 및 시야 확보")
+                elif toWait == 3:
+                    strategy.append("2분 뒤 생성될 바론 처치를 위한 정비 및 시야 확보")
                 baron = True
         elif tf == "total_level":
             strategy.append("성장, 레벨링")

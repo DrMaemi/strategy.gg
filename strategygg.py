@@ -107,6 +107,7 @@ def key_test():
 
 @app.route("/regenerate_key/<new_key>")
 def regenerate_key(new_key):
+    global api_key
     api_key = new_key
     return "True"
 
