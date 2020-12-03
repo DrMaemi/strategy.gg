@@ -258,7 +258,7 @@ def getspec(info, Models):
                 models = Models["GOLD"]
             scaler = StandardScaler()
             for tl in range(2, endtime+1):
-                if tl > 10: break
+                if tl > 45: break
                 input_data = refined_timeline_npArr[:tl, :]
                 input_data = scaler.fit_transform(input_data)
                 timestamps, input_dim = input_data.shape

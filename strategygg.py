@@ -36,7 +36,7 @@ Models = {
 # load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 11):
+    for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
