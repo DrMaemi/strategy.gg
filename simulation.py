@@ -61,6 +61,7 @@ def before5(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             varState['first_blood'] += statistics['kills']
         varState['kills'] += statistics['kills']
+        varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
         timestamps, input_dim = simul.shape
@@ -144,7 +145,12 @@ def before8(tier, point, team_belongs_to, timeline_df, df, targetModel):
     else: # 아직 퍼블이 발생하지 않은 경우
         varState = latestState.copy()
         varState['total_gold'] += 500
-        varState['first_blood'] += statistics['first_blood']
+        if statistics['kills'] > 1:
+            varState['first_blood'] += 1
+        else:
+            varState['first_blood'] += statistics['kills']
+        varState['kills'] += statistics['kills']
+        varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
         timestamps, input_dim = simul.shape
@@ -179,6 +185,7 @@ def before8(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 else: varState['total_gold'] -= 100
             varState['kills'] += statistics['kills']
             varState['deaths'] -= statistics['deaths'] #데스는 거꾸로 더해줘야 함
+            varState['assists'] += statistics['assists']
         elif tf == "kills_total_minion": # 미니언
             varState['total_gold'] += 18*statistics['kills_total_minion']
             varState['kills_total_minion'] += statistics['kills_total_minion']
@@ -265,8 +272,13 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
         winrate_var.append(0)
     else: # 아직 퍼블이 발생하지 않은 경우
         varState = latestState.copy()
-        varState['total_gold'] += 400*statistics['first_blood']
-        varState['first_blood'] += statistics['first_blood']
+        varState['total_gold'] += 500
+        if statistics['kills'] > 1:
+            varState['first_blood'] += 1
+        else:
+            varState['first_blood'] += statistics['kills']
+        varState['kills'] += statistics['kills']
+        varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
         timestamps, input_dim = simul.shape
@@ -317,6 +329,7 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 else: varState['total_gold'] -= 100
             varState['kills'] += statistics['kills']
             varState['deaths'] -= statistics['deaths'] #데스는 거꾸로 더해줘야 함
+            varState['assists'] += statistics['assists']
         elif tf == "kills_total_minion": # 미니언
             varState['total_gold'] += 19*statistics['kills_total_minion']
             varState['kills_total_minion'] += statistics['kills_total_minion']
@@ -460,7 +473,12 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
     else: # 아직 퍼블이 발생하지 않은 경우
         varState = latestState.copy()
         varState['total_gold'] += 500
-        varState['first_blood'] += statistics['first_blood']
+        if statistics['kills'] > 1:
+            varState['first_blood'] += 1
+        else:
+            varState['first_blood'] += statistics['kills']
+        varState['kills'] += statistics['kills']
+        varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
         timestamps, input_dim = simul.shape
@@ -527,6 +545,7 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 else: varState['total_gold'] -= 100
             varState['kills'] += statistics['kills']
             varState['deaths'] -= statistics['deaths'] #데스는 거꾸로 더해줘야 함
+            varState['assists'] += statistics['assists']
         elif tf == "kills_total_minion": # 미니언
             varState['total_gold'] += 20*statistics['kills_total_minion']
             varState['kills_total_minion'] += statistics['kills_total_minion']
@@ -690,7 +709,12 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
     else: # 아직 퍼블이 발생하지 않은 경우
         varState = latestState.copy()
         varState['total_gold'] += 500
-        varState['first_blood'] += statistics['first_blood']
+        if statistics['kills'] > 1:
+            varState['first_blood'] += 1
+        else:
+            varState['first_blood'] += statistics['kills']
+        varState['kills'] += statistics['kills']
+        varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
         if team == "blue":
@@ -771,6 +795,7 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 else: varState['total_gold'] -= 100
             varState['kills'] += statistics['kills']
             varState['deaths'] -= statistics['deaths'] #데스는 거꾸로 더해줘야 함
+            varState['assists'] += statistics['assists']
         elif tf == "kills_total_minion": # 미니언
             varState['total_gold'] += 20*statistics['kills_total_minion']
             varState['kills_total_minion'] += statistics['kills_total_minion']
