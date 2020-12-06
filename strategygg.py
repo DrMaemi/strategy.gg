@@ -18,9 +18,7 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-e34f5389-833c-4ad5-8ece-569e03d2682b"
-# 라이엇 계정 4일 09:24
-# RGAPI-526addb1-41eb-40d7-8f05-530faf03899d 09:25
+api_key = "RGAPI-df142258-2691-4476-9bab-35c05dcac9d8"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]

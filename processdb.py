@@ -53,6 +53,11 @@ def load_timelinespec(summoner_name, game_id):
     timelinespec = ref.child("timelinespec").get()
     return timelinespec
 
+def load_matchspecs(summoner_name):
+    ref = db.reference("Specs/{}/matchspecs".format(summoner_name))
+    matchspecs = ref.get()
+    return matchspecs
+
 def store_spec(summoner_name, spec):
     ref = db.reference("Specs/"+summoner_name)
     ref.update(spec)

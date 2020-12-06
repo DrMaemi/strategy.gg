@@ -101,7 +101,6 @@ def getspec(info, Models):
             "rank":0,
             "league_point":0
         }
-    matchspecs = []
     outlines = info['5matches']['outlines']
     if outlines == 0:
         spec = {
@@ -112,7 +111,31 @@ def getspec(info, Models):
         return spec
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
-    for idx, outline in enumerate(outlines['matches']):
+    matchspecs_db = db.load_matchspecs(summoner_name_db)
+    cutIdx = len(outlines) # 초기화, 값이 변하지 않았다면...
+    if matchspecs_db is not None and matchspecs_db != 0: # 저장되어있는 matchspecs 검사, 재활용
+        game_id = matchspecs_db[0]['game_id'] # first game id
+        cutIdx = len(matchspecs_db)
+        for idx, outline in enumerate(outlines['matches']):
+            if game_id == outline['gameId']:
+                cutIdx = idx
+                break
+        for matchspec_db in matchspecs_db[:cutIdx]:
+            whenGamePlayed = matchspec_db['whenGamePlayed']
+            time_passed = ceil(round(time.time(), 1)-whenGamePlayed)
+            matchspec_db['time_passed'] = time_passed
+    if cutIdx == 0: # 이미 모든 정보가 db에 있는 경우
+        spec = {
+            "userspec":userspec,
+            "matchspecs":matchspecs_db
+        }
+        return spec
+    # 모델 분석 먼저 하기 위한, refined_timeline_df_list 모으면서 gold_differences_list도 완성
+    refined_timeline_df_list = []
+    gold_differences_list = []
+    temp_timelinespecs = []
+    matchspecs = []
+    for idx, outline in enumerate(outlines['matches'][:cutIdx]):
         game_id = outline['gameId']
         whenGamePlayed = int(str(outline['timestamp'])[:11])/10
         time_passed = ceil(round(time.time(), 1)-whenGamePlayed)
@@ -188,12 +211,18 @@ def getspec(info, Models):
             ps_Arr.append(list(map(float, rpsnparr)))
         ps_df = pd.DataFrame(ps_Arr, columns=ps_db_features)
         ps_json = eval(ps_df.to_json(orient="records"))
-        print("ps_json: {}".format(ps_json))
-        ps_json_db = {
-            "tier":targetLeagueInfo['tier'],
-            "lane":lane,
-            "ps_json":ps_json
-        }
+        try:
+            ps_json_db = {
+                "tier":targetLeagueInfo['tier'],
+                "lane":lane,
+                "ps_json":ps_json
+            }
+        except:
+            ps_json_db = {
+                "tier":0,
+                "lane":lane,
+                "ps_json":ps_json
+            }
         db.store_ps_json(summoner_name_db, game_id, ps_json_db) # 저장 끝
         stats = targetParticipant['stats'] # json
         kill = stats['kills']
@@ -229,6 +258,7 @@ def getspec(info, Models):
                 df_row = pd.DataFrame([tldata], columns=raw_columns)
                 timeline_df = pd.concat([timeline_df, df_row])
         refined_timeline_df = refine_timeline_df(timeline_df)
+        refined_timeline_df_list.append(refined_timeline_df)
         gold_differences = refined_timeline_df['total_gold'].tolist()
         for i in range(len(gold_differences)):
             gold = gold_differences[i]
@@ -236,50 +266,12 @@ def getspec(info, Models):
                 gold_differences[i] = int(gold)
             elif team == 1: # 레드팀 - 블루팀의 골드 차이로 계산
                 gold_differences[i] = -int(gold)
-        # 모델을 이용하기 전 timelinespec 데이터가 있는지 확인
-        timelinespec_db = db.load_timelinespec(summoner_name_db, game_id)
-        if timelinespec_db is None:
-            # 모델을 이용해서 기대승률 그래프 생성
-            win_rates = [0.5] # at 1 minute, win rate is 50%
-            refined_timeline_npArr = np.array(refined_timeline_df)
-            model_tier = userspec['tier']
-            try:
-                models = Models[model_tier]
-            except KeyError:
-                models = Models["GOLD"]
-            scaler = StandardScaler()
-            for tl in range(2, endtime+1):
-                if tl > 45: break
-                input_data = refined_timeline_npArr[:tl, :]
-                input_data = scaler.fit_transform(input_data)
-                timestamps, input_dim = input_data.shape
-                input_data = input_data.reshape(1, timestamps, input_dim)
-                if team == 0: # 블루팀이 이길 확률 계산
-                    win_rate = models[tl-2].predict(input_data)[0][0] # 2분 모델부터 0번 인덱스에 들어가 있다.
-                elif team == 1: # 레드팀이 이길 확률 계산
-                    win_rate = models[tl-2].predict(input_data)[0][1]
-                win_rates.append(win_rate)
-            """피드백 개수도 알려줘야 하는데."""
-            refined_timeline_data = eval(refined_timeline_df.to_json(orient="records")) # df.to_json object, List<json>
-            win_rates = list(win_rates)
-            for ridx, win_rate in enumerate(win_rates):
-                win_rates[ridx] = round(float(win_rate*100), 1)
-            feedbackOutline = getfboutline(win_rates)
-            feedbacks = feedbackOutline['feedback_num']
-            feedback_points = feedbackOutline['feedback_points']
-            timelinespec = {
-                "tier":userspec['tier'],
-                "team_belongs_to":team, # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
-                "refined_timeline_data":refined_timeline_data,
-                "gold_differences":gold_differences,
-                "win_rates":win_rates,
-                "feedback_points":feedback_points
-            }
-            db.store_timelinespec(summoner_name_db, game_id, timelinespec)
-        else: # timelinespec_db is not None. db에 데이터가 있었음
-            win_rates = timelinespec_db['win_rates']
-            feedbackOutline = getfboutline(win_rates)
-            feedbacks = feedbackOutline['feedback_num']
+        gold_differences_list.append(gold_differences)
+        temp_timelinespec = {
+            "team_belongs_to":team,
+            "win_rates":[0.5]
+        }
+        temp_timelinespecs.append(temp_timelinespec)
         matchspec = {
             "game_id":game_id,
             "time_passed":time_passed,
@@ -296,9 +288,55 @@ def getspec(info, Models):
             "role":role,
             "team_score":team_score,
             "duration":duration,
-            "feedbacks":feedbacks # [# positives, # negatives]
+            "feedbacks":0, # [# positives, # negatives]
+            "whenGamePlayed":whenGamePlayed
         }
         matchspecs.append(matchspec)
+    # 본격적인 모델 분석 시작
+    model_tier = userspec['tier']
+    try:
+        models = Models[model_tier]
+    except KeyError:
+        if model_tier == "GRANDMASTER":
+            models = Models["CHALLENGER"]
+        else:
+            models = Models["GOLD"]
+    scaler = StandardScaler()
+    dones = [0 for _ in range(cutIdx)]
+    for tl, model in enumerate(models):
+        if all(dones): break
+        for idx in range(cutIdx):
+            if dones[idx] == 1: continue
+            refined_timeline_npArr = np.array(refined_timeline_df_list[idx])
+            if refined_timeline_npArr.shape[0] == tl+2: dones[idx] = 1
+            input_data = scaler.fit_transform(refined_timeline_npArr[:tl+2, :])
+            timestamps, input_dim = input_data.shape
+            input_data = input_data.reshape(1, timestamps, input_dim)
+            if temp_timelinespecs[idx]['team_belongs_to'] == 0: # blue team
+                win_rate = model.predict(input_data)[0][0]
+            else: # red team
+                win_rate = model.predict(input_data)[0][1]
+            temp_timelinespecs[idx]['win_rates'].append(win_rate)
+    for idx in range(cutIdx):
+        refined_timeline_data = eval(refined_timeline_df_list[idx].to_json(orient="records")) # df.to_json object, List<json>
+        win_rates = temp_timelinespecs[idx]['win_rates']
+        for wridx, win_rate in enumerate(win_rates):
+            win_rates[wridx] = round(float(win_rate*100), 1)
+        feedbackOutline = getfboutline(win_rates)
+        feedbacks = feedbackOutline['feedback_num']
+        feedback_points = feedbackOutline['feedback_points']
+        timelinespec = {
+            "tier":userspec['tier'],
+            "team_belongs_to":temp_timelinespecs[idx]['team_belongs_to'], # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
+            "refined_timeline_data":refined_timeline_data,
+            "gold_differences":gold_differences[idx],
+            "win_rates":win_rates,
+            "feedback_points":feedback_points
+        }
+        matchspecs[idx]['feedbacks'] = feedbacks
+        db.store_timelinespec(summoner_name_db, matchspecs[idx]['game_id'], timelinespec)
+    try: matchspecs += matchspecs_db[:cutIdx]
+    except TypeError: pass
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs # list<json>
