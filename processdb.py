@@ -67,6 +67,15 @@ def load_spec(summoner_name):
     spec = ref.get()
     return spec
 
+def load_feedback_points_timeline_events(game_id, events):
+    ref = db.reference("events/{}".format(game_id))
+    timeline_events = ref.get()
+    return timeline_events
+
+def store_feedback_points_timeline_events(game_id, events):
+    ref = db.reference("events")
+    ref.update({str(game_id):events})
+
 def store_timeline_dataframe(game_id, timeline_df):
     timeline_json = eval(timeline_df.to_json(orient="records"))
     ref = db.reference("Timeline DataFrames")

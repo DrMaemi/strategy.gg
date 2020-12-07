@@ -57,14 +57,14 @@ def getfboutline(win_rates):
                 delta = round(targetInterval[point], 1)
                 if delta > 0:
                     feedback_points[str(point+lower+1)] = {
-                    "win_rate":win_rates[point+lower],
-                    "delta":delta
+                        "win_rate":win_rates[point+lower],
+                        "delta":delta
                     }
                     pFeedbackNum += 1
                 elif delta < 0:
                     feedback_points[str(point+lower+1)] = {
-                    "win_rate":win_rates[point+lower],
-                    "delta":delta
+                        "win_rate":win_rates[point+lower],
+                        "delta":delta
                     }
                     nFeedbackNum += 1
         feedback_num = [pFeedbackNum, nFeedbackNum]
@@ -112,7 +112,7 @@ def getspec(info, Models):
     matchinfos = info['5matches']['matchinfos']
     timelines = info['5matches']['timelines'] # list of json: gameId, timeline_data
     matchspecs_db = db.load_matchspecs(summoner_name_db)
-    cutIdx = len(outlines) # 초기화, 값이 변하지 않았다면...
+    cutIdx = len(outlines['matches']) # 초기화, 값이 변하지 않았다면...
     if matchspecs_db is not None and matchspecs_db != 0: # 저장되어있는 matchspecs 검사, 재활용
         game_id = matchspecs_db[0]['game_id'] # first game id
         cutIdx = len(matchspecs_db)
@@ -129,6 +129,9 @@ def getspec(info, Models):
             "userspec":userspec,
             "matchspecs":matchspecs_db
         }
+        for matchspec in spec['matchspecs']:
+            try: del matchspec['whenGamePlayed']
+            except: pass
         return spec
     # 모델 분석 먼저 하기 위한, refined_timeline_df_list 모으면서 gold_differences_list도 완성
     refined_timeline_df_list = []
@@ -329,19 +332,31 @@ def getspec(info, Models):
             "tier":userspec['tier'],
             "team_belongs_to":temp_timelinespecs[idx]['team_belongs_to'], # 팀 정보를 알아야 refined_timeline_data를 알맞게 분석할 수 있다.
             "refined_timeline_data":refined_timeline_data,
-            "gold_differences":gold_differences[idx],
+            "gold_differences":gold_differences_list[idx],
             "win_rates":win_rates,
             "feedback_points":feedback_points
         }
         matchspecs[idx]['feedbacks'] = feedbacks
         db.store_timelinespec(summoner_name_db, matchspecs[idx]['game_id'], timelinespec)
-    try: matchspecs += matchspecs_db[:cutIdx]
+        try:
+            timeline_events = {}
+            for point in feedback_points.keys():
+                # te: timeline_event
+                te = timeline_data['frames'][int(point)]['events']
+                if len(te) == 0: te = 0 # 어떤 event도 발생하지 않은 경우
+                timeline_events[point] = te
+            db.store_feedback_points_timeline_events(game_id, timeline_events)
+        except: pass # feedback_points = 0, 즉 피드백할 내용이 없는 경기인 경우
+    try: matchspecs += matchspecs_db[:cutIdx+1]
     except TypeError: pass
     spec = {
         "userspec":userspec, # json
         "matchspecs":matchspecs # list<json>
     }
     db.store_spec(summoner_name_db, spec)
+    for matchspec in spec['matchspecs']:
+        try: del matchspec['whenGamePlayed']
+        except: pass
     return spec
 
 def getinfo(summoner_name, api_key):

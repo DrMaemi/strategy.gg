@@ -18,7 +18,7 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-df142258-2691-4476-9bab-35c05dcac9d8"
+api_key = "RGAPI-e0fa29ed-93a1-4756-a381-afc3425f5107"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -34,7 +34,7 @@ Models = {
 # load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 46):
+    for tl in range(2, 11):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))

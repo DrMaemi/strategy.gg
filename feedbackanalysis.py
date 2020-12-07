@@ -2,6 +2,20 @@ import pandas as pd
 import numpy as np
 from refinedata import Metadata
 
+def distinguish_pos(x, y):
+    # TOP
+    if ((y>3000) and (570<x and x<1710)) or ((x<12000) and (13090<y and y<14230)):
+        return "TOP"
+    elif ((x>3000) and (570<y and y<1710)) or ((y<12000) and (13090<x and x<14230)):
+        return "BOTTOM"
+    elif (2120<x and x<12880) and (y<x+820 and y>x-820):
+        return "MID"
+    else:
+        if y<-x+15000: result="Blue"
+        else: result="Red"
+        if y>x+820: result+="AboveJungle"
+        else: result+="BelowJungle"
+        
 def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
     feedback = []
     if delta > 0:
