@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 
 const GoldChart = ({gold}) => {
+  console.log(gold);
   let data = [];
   let check = 0;
   const gradientOffset = () => {
@@ -32,7 +33,7 @@ const GoldChart = ({gold}) => {
         }
     }
     let off = gradientOffset();
-    console.log(off);
+    
     return (
       <AreaChart
         width={1000}

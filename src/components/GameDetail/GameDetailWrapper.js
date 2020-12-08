@@ -5,8 +5,7 @@ import WinRateChart from './WinRateChart'
 import './GameDetailWrapper.css'
 
 const GameDetailWrapper = (props) =>{
-    console.log("여기 wrapper");
-    console.log(props.ps);
+    console.log(props);
     return(
         <div className = "Wrapper">
             <div className = "title">

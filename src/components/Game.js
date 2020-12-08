@@ -165,14 +165,13 @@ function ChIDToName(id) {
 }
 
 const Game = (props) => {
-
-
+    console.log(props);
     const [DropdownState, setDropdownState] = useState("dropdown-disable");
     const [copyInfo, setCopyInfo] = useState(props);
+    
     const [isPageLoading, setIsPageLoading] = useState(0);
     const [isLoading, setLoading] = useState(0);
     const [matchSpec, setMatchSpec] = useState(0);
-
     const [PlayStyleInfo, setPlayStyleInfo] = useState(null);
     //console.log(isPageLoading);
 
@@ -249,23 +248,20 @@ const Game = (props) => {
 
         setIsPageLoading(1);
     }
-    /*duration*/
-    var min = parseInt(props.info.duration / 60);
-    var sec = props.info.duration - min * 60;
-    const duration = min + '분 ' + sec + '초';
 
+    
     var time_passed;
-    if (props.info.time_passed < 60) {//1분 이내
-        time_passed = props.info.time_passed + '초';
+    if (copyInfo.info.time_passed < 60) {//1분 이내
+        time_passed = copyInfo.info.time_passed + '초';
     }
-    else if (props.info.time_passed < 3600) {//1시간 이내
-        time_passed = parseInt(props.info.time_passed / 60) + '분 ' + parseInt(props.info.time_passed % 60) + '초';
+    else if (copyInfo.info.time_passed < 3600) {//1시간 이내
+        time_passed = parseInt(copyInfo.info.time_passed / 60) + '분 ' + parseInt(copyInfo.info.time_passed % 60) + '초';
     }
-    else if (props.info.time_passed < 86400) {//하루 이내
-        time_passed = parseInt(props.info.time_passed / 3600) + '시간 ' + parseInt(props.info.time_passed % 3600 / 60) + '분';
+    else if (copyInfo.info.time_passed < 86400) {//하루 이내
+        time_passed = parseInt(copyInfo.info.time_passed / 3600) + '시간 ' + parseInt(copyInfo.info.time_passed % 3600 / 60) + '분';
     }
     else {
-        time_passed = parseInt(props.info.time_passed / 86400) + '일'
+        time_passed = parseInt(copyInfo.info.time_passed / 86400) + '일'
     }
     const onClick = (event) => {
         if (DropdownState === "dropdown-disable") {

@@ -26,7 +26,7 @@ const WinRateChart = ({rate}) => {
     return (
       <LineChart
         width={1000}
-        height={200}
+        height={300}
         data={data}
         margin={{
           top: 10, right: 30, left: 30, bottom: 20,

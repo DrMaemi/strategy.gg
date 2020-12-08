@@ -162,8 +162,7 @@ case 143: return "Zyra"; break;
 }
 
 const PlayStyle = ({info}) =>{
-   
-    console.log(info);
+
     const [rec_champ1,setrec_champ1]=useState(null);
     const [rec_champ2,setrec_champ2]=useState(null);
     const [rec_champ3,setrec_champ3]=useState(null);
@@ -212,19 +211,19 @@ const PlayStyle = ({info}) =>{
             <div className = "barChart">
                 <BarChart data = {data}/></div>
             <div className = "explain">
-                <div className = "설명공략추천카운터">&nbsp;설명</div>
+                <div className = "설명공략추천카운터">&nbsp;&nbsp;설명</div>
                 <div className = "explain_box">
                     {explain.map(x=><div className="explain_content">{x}</div>)}
                 </div>
             </div>
             <div className = "explain">
-                <div className = "설명공략추천카운터">&nbsp;공략</div>
+                <div className = "설명공략추천카운터">&nbsp;&nbsp;공략</div>
                 <div className = "explain_box">
                     {todo.map(x=><div className="explain_content">{x}</div>)}
                 </div>
             </div>
             <div className = "recommend">
-                <div className = "설명공략추천카운터">&nbsp;추천</div>
+                <div className = "설명공략추천카운터">&nbsp;&nbsp;&nbsp;추천</div>
 
                 <div className = "champ_container">
                     <div className="chmp_info">
