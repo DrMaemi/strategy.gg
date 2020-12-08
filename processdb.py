@@ -67,12 +67,12 @@ def load_spec(summoner_name):
     spec = ref.get()
     return spec
 
-def load_feedback_points_timeline_events(game_id, events):
+def load_events(game_id):
     ref = db.reference("events/{}".format(game_id))
-    timeline_events = ref.get()
-    return timeline_events
+    events = ref.get()
+    return events
 
-def store_feedback_points_timeline_events(game_id, events):
+def store_events(game_id, events):
     ref = db.reference("events")
     ref.update({str(game_id):events})
 

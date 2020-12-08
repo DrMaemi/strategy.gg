@@ -2,35 +2,106 @@ import pandas as pd
 import numpy as np
 from refinedata import Metadata
 
+posTypes = ["탑", "봇", "미드", "블루팀 위쪽 정글", "블루팀 아래쪽 정글", "레드팀 위쪽 정글", "레드팀 아래쪽 정글", "바론 앞", "용 앞"]
+
 def distinguish_pos(x, y):
     # TOP
     if ((y>3000) and (570<x and x<1710)) or ((x<12000) and (13090<y and y<14230)):
-        return "TOP"
+        return "탑"
     elif ((x>3000) and (570<y and y<1710)) or ((y<12000) and (13090<x and x<14230)):
-        return "BOTTOM"
+        return "봇"
     elif (2120<x and x<12880) and (y<x+820 and y>x-820):
-        return "MID"
+        return "미드"
     else:
-        if y<-x+15000: result="Blue"
-        else: result="Red"
-        if y>x+820: result+="AboveJungle"
-        else: result+="BelowJungle"
+        if y<-x+14180 and y>x+820: result = "블루팀 위쪽 정글"
+        elif y<-x+14180 and y<x-820: result = "블루팀 아래쪽 정글"
+        elif y>-x+15820 and y>x+820: result = "레드팀 위쪽 정글"
+        elif y>-x+15820 and y<x-820: result = "레드팀 아래쪽 정글"
+        else:
+            if y>x: result = "바론 앞"
+            else: result = "용 앞"
+        return result
+
+def makeCombatState(events):
+    combatState = {"blue":{}, "red":{}}
+    for pos in posTypes:
+        combatState['blue'][pos] = {'participants':set(), 'kills':0}
+        combatState['red'][pos] = {'participants':set(), 'kills':0}
+    for event in events:
+        if event['type'] == "CHAMPION_KILL":
+            print("event: {}".format(event))
+            # 유저가 블루팀일 때 블루가 킬한 경우만
+            killerId = event['killerId'] # int
+            if killerId <= 5:
+                pos = distinguish_pos(event['position']['x'], event['position']['y'])
+                combatState['blue'][pos]['participants'].add(killerId)
+                try:
+                    for assistant in event['assistingParticipantIds']:
+                        combatState['blue'][pos]['participants'].add(assistant)
+                except KeyError: pass
+                combatState['blue'][pos]['kills'] += 1
+            elif killerId > 5:
+                pos = distinguish_pos(event['position']['x'], event['position']['y'])
+                combatState['red'][pos]['participants'].add(killerId)
+                try:
+                    for assistant in event['assistingParticipantIds']:
+                        combatState['red'][pos]['participants'].add(assistant)
+                except KeyError: pass
+                combatState['red'][pos]['kills'] += 1
+    return combatState
+
+def calCombatFeedback(team_belongs_to, combatState, feedback):
+    if team_belongs_to == 0: # 유저가 블루팀
+        for pos in combatState['blue'].keys():
+            participants = combatState['blue'][pos]['participants'] # set
+            kills = combatState['blue'][pos]['kills']
+            if len(participants) == 1:
+                if kills == 1:
+                    feedback.append("아군이 {}에서 솔로킬".format(pos))
+                elif kills > 1:
+                    feedback.append("아군의 슈퍼플레이: {}에서 단신으로 적 {}명 처치".format(pos, kills))
+            elif len(participants) > 1:
+                feedback.append("아군 {}명이 {}에서 적 {}명 처치".format(len(participants), pos, kills))
+            participants = combatState['red'][pos]['participants'] # set
+            kills = combatState['red'][pos]['kills']
+            if len(participants) == 1:
+                if kills == 1:
+                    feedback.append("적이 {}에서 솔로킬".format(pos))
+                elif kills > 1:
+                    feedback.append("적의 슈퍼플레이: {}에서 단신으로 아군 {}명 처치".format(pos, kills))
+            elif len(participants) > 1:
+                feedback.append("적 {}명이 {}에서 아군 {}명 처치".format(len(participants), pos, kills))
+    else: # 유저가 레드팀
+        for pos in combatState['red'].keys():
+            participants = combatState['red'][pos]['participants'] # set
+            kills = combatState['red'][pos]['kills']
+            if len(participants) == 1:
+                if kills == 1:
+                    feedback.append("아군이 {}에서 솔로킬".format(pos))
+                elif kills > 1:
+                    feedback.append("아군의 슈퍼플레이: {}에서 단신으로 적 {}명 처치".format(pos, kills))
+            elif len(participants) > 1:
+                feedback.append("아군 {}명이 {}에서 적 {}명 처치".format(len(participants), pos, kills))
+            participants = combatState['blue'][pos]['participants'] # set
+            kills = combatState['blue'][pos]['kills']
+            if len(participants) == 1:
+                if kills == 1:
+                    feedback.append("적이 {}에서 솔로킬".format(pos))
+                elif kills > 1:
+                    feedback.append("적의 슈퍼플레이: {}에서 단신으로 아군 {}명 처치".format(pos, kills))
+            elif len(participants) > 1:
+                feedback.append("적 {}명이 {}에서 아군 {}명 처치".format(len(participants), pos, kills))
+    return feedback
         
-def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
+def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, events):
     feedback = []
+    combatState = makeCombatState(events)
     if delta > 0:
         if dF['first_blood'] == 1:
             feedback.append("선취점")
-        if dF['kills'] > 0:
-            if dF['assists'] == 0:
-                feedback.append("스플릿 공격로 압도:{}킬".format(dF['kills']))
-            elif dF['assists'] < 4:
-                feedback.append("국지전 승리")
-            else:
-                feedback.append("한타 승리")
-        else:
-            if dF['kills_total_towers'] > 0:
-                feedback.append("스플릿/백도어")
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] < 1 and dF['kills_total_towers'] > 0:
+            feedback.append("아군의 스플릿/백도어")
         if dF['first_baron'] == 1:
             feedback.append("첫 번째 바론 선점")
         elif dF['total_barons'] == 1:
@@ -105,17 +176,9 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
         if dF['first_blood'] == 1:
             feedback.append("적의 선취점")
             #sthHappened = True
-        if dF['kills'] > 0:
-            #sthHappened = True
-            if dF['assists'] == 0:
-                feedback.append("적의 스플릿 공격로 압도")
-            elif dF['assists'] < 4:
-                feedback.append("국지전 패배")
-            else:
-                feedback.append("한타 패배")
-        else:
-            if dF['kills_total_towers'] > 0:
-                feedback.append("적의 스플릿/백도어")
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] < 1 and dF['kills_total_towers'] > 0:
+            feedback.append("적의 스플릿/백도어")
         if dF['first_baron'] == 1:
             feedback.append("적의 첫 번째 바론 선점")
         elif dF['total_barons'] == 1:
@@ -186,22 +249,16 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                 feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
+def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, events):
     feedback = []
     sthHappened = False
+    combatState = makeCombatState(events)
     if delta > 0: # 이기는 상황
         if dF['first_blood'] == 1:
             feedback.append("선취점")
             sthHappened = True
-        if dF['kills'] > 1 and dF['assists'] == 0:
-            feedback.append("두 라인 이상 압도 혹은 갱킹/로밍 역관광")
-            sthHappened = True
-        elif dF['kills'] > 1 or dF['assists'] > 0:
-            feedback.append("국지전 승리")
-            sthHappened = True
-        elif dF['kills'] == 1 and dF['assists'] == 0:
-            feedback.append("아군의 솔로킬")
-            sthHappened = True
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
         if dF['kills_total_towers'] > 0:
@@ -276,15 +333,8 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
         if dF['first_blood'] == 1:
             feedback.append("적의 선취점")
             sthHappened = True
-        if dF['kills'] > 1 and dF['assists'] == 0:
-            feedback.append("적이 두 라인 이상 압도 혹은 갱킹/로밍 역관광")
-            sthHappened = True
-        elif dF['kills'] > 1 or dF['assists'] > 0:
-            feedback.append("국지전 패배")
-            sthHappened = True
-        elif dF['kills'] == 1 and dF['assists'] == 0:
-            feedback.append("적의 솔로킬")
-            sthHappened = True
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
         if dF['kills_total_towers'] > 0:
@@ -355,22 +405,16 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
                 feedback.append("적의 귀환 후 정비 및 우세 유지")
     return feedback
 
-def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
+def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, events):
     feedback = []
+    combatState = makeCombatState(events)
     sthHappened = False
     if delta > 0: # 이기는 상황
         if dF['first_blood'] == 1:
             feedback.append("선취점")
             sthHappened = True
-        if dF['kills'] > 1 and dF['assists'] == 0:
-            feedback.append("두 라인 이상 압도 혹은 갱킹/로밍 역관광")
-            sthHappened = True
-        elif dF['kills'] > 1 or dF['assists'] > 0:
-            feedback.append("국지전 승리")
-            sthHappened = True
-        elif dF['kills'] == 1 and dF['assists'] == 0:
-            feedback.append("아군의 솔로킬")
-            sthHappened = True
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("포탑 선취점")
         if dF['kills_total_towers'] > 0:
@@ -445,15 +489,8 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df):
         if dF['first_blood'] == 1:
             feedback.append("적의 선취점")
             sthHappened = True
-        if dF['kills'] > 1 and dF['assists'] == 0:
-            feedback.append("적이 두 라인 이상 압도 혹은 갱킹/로밍 역관광")
-            sthHappened = True
-        elif dF['kills'] > 1 or dF['assists'] > 0:
-            feedback.append("국지전 패배")
-            sthHappened = True
-        elif dF['kills'] == 1 and dF['assists'] == 0:
-            feedback.append("적의 솔로킬")
-            sthHappened = True
+        feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
+        if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
             feedback.append("적의 포탑 선취점")
         if dF['kills_total_towers'] > 0:
