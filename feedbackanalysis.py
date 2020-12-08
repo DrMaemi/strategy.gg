@@ -29,7 +29,6 @@ def makeCombatState(events):
         combatState['red'][pos] = {'participants':set(), 'kills':0}
     for event in events:
         if event['type'] == "CHAMPION_KILL":
-            print("event: {}".format(event))
             # 유저가 블루팀일 때 블루가 킬한 경우만
             killerId = event['killerId'] # int
             if killerId <= 5:
@@ -105,9 +104,9 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, event
         if dF['first_baron'] == 1:
             feedback.append("첫 번째 바론 선점")
         elif dF['total_barons'] == 1:
-            feedback.append("바론 처치")
+            feedback.append("아군이 바론 처치")
         if dF['first_tower'] == 1:
-            feedback.append("포탑 선취점")
+            feedback.append("아군의 포탑 선취점")
         if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 이기고 있을 때는 아군 껄 가져와야돼.
                 topTowerList = list(timeline_df['blueTopTowerKills'])
@@ -150,21 +149,21 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, event
             content = str(content).replace("'", "")
             feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
-            feedback.append("억제기 선취점")
+            feedback.append("아군의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("아군이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("첫 번째 용 선점")
         elif dF['total_dragons'] == 1:
-            feedback.append("용 처치")
+            feedback.append("아군이 용 처치")
         if dF['total_level'] > 2:
-            feedback.append("레벨 격차")
+            feedback.append("레벨 우위")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 13:
-            feedback.append("cs 격차")
+            feedback.append("cs 우위")
         if jungles > 8:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 우위")
         if len(feedback) == 0:
             if win_rate > 50: # 본인 팀이 유리하고 승률이 증가
                 feedback.append("귀환 후 정비 및 우세 유지")
@@ -229,19 +228,19 @@ def tfphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, event
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("적이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("적의 첫 번째 용 선점")
         elif dF['total_dragons'] == 1:
             feedback.append("적의 용 처치")
         if dF['total_level'] > 2:
-            feedback.append("레벨 격차")
+            feedback.append("레벨 열세")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 13:
-            feedback.append("cs 격차")
+            feedback.append("cs 열세")
         if jungles > 8:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 열세")
         if len(feedback) == 0:
             if win_rate > 50: # 본인 팀이 유리한데 승률이 감소
                 feedback.append("적의 귀환 후 정비 및 현상 유지")
@@ -260,7 +259,7 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, ev
         feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
         if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("포탑 선취점")
+            feedback.append("아군의 포탑 선취점")
         if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
                 topTowerList = list(timeline_df['blueTopTowerKills'])
@@ -303,23 +302,23 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, ev
             content = str(content).replace("'", "")
             feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
-            feedback.append("억제기 선취점")
+            feedback.append("아군의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("아군이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("첫 번째 용 선점")
         elif dF['total_dragons'] == 1:
-            feedback.append("용 처치")
+            feedback.append("아군이 용 처치")
         if dF['rift_heralds'] == 1:
-            feedback.append("전령 처치")
+            feedback.append("아군이 전령 처치")
         if dF['total_level'] > 2:
-            feedback.append("레벨 격차")
+            feedback.append("레벨 우위")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 11:
-            feedback.append("cs 격차")
+            feedback.append("cs 우위")
         if jungles > 7:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 우위")
         if dF['total_gold'] > 20*minions+40*jungles+130 and not sthHappened and t < 15:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
@@ -381,7 +380,7 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, ev
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("적이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("적의 첫 번째 용 선점")
         elif dF['total_dragons'] == 1:
@@ -389,13 +388,13 @@ def transphase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, ev
         if dF['rift_heralds'] == 1:
             feedback.append("적의 전령 처치")
         if dF['total_level'] > 2:
-            feedback.append("레벨 격차")
+            feedback.append("레벨 열세")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 11:
-            feedback.append("cs 격차")
+            feedback.append("cs 열세")
         if jungles > 7:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 열세")
         if dF['total_gold'] > 20*minions+40*jungles+100 and not sthHappened and t < 15:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
@@ -416,7 +415,7 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, eve
         feedback = calCombatFeedback(team_belongs_to, combatState, feedback)
         if dF['kills'] > 0: sthHappened = True
         if dF['first_tower'] == 1:
-            feedback.append("포탑 선취점")
+            feedback.append("아군의 포탑 선취점")
         if dF['kills_total_towers'] > 0:
             if team_belongs_to == 0: # 유저가 블루팀. 상대팀은 레드팀
                 topTowerList = list(timeline_df['blueTopTowerKills'])
@@ -459,23 +458,23 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, eve
             content = str(content).replace("'", "")
             feedback.append("적의 {} 포탑 파괴".format(content))
         if dF['first_inhibitor'] > 0:
-            feedback.append("억제기 선취점")
+            feedback.append("아군의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("아군이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("첫 번째 용 처치")
         elif dF['total_dragons'] == 1:
-            feedback.append("용 처치")
+            feedback.append("아군이 용 처치")
         if dF['rift_heralds'] == 1:
-            feedback.append("전령 처치")
+            feedback.append("아군이 전령 처치")
         if dF['total_level'] > 1:
-            feedback.append("레벨 격차")
+            feedback.append("레벨 우위")
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 5:
-            feedback.append("cs 격차")
+            feedback.append("cs 우위")
         if jungles > 3:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 우위")
         if dF['total_gold'] > 17*minions+35*jungles+130 and not sthHappened:
             feedback.append("공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:
@@ -537,7 +536,7 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, eve
         if dF['first_inhibitor'] > 0:
             feedback.append("적의 억제기 선취점")
         elif dF['kills_inhibitors'] > 0:
-            feedback.append("억제기 파괴")
+            feedback.append("적이 억제기 파괴")
         if dF['first_dragon'] == 1:
             feedback.append("적의 첫 번째 용 선점")
         elif dF['total_dragons'] == 1:
@@ -549,9 +548,9 @@ def lanephase_analysis(t, team_belongs_to, win_rate, delta, dF, timeline_df, eve
         minions = dF['kills_total_minion']
         jungles = dF['kills_total_jungle_minion']
         if minions > 5:
-            feedback.append("cs 격차")
+            feedback.append("cs 열세")
         if jungles > 3:
-            feedback.append("정글링 격차")
+            feedback.append("정글링 열세")
         if dF['total_gold'] > 17*minions+35*jungles+100 and not sthHappened:
             feedback.append("적의 공격로 압박, 포탑 방패 파괴")
         if len(feedback) == 0:

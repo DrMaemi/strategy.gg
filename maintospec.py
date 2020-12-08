@@ -341,11 +341,11 @@ def getspec(info, Models):
         try:
             timeline_events = {}
             for point in feedback_points.keys():
-                # te: timeline_event
-                te = timeline_data['frames'][int(point)]['events']
+                # te: timeline event
+                te = timelines[idx]['timeline_data']['frames'][int(point)+1]['events']
                 if len(te) == 0: te = 0 # 어떤 event도 발생하지 않은 경우
                 timeline_events[point] = te
-            db.store_events(matchspecs[idx]['game_id'], timeline_events)
+            db.store_events(timelines[idx]['gameId'], timeline_events)
         except: pass # feedback_points = 0, 즉 피드백할 내용이 없는 경기인 경우
     try: matchspecs += matchspecs_db[:cutIdx+1]
     except TypeError: pass

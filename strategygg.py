@@ -34,14 +34,13 @@ Models = {
 # load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 11):
+    for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
         print("{}RNN{} has been loaded".format(tier, tl))
 print("All RNN models have been loaded !")
 print("Wait time: {} second(s)".format(time.time()-start_time))
-
 
 psModels = {
     "tiers":["DIAMOND"],

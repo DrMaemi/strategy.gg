@@ -104,7 +104,7 @@ def getanalysis(summoner_name, game_id, Models):
         # npArr[point]: (point+1)분의 상황
         # deltaFeatures는 (point+1)분 상황 - point분 상황 차이
         deltaFeatures = df.iloc[point]-df.iloc[point-1]
-        targetEvents = events[str(point)] # events: Json, targetEvents: List<Json>
+        targetEvents = events[str(point)].copy() # events: Json, targetEvents: List<Json>
         if team_belongs_to == 1: # red team
             deltaFeatures = pd.Series(map(lambda x:-x, deltaFeatures), index=diff_columns)
         delta = feedback_points[str(point)]['delta']
