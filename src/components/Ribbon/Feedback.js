@@ -1,18 +1,60 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Feedback.css'
+
+import { Combobox, DropdownList } from 'react-widgets'
+import "react-widgets/dist/css/react-widgets.css";
 import BoxContainers from './BoxContainers'
-import ComboboxStrategy from './ComboBox'
+
+var temp_StrategyArr = [];
+var myStrategy = [];
 const Feedback = (props) =>{
-    var feedbackArr = Object.keys(props.feedback);
-    let tierList = [];
     console.log(props);
+    const [tier, setTier] = useState(props.summonerTier);
+
+    var feedbackArr = Object.keys(props.feedback);
+    
+    let tierList = [];
     if(props.summonerTier === "GOLD")tierList=["GOLD","PLATINUM","DIAMOND","MASTER","CHALLENGER"];
     if(props.summonerTier === "PLATINUM")tierList=["PLATINUM","DIAMOND","MASTER","CHALLENGER"];
     if(props.summonerTier === "DIAMOND")tierList=["DIAMOND","MASTER","CHALLENGER"];
     if(props.summonerTier === "MASTER")tierList=["MASTER","CHALLENGER"];
     if(props.summonerTier === "CHALLENGER")tierList=["CHALLENGER"];
 
-    console.log(tierList);
+    temp_StrategyArr = [];
+    function getStrategy(value) {
+        if(props.summonerTier==="GOLD"){
+            if(value === "GOLD"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[0].strategy}))} 
+            if(value === "PLATINUM"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[1].strategy}))}
+            if(value === "DIAMOND"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[2].strategy}))}
+            if(value === "MASTER"){temp_StrategyArr.push(feedbackArr.map(number => {return  props.feedback[number].strategies[3].strategy}))}
+            if(value === "CHALLENGER"){temp_StrategyArr.push(feedbackArr.map(number => {return  props.feedback[number].strategies[4].strategy}))}
+          }
+            if(props.summonerTier==="PLATINUM"){
+            if(value === "PLATINUM"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[0].strategy}))}
+            if(value === "DIAMOND"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[1].strategy}))}
+            if(value === "MASTER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[2].strategy}))}
+            if(value === "CHALLENGER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[3].strategy}))}
+          
+          }
+          if(props.summonerTier==="DIAMOND"){
+            if(value === "DIAMOND"){temp_StrategyArr.push(feedbackArr.map(number => {return props.feedback[number].strategies[0].strategy}))}
+            if(value === "MASTER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[1].strategy}))}
+            if(value === "CHALLENGER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[2].strategy}))}
+          
+          }
+          if(props.summonerTier==="MASTER"){
+            if(value === "MASTER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[0].strategy}))}
+            if(value === "CHALLENGER"){temp_StrategyArr.push(feedbackArr.map(number => { return props.feedback[number].strategies[1].strategy}))}
+          
+          }
+          if(props.summonerTier==="CHALLENGER"){
+            if(value === "CHALLENGER"){temp_StrategyArr.push(feedbackArr.map(number => { return feedbackArr.feedback[number].strategies[0].strategy}))}
+            
+          }
+       myStrategy = temp_StrategyArr[0];
+       temp_StrategyArr=[];
+    }
+    getStrategy(tier);
     return(
         <div className = "feedback_content_container">
             <div className = "원인">원인</div>
@@ -29,11 +71,26 @@ const Feedback = (props) =>{
                 ))}
                
             </div>
-        
-            
             <div className = "combo">
-            <div >전략</div>   
-            <ComboboxStrategy strategyBox={props} tierList={tierList}/>
+                <div className = "comboTitle">
+                    <div className= "전략" >전략</div>  
+                    <DropdownList
+                    data={tierList}
+                    value={tier}
+                    onChange={value =>(setTier(value),getStrategy(value))}
+                    className="size"/>
+                    
+                </div>
+                {feedbackArr.map((value, index)=>(
+                    <div className = "strategyContainer">
+                        {props.feedback[value].feedback.map((x,y)=>(y>=1 ? <br></br> : null ))}
+                        {myStrategy.map((x,y)=> (
+                            y === index ? x.map(text=><div className = "strategy_content">{text}</div>) : null ))
+                        }
+                        {props.feedback[value].feedback.map((x,y)=>(y>=1 ? <br></br> : null ))}
+                    </div>
+                ))}
+
             </div>
 
             

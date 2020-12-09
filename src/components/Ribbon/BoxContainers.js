@@ -4,7 +4,6 @@ import StrategyBox from './StrategyBox'
 import './BoxContainers.css'
 import ComboboxStrategy from './ComboBox'
 const BoxContainers = (props) =>{
-    console.log(props);
     return(
         <div className = "BoxContainer">
             <FeedbackBox 

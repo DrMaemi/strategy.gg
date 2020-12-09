@@ -312,7 +312,7 @@ const Game = (props) => {
                     </div>
                     <div className="column">
                         <b className="KDA">{copyInfo.info.kill + ' / ' + copyInfo.info.death + ' / ' + copyInfo.info.assist}</b>
-                        <b className="AVG">{'평점 ' + copyInfo.info.avg}</b>
+                        <b className="AVG">{'평점 ' + copyInfo.info.avg}:1</b>
                     </div>
                     <img src={LaneImg} className="Lane" />
                     <div className="column">
