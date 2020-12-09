@@ -165,7 +165,7 @@ function ChIDToName(id) {
 }
 
 const Game = (props) => {
-    console.log(props);
+
     const [DropdownState, setDropdownState] = useState("dropdown-disable");
     const [copyInfo, setCopyInfo] = useState(props);
     
@@ -173,7 +173,6 @@ const Game = (props) => {
     const [isLoading, setLoading] = useState(0);
     const [matchSpec, setMatchSpec] = useState(0);
     const [PlayStyleInfo, setPlayStyleInfo] = useState(null);
-    //console.log(isPageLoading);
 
     const [LaneImg, setLaneImg] = useState(null);
     const [Spell1Img, setSpell1Img] = useState(null);
@@ -182,13 +181,10 @@ const Game = (props) => {
 
     useEffect(() => {
         if (isPageLoading === 0) { getUrlnfo(); }
-        //console.log("getUrlnfo 실행함!!")
+    
 
     }, [isLoading, isPageLoading])
-    // if(props.summonerName !== copyInfo.info.summonerName){
-    //     setCopyInfo(props);
-    // }
-    // const [ChampionName, setChampionName] = useState(ChIDToName(props.info.champion_id));
+    
 
     const getUrlnfo = async () => {
         let ChampionURL, Spell1URL, Spell2URL, LaneURL = 0;
@@ -280,10 +276,9 @@ const Game = (props) => {
                 .get(`http://61.99.75.232:5000/analysis/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
             const PS_spec = await axios
             .get(`http://61.99.75.232:5000/playstyle/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
-            console.log("여기 game");
-            console.log(PS_spec.data);
+      
             setPlayStyleInfo(PS_spec.data); 
-            console.log(PlayStyleInfo);
+     
             setMatchSpec(spec.data);
             
             setLoading(1);

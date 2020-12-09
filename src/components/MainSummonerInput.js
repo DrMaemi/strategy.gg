@@ -47,7 +47,7 @@ const MainSummonerInput = () =>{
          className="search"
          onChange={onChange}
         />
-        {console.log(users)}
+       
         <button className = {searchBTN}  onClick={onClick}/>
     </form>
    );

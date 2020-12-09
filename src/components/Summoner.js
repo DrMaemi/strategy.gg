@@ -9,8 +9,7 @@ import Game from './Game';
 import loading from '../img/loading.png';
 
 const Summoner = ({ info }) => {
-    console.log("info는");
-    console.log(info);
+   
     let isProfileURLOk = 0;
     let isTierURLOk = 0;
 
@@ -20,7 +19,7 @@ const Summoner = ({ info }) => {
     const [isLoading, setIsLoading] = useState(0);
     const [Profileimg, setProfileimg] = useState(null);
     const [Tierimg, setTierimg] = useState(null);
-    console.log(isLoading);
+
     const [copyInfo, setCopyInfo] = useState(info);
 
 
@@ -37,7 +36,7 @@ const Summoner = ({ info }) => {
 
     useEffect(() => {
         if (isLoading === 0) { sameTime(); }
-        console.log("useEfffect!!");
+      
     }, [isLoading, isRefetching, isRender])
 
     const refetchInfo = async () => {
@@ -45,7 +44,6 @@ const Summoner = ({ info }) => {
         const { data: fetchInfo } = await axios.get(`http://61.99.75.232:5000/refresh/?name=${copyInfo.userspec.summoner_name}`);
 
         if (fetchInfo.userspec.summoner_name === copyInfo.userspec.summoner_name) {
-            console.log("전적갱신 끝!!");
             setIsRefetching(0);
         }
         setCopyInfo(fetchInfo);
@@ -63,16 +61,16 @@ const Summoner = ({ info }) => {
         let copyResolveProfile, copyResolveTier = 0;
         try {
             await profileURL();
-            console.log("URL받아옴")
+        
             await ProfileURL.then(resolve => {
                 setProfileimg(resolve);
-                console.log("프로필 받아옴")
+           
             });
         }
-        catch { console.log("프로필 오류") }
+        catch{}
 
 
-        console.log("ProfileURLTierURL w중간 임");
+
         try {
             await tierURL();
             await TierURL.then(resolve => {
@@ -81,9 +79,9 @@ const Summoner = ({ info }) => {
 
             });
         }
-        catch { console.log("티어 오류"); }
+        catch {}
 
-        console.log("sametime 끝")
+        
         setIsLoading(1);
 
     }
@@ -120,10 +118,7 @@ const Summoner = ({ info }) => {
 
             if(info.userspec.summoner_name === copyInfo.userspec.summoner_name){
                 return(
-        
-        
                     <>
-                        {console.log("랜더링 됐냐???")}
                         <div className="ProfileContainer">
                             <img src =  {Profileimg} alt="Profileicon" className = "ProfileIcon"/> 
                             <div className = "nameNbtn">

@@ -6,8 +6,7 @@ import Game from '../components/Game';
 
 
 const SummonerDetailPage = ({ location : {state : {spec : {data}}}}) =>{
-    console.log("디테일페이지 진입!!");
-    console.log(data);
+  
     return(
         <div className="SummonerDetailPageContainer">
             <OtherGnb/>

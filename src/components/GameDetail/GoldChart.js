@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 
 const GoldChart = ({gold}) => {
-  console.log(gold);
+
   let data = [];
   let check = 0;
   const gradientOffset = () => {

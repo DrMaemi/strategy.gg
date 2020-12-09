@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import FeedbackBox from './FeedbackBox'
-import StrategyBox from './StrategyBox'
+
 import './BoxContainers.css'
-import ComboboxStrategy from './ComboBox'
+
 const BoxContainers = (props) =>{
     return(
         <div className = "BoxContainer">
@@ -11,8 +11,8 @@ const BoxContainers = (props) =>{
             delta = {props.feedback.delta}
             feedback = {props.feedback.feedback}
             win_rate = {props.feedback.win_rate}/>
-            {/* <StrategyBox strategy={props.feedback.strategies}/> */}
-            
+          
+    
         </div>
     );
 }
