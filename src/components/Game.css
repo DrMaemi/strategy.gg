@@ -1,0 +1,156 @@
+.AboutOneGame{
+    display: flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items: center;
+}
+.GameContainer{
+    background-color:#3B3838;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius : 10px;
+    box-shadow : 5px 5px 15px #212121;
+    margin : 20px;
+    padding : 10px;
+    padding-left : 0px;
+}
+.timePassed{
+    font-size : 13px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color :white;
+}
+.near{
+    display : flex;
+    flex-direction: row;
+    justify-content : center;
+}
+.column{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.Champion{
+    width : 70px;
+    height : 70px;
+    margin-bottom : 5px;
+}
+.Level{
+    font-size:15px;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+}
+.Spell1{
+    width : 30px;
+    height : 30px;
+    margin : 5px;
+}
+.Spell2{
+    width : 30px;
+    height : 30px;
+}
+.KDA{
+    width : 130px;
+    font-size:20px;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    margin-bottom : 7px;
+}
+.AVG{
+    
+    width : 130px;
+    font-size:15px;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+}
+.Lane{
+    width : 70px;
+    height : 70px;
+}
+.TeamScore{
+    font-size : 20px;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    margin-bottom : 7px;
+}
+.승리 {
+    margin-top : 5px;
+    font-size : 18px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color :#0088FE;
+}
+.패배 {
+    margin-top : 5px;
+    font-size : 18px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color : #FF5050;
+}
+.Duration{
+    font-size : 20px;
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+}
+.PieChart{
+    width : 200px;
+    height: 180px;
+}
+.descPieChart{
+    margin-left : 13px;
+    font-size : 15px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color : white;
+}
+.Analysis{
+    background-image: url('../img//Anaysis.png');
+    background-repeat: no-repeat;
+    background-color : transparent;
+
+    border : 0px;
+    margin : 10px;
+
+    width : 45px;
+    height : 45px;
+    background-repeat: no-repeat;
+    cursor : pointer;
+}
+.Analysis:hover{
+    transform: scale(1.1);
+}
+  .dropdown-disable {
+    display: none;
+  }
+  .dropdown-able .dropdown-disable {
+      display: block;
+
+}
+
+    
+.loading {
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s ease-in-out infinite;
+    -webkit-animation: spin 1.5s ease-in-out infinite;
+    border : 0px;
+    background-color: transparent;  
+    margin-top:60px;
+    margin-bottom:60px;
+    margin-left:45vw;
+  }
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  } 

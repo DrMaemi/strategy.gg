@@ -1,39 +1,42 @@
+.ModelPageContainer{
+    background-image:url('../img/ModelPageBackground.png');
+    height : 100vh;
+    width : 100vw;
+
+    background-size : cover;
+    background-repeat: no-repeat;
+    overflow: scroll;
+}    
 .main{
     width: 960px;
     margin: 0 auto;
     overflow: hidden;
-    background-color: black;
  }
  
  .explane{
-     margin-top: 10px;
-     margin-left: 10px;
-     margin-right: 10px;
-     margin-bottom: 10px;
-     padding: 20px;
-     border: 1px solid white;
+     margin : 30px ;
+     padding: 40px;
      border-radius: 20px;
+     background-color : rgb(0,0,0,0.8);
+     box-shadow: 0 7px 15px black;
+     
  }
- 
- .title{
-     color: cornflowerblue;
+ .modelName{
+    font-family: '나눔스퀘어';
+    src : url('../components/common/NANUMSQUAREEB.TTF');
+    font-weight: bolder ;
+    font-size : 30px;
+    color: cornflowerblue;
+
+    margin-bottom : 30px;
  }
  
  .contents{
      color: white;
+     line-height:35px;
  }
  
  .button{
      text-align: center;
  }
  
- .back{
-     position: relative;
-     padding-top: 0.75rem;
-     padding-bottom:  0.75rem;
-     margin-left: 0.25rem;
-     margin-right: 00.25rem;
-     min-width: 150px;
-     border-radius: 50px;
-     background-color: white;
- }

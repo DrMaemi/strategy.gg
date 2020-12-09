@@ -1,16 +1,16 @@
 import React from 'react';
 import OtherGnb from './../components/OtherGnb.js'
-import './MainPage.css';
-import Question from './../img/QuestionMark.png'
+import './SummonerDetailPage.css';
+import './ExecptPage.css';
 
 function ExceptPage(){
     return(
-        <div className="container" >
+        <div className="SummonerDetailPageContainer" >
             <OtherGnb/>
-            <div>
-                <img src = {Question} alt="NoUser"></img>
-                <h1>Summoner not found</h1>
-            </div>
+            <div className = "NotFoundMsg">Summoner not found</div>
+            <div className = "Again">Please try again</div>
+            
+            
         </div>
     );
 }

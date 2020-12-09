@@ -1,7 +1,8 @@
-.Topbar .otherInput form{
+.otherInput {
     display: inline;
-    position: relative;
-    left: 60%;
+    position : absolute;
+    bottom : 19px;
+    left : 810px;
 }
 /* inline넣은 이유 : form 태그는 자동 줄바꿈되서 툴바에서 벗어남 */
 /* 그냥 form 해서 main -> model 페이지에서 소환사명 검색 바가 form 입혀지는거 방지 */
