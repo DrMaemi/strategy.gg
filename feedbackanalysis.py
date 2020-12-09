@@ -18,7 +18,7 @@ def distinguish_pos(x, y):
         elif y>-x+15820 and y>x+820: result = "레드팀 위쪽 정글"
         elif y>-x+15820 and y<x-820: result = "레드팀 아래쪽 정글"
         else:
-            if y>x: result = "바론 앞"
+            if y>x: result = "전령/바론 앞"
             else: result = "용 앞"
         return result
 

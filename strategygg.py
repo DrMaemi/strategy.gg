@@ -18,7 +18,7 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-3a2b1c81-e72d-46ad-ab5e-b3a7fd7d29ab"
+api_key = "RGAPI-46a30cd3-e176-4b84-a3fc-b262fa4e3e89"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -34,7 +34,7 @@ Models = {
 # load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 46):
+    for tl in range(2, 2):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
@@ -43,7 +43,7 @@ print("All RNN models have been loaded !")
 print("Wait time: {} second(s)".format(time.time()-start_time))
 
 psModels = {
-    "tiers":["DIAMOND"],
+    "tiers":tiers,
     "lanes":["TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORTER"],
     "GOLD":[],
     "PLATINUM":[],
@@ -142,5 +142,6 @@ def regenerate_key(new_key):
     return "True"
 
 if __name__ == "__main__":
-    app.run(host_addr, port=5000, threaded=True)
+    context = ("APICertificates/strategy.crt", "APICertificates/strategy.key")
+    app.run(host_addr, port=5000, threaded=True, ssl_context=context)
     #app.run()

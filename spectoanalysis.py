@@ -15,13 +15,22 @@ def getplaystyle(summoner_name, game_id, psModels):
     PlayStyle = ps.PlayStyle()
     ps_json = db.load_ps_json(summoner_name, game_id)
     tier = ps_json['tier']
-    tier = "DIAMOND"
+    try: psModels['tiers'].index(tier)
+    except ValueError:
+        if tier == "GRANDMASTER": tier = "CHALLENGER"
+        else: tier = "GOLD"
     lane = ps_json['lane']
     data = ps_json['ps_json']
     targetData = []
-    for value in data[0].values():
-        targetData.append(value)
-    ps_df = pd.DataFrame([targetData], columns=PlayStyle.ps_features)
+    if tier == "GOLD":
+        ps_db_features = PlayStyle.ps_db_features_gold
+        ps_features = PlayStyle.ps_features_gold
+    else:
+        ps_db_features = PlayStyle.ps_db_features
+        ps_features = PlayStyle.ps_features
+    for feature in ps_db_features:
+        targetData.append(data[0][feature])
+    ps_df = pd.DataFrame([targetData], columns=ps_features)
     targetModel = psModels[tier][psModels["lanes"].index(lane)]
     # scale code #
     scaleData = pd.read_csv("Playstyle Origin Data/{0}/{0}{1}.csv".format(tier, lane))
@@ -30,7 +39,7 @@ def getplaystyle(summoner_name, game_id, psModels):
     scaleData = scale(scaleData)
     data = [scaleData[len(scaleData)-1]]
     classResult = targetModel.predict(np.array(data))
-    playstyle = eval("ps.PlayStyle().{}{}PS{}".format(tier, lane, classResult[0]))
+    playstyle = eval("ps.PlayStyle().{}PS{}".format(lane, classResult[0]))
     #db.store_playstyle(summoner_name, game_id, playstyle)
     return playstyle
 

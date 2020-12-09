@@ -1,7 +1,20 @@
-import pandas as pd
-
 class PlayStyle:
     def __init__(self):
+        self.ps_db_features_gold = [
+            'kills', 'deaths', 'assists','killingSprees',
+            'longestTimeSpentLiving','totalDamageDealt', 
+            'visionScore', 'timeCCingOthers',
+            'totalDamageTaken', 'totalMinionsKilled', 'champLevel'
+        ]
+
+        self.ps_features_gold = [
+            'stats.kills','stats.deaths', 'stats.assists','stats.killingSprees',
+            'stats.longestTimeSpentLiving','stats.totalDamageDealtToChampions', 
+            'stats.visionScore', 'stats.timeCCingOthers',
+            'stats.totalDamageTaken', 'stats.totalMinionsKilled',
+            'stats.champLevel'
+        ]
+
         self.ps_db_features = [
             'kills','deaths', 'assists','killingSprees',
             'longestTimeSpentLiving','totalDamageDealt', 
@@ -18,7 +31,7 @@ class PlayStyle:
             'stats.totalMinionsKilled', 'stats.champLevel'
         ]
 
-        self.DIAMONDTOPPS0 = {
+        self.TOPPS0 = {
             "playstyle":'무난형',
             'stats': {'공격':2, '시야':2,'군중제어':2, '성장':3},
             'explain':['상대에가 준 피해량이 보통입니다',
@@ -30,7 +43,7 @@ class PlayStyle:
             'counter': {'id':[74, 85,54]}
             }
 
-        self.DIAMONDTOPPS1= {"playstyle":'무리형',
+        self.TOPPS1= {"playstyle":'무리형',
             'stats': {'공격':3, '시야':3,'군중제어':4, '성장':3},
             'explain':['상대에게 많은 피해량을 주었습니다',
                 '그러나 너무 많이 죽거나 무리해서 플레이 했습니다',
@@ -42,7 +55,7 @@ class PlayStyle:
             'counter': {'id':[74, 240, 98]}
             }
 
-        self.DIAMONDTOPPS2  ={"playstyle":"공격 안정형",
+        self.TOPPS2  ={"playstyle":"공격 안정형",
             "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장': 4},
             "explain"  :['상대에게 준 피해량이 가장 높습니다.',
                 '상대에게 군중제어를 건 시간이 깁니다',
@@ -52,7 +65,7 @@ class PlayStyle:
             'counter': {'id':[14, 10, 74]}
             }
             
-        self.DIAMONDTOPPS3 = {"playstyle":'부족형',
+        self.TOPPS3 = {"playstyle":'부족형',
             'stats': {'공격':1, '시야':1,'군중제어':1, '성장':1},
             'explain':['상대에가 준 피해량이 가장 적습니다',
                 '성장도 가장 못했습니다',
@@ -66,7 +79,7 @@ class PlayStyle:
             'counter': {'id':[14,10,98]}
             }
 
-        self.DIAMONDJUNGLEPS0  ={"playstyle":"공격형",
+        self.JUNGLEPS0  ={"playstyle":"공격형",
         "stats": {'공격': 4, '시야': 3, '군중제어': 2, '성장': 3},
         "explain"  :['성장이 잘 되었습니다.',
                     '상대방에게 가장 많은 피해를 주었습니다.',
@@ -76,7 +89,7 @@ class PlayStyle:
         'champion': {'id':[141, 104, 121]},
         'counter': {'id':[11,78,20]}
         }
-        self.DIAMONDJUNGLEPS1  ={"playstyle":"부족형",
+        self.JUNGLEPS1  ={"playstyle":"부족형",
         "stats": {'공격': 1, '시야': 2, '군중제어': 1, '성장': 2},
         "explain"  :['가장 아쉬운 플레이 스타일입니다.',
                     '상대에게 준 피해량이 부족하지 않지만 아쉽습니다',
@@ -87,7 +100,7 @@ class PlayStyle:
         'champion': {'id':[32, 33, 2]},
         'counter': {'id':[141, 427, 36]}
         }
-        self.DIAMONDJUNGLEPS2  ={"playstyle":"와드갱킹형",
+        self.JUNGLEPS2  ={"playstyle":"와드갱킹형",
         "stats": {'공격': 3, '시야': 4, '군중제어': 4, '성장': 3},
         "explain"  :['시야 점수와 군중 제어 점수가 가장 좋습니다.',
                     '공격과 성장도 잘했습니다',
@@ -96,7 +109,7 @@ class PlayStyle:
         'champion': {'id':[20, 32, 60]},
         'counter': {'id':[141, 36,9]}
         }
-        self.DIAMONDJUNGLEPS3  ={"playstyle":"성장형",
+        self.JUNGLEPS3  ={"playstyle":"성장형",
         "stats": {'공격': 2, '시야': 1, '군중제어': 3, '성장': 4},
         "explain"  :['가장 보통인 플레이입니다',
                     '시야점수가 좋지 않습니다',
@@ -107,7 +120,7 @@ class PlayStyle:
         'counter': {'id':[20, 141, 33]}
         }
 
-        self.DIAMONDMIDPS0  ={"playstyle":"쓰레기형",
+        self.MIDPS0  ={"playstyle":"쓰레기형",
         "stats": {'공격': 1, '시야': 1, '군중제어':1 , '성장':1 },
         "explain"  :['미드에서 가장 하기 힘든 플레이 입니다',
                     '모든 지표가 좋지 않습니다.'],
@@ -117,7 +130,7 @@ class PlayStyle:
         'champion': {'id':[238, 3, 112]},
         'counter': {'id':[54, 50, 20]}
         }
-        self.DIAMONDMIDPS1  ={"playstyle":"무난형",
+        self.MIDPS1  ={"playstyle":"무난형",
         "stats": {'공격': 3, '시야': 2, '군중제어':2 , '성장':2 },
         "explain"  :['평범한 플레이입니다.'
                     '상대방에게 적절한 피해를 주었습니다.',
@@ -128,7 +141,7 @@ class PlayStyle:
         'champion': {'id':[238, 3,105]},
         'counter': {'id':[54,50,10]}
         }
-        self.DIAMONDMIDPS2  ={"playstyle":"페이커형",
+        self.MIDPS2  ={"playstyle":"페이커형",
         "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장':4 },
         "explain"  :['매우 잘한 플레이 입니다.',
                     '시야 점수 또한 매우 좋습니다.',
@@ -138,7 +151,7 @@ class PlayStyle:
         'champion': {'id':[142,7 ,69]},
         'counter': {'id':[10, 90, 84]}
         }
-        self.DIAMONDMIDPS3  ={"playstyle":"스턴형",
+        self.MIDPS3  ={"playstyle":"스턴형",
         "stats": {'공격': 2, '시야': 3, '군중제어': 4, '성장':3 },
         "explain"  :['가장 군중제어를 가장 잘 걸었습니다.',
                     '상대방에게 넣은 딜이 보통입니다.',],
@@ -147,7 +160,7 @@ class PlayStyle:
         'counter': {'id':[54,20,10]}
         }
 
-        self.DIAMONDBOTTOMPS0 ={"playstyle":"골고루형",
+        self.BOTTOMPS0 ={"playstyle":"골고루형",
         "stats": {'공격': 3, '시야': 3, '군중제어': 4, '성장': 3},
         "explain"  :['플레이가 평균입니다',
                     '원딜인데도 군중제어를 잘 걸었습니다',
@@ -156,7 +169,7 @@ class PlayStyle:
         'champion': {'id':[360,202,67]},
         'counter': {'id':[50,21,18]}
         }
-        self.DIAMONDBOTTOMPS1 ={"playstyle":"공격형",
+        self.BOTTOMPS1 ={"playstyle":"공격형",
         "stats": {'공격': 3, '시야': 2, '군중제어': 1, '성장': 3},
         "explain"  :['군중제어 점수가 좀 낮습니다',
                     '와드를 좀 더 설치하세요',
@@ -165,7 +178,7 @@ class PlayStyle:
         'champion': {'id':[202, 81,22]},
         'counter': {'id':[50, 18, 81]}
         }
-        self.DIAMONDBOTTOMPS2 ={"playstyle":"세체원형",
+        self.BOTTOMPS2 ={"playstyle":"세체원형",
         "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장': 4},
         "explain"  :['가장 잘한 플레이 입니다',
                     '말할 게 없습니다'],
@@ -173,7 +186,7 @@ class PlayStyle:
         'champion': {'id':[360, 67,236]},
         'counter': {'id':[50,21,18]}
         }
-        self.DIAMONDBOTTOMPS3 ={"playstyle":"벌레형",
+        self.BOTTOMPS3 ={"playstyle":"벌레형",
         "stats": {'공격': 1, '시야': 1, '군중제어': 1, '성장': 1},
         "explain"  :['가장 못한 플레이 입니다.',
                     '많은 부분에서 보완이 필요합니다'],
@@ -184,7 +197,7 @@ class PlayStyle:
         'champion': {'id':[22, 236, 110]},
         'counter': {'id':[18, 202, 157]}
         }
-        self.DIAMONDSUPPORTERPS0 = {"playstyle":"완벽형",
+        self.SUPPORTERPS0 = {"playstyle":"완벽형",
         "stats": {'공격': 4, '시야': 4, '군중제어': 3, '성장': 3},
         "explain"  :['굉장히 잘한 플레이 입니다',
                     '적절한 군중제어와 성장을 하였습니다',
@@ -193,7 +206,7 @@ class PlayStyle:
         'champion': {'id':[89,412,53]},
         'counter': {'id':[35,57,161]}
         }
-        self.DIAMONDSUPPORTERPS1 = {"playstyle":"보디가드형",
+        self.SUPPORTERPS1 = {"playstyle":"보디가드형",
         "stats": {'공격': 3, '시야': 4, '군중제어': 4, '성장': 3},
         "explain"  :['좀 많이 죽을 수는 있고 다른 부분은 매우 잘했습니다',
                     '시야 점수가 매우 좋습니다'],
@@ -202,7 +215,7 @@ class PlayStyle:
         'champion': {'id':[89,412,201]},
         'counter': {'id':[35, 180, 350]}
         }
-        self.DIAMONDSUPPORTERPS2 = {"playstyle":"시야형",
+        self.SUPPORTERPS2 = {"playstyle":"시야형",
         "stats": {'공격': 2, '시야':3 , '군중제어': 2, '성장': 3},
         "explain"  :['시야 점수가 보통입니다',
                     '군중제어가 좀 약합니다'],
@@ -211,7 +224,7 @@ class PlayStyle:
         'champion': {'id':[89, 201, 555]},
         'counter': {'id':[35, 412, 53]}
         }
-        self.DIAMONDSUPPORTERPS3 = {"playstyle":"캐리형",
+        self.SUPPORTERPS3 = {"playstyle":"캐리형",
         "stats": {'공격': 1, '시야': 1, '군중제어': 1, '성장': 4},
         "explain"  :['성장 점수가 높지만 서폿으로써는 좋지 않습니다',
                     '시야점수가 좋지 않습니다'],

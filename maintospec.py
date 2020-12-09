@@ -342,7 +342,7 @@ def getspec(info, Models):
             timeline_events = {}
             for point in feedback_points.keys():
                 # te: timeline event
-                te = timelines[idx]['timeline_data']['frames'][int(point)+1]['events']
+                te = timelines[idx]['timeline_data']['frames'][int(point)]['events']
                 if len(te) == 0: te = 0 # 어떤 event도 발생하지 않은 경우
                 timeline_events[point] = te
             db.store_events(timelines[idx]['gameId'], timeline_events)
