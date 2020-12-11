@@ -76,6 +76,24 @@ def store_events(game_id, events):
     ref = db.reference("events")
     ref.update({str(game_id):events})
 
+def load_pframes(game_id):
+    ref = db.reference("pframes/{}".format(game_id))
+    pframes = ref.get()
+    return pframes
+
+def store_pframes(game_id, pframes):
+    ref = db.reference("pframes")
+    ref.update({str(game_id):pframes})
+
+def load_laneinfo(game_id):
+    ref = db.reference("Lanes/{}".format(game_id))
+    laneInfo = ref.get()
+    return laneInfo
+
+def store_laneinfo(game_id, laneInfoForDb):
+    ref = db.reference("Lanes")
+    ref.update({str(game_id):laneInfoForDb})
+
 def store_timeline_dataframe(game_id, timeline_df):
     timeline_json = eval(timeline_df.to_json(orient="records"))
     ref = db.reference("Timeline DataFrames")
@@ -85,3 +103,12 @@ def load_timeline_dataframe(game_id):
     ref = db.reference("Timeline DataFrames/{}".format(game_id))
     timeline_json = ref.get()
     return timeline_json
+
+def load_target_id(summoner_name, game_id):
+    ref = db.reference("TargetIds/{}/{}".format(summoner_name, game_id))
+    targetId = ref.get()
+    return targetId
+
+def store_target_id(summoner_name, game_id, target_id):
+    ref = db.reference("TargetIds/{}".format(summoner_name))
+    ref.update({str(game_id):target_id})

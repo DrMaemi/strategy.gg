@@ -18,7 +18,7 @@ import spectoanalysis
 app = Flask(__name__)
 CORS(app)
 host_addr = "61.99.75.232"
-api_key = "RGAPI-46a30cd3-e176-4b84-a3fc-b262fa4e3e89"
+api_key = "RGAPI-e895e2ce-9375-4a38-877d-8536b7b24372"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -34,7 +34,7 @@ Models = {
 # load RNN models
 start_time = time.time()
 for tier in tiers:
-    for tl in range(2, 2):
+    for tl in range(2, 46):
         setattr(mod, "{}RNN{}".format(tier, tl), load_model("RNN Classifiers/{0}/{0}{1}".format(tier, tl)))
         #print(eval("{}RNN{}".format(tier, tl)).summary())
         eval("Models['{}']".format(tier)).append(eval("{}RNN{}".format(tier, tl)))
@@ -85,6 +85,9 @@ def specpage():
     try:
         spec = db.load_spec(summoner_name)
         if spec is not None:
+            for matchspec in spec['matchspecs']:
+                try: del matchspec['whenGamePlayed']
+                except: pass
             return spec
     except ValueError:
         return abort(406)
@@ -142,6 +145,6 @@ def regenerate_key(new_key):
     return "True"
 
 if __name__ == "__main__":
-    context = ("APICertificates/strategy.crt", "APICertificates/strategy.key")
+    context = ("APICertificates/server.crt", "APICertificates/server.key")
     app.run(host_addr, port=5000, threaded=True, ssl_context=context)
     #app.run()

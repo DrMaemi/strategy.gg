@@ -148,6 +148,7 @@ def getspec(info, Models):
         for identity in matchinfo['participantIdentities']:
             if identity['player']['summonerName'] == summoner_name:
                 targetId = identity['participantId']
+                db.store_target_id(summoner_name_db, game_id, targetId)
                 break
         if targetId <= 5: # this player belongs to blue team
             team = 0 # blue team
@@ -157,52 +158,57 @@ def getspec(info, Models):
             team = 1 # red team
             if matchinfo['teams'][1]['win'] == 'Win': win = 1
             else: win = 0
+        laneInfoForDb, frames = {}, timeline_data['frames'][3:11]
+        for p_id in range(1, 11): # 해당 게임에 참여한 유저 10명의 라인 정보 조사
+            tmpParticipant = matchinfo['participants'][p_id-1]
+            spell1id, spell2id = tmpParticipant['spell1Id'], tmpParticipant['spell2Id']
+            role = tmpParticipant['role']
+            lane = tmpParticipant['lane']
+            if spell1id == 11 or spell2id == 11:
+                lane = "JUNGLE"
+            else:
+                calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
+                try:
+                    for frame in frames:
+                        participantFrames = frame['participantFrames']
+                        for pfidx in range(1, 11):
+                            pf = participantFrames[str(pfidx)]
+                            if pf['participantId'] == p_id:
+                                x, y = pf['position']['x'], pf['position']['y']
+                                if (x<4000 and y>4000) or (x<11000 and y>11000):
+                                    calPositions['TOP'] += 1
+                                elif (x>4000 and y<4000) or (x>11000 and y<11000):
+                                    calPositions['BOTTOM'] += 1
+                                else:
+                                    calPositions['MID'] += 1
+                                break
+                    posVals = list(calPositions.values())
+                    posKeys = list(calPositions.keys())
+                    lane = posKeys[posVals.index(max(posVals))]
+                except: pass
+                if lane == "BOTTOM":
+                    if role == "DUO_SUPPORT": lane = "SUPPORTER"
+                    else:
+                        csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
+                        if team == 0: # target 유저가 블루팀인 경우
+                            for pidx in range(5):
+                                ptcp = matchinfo['participants'][pidx]
+                                csKilled = ptcp['stats']['totalMinionsKilled']
+                                csList.append(csKilled)
+                        else: # target 유저가 레드팀인 경우
+                            for pidx in range(5, 10):
+                                ptcp = matchinfo['participants'][pidx]
+                                csKilled = ptcp['stats']['totalMinionsKilled']
+                                csList.append(csKilled)
+                        supporterId = csList.index(min(csList))+1
+                        if team == 1: supporterId += 5
+                        if p_id == supporterId: lane = "SUPPORTER"
+            laneInfoForDb[str(p_id)] = lane
+        db.store_laneinfo(game_id, laneInfoForDb)
         targetParticipant = matchinfo['participants'][targetId-1] # json
         spell1id, spell2id = targetParticipant['spell1Id'], targetParticipant['spell2Id']
         role = outline['role']
-        lane = outline['lane']
-        #if lane == "NONE":
-        if spell1id == 11 or spell2id == 11:
-            lane = "JUNGLE"
-        else:
-            calPositions = { "TOP":0, "MID":0, "BOTTOM":0 }
-            frames = timeline_data['frames']
-            frames = frames[3:11]
-            try:
-                for frame in frames:
-                    participantFrames = frame['participantFrames']
-                    for pfidx in range(1, 11):
-                        pf = participantFrames[str(pfidx)]
-                        if pf['participantId'] == targetId:
-                            x, y = pf['position']['x'], pf['position']['y']
-                            if (x<4000 and y>4000) or (x<11000 and y>11000):
-                                calPositions['TOP'] += 1
-                            elif (x>4000 and y<4000) or (x>11000 and y<11000):
-                                calPositions['BOTTOM'] += 1
-                            else:
-                                calPositions['MID'] += 1
-                            break
-                posVals = list(calPositions.values())
-                posKeys = list(calPositions.keys())
-                lane = posKeys[posVals.index(max(posVals))]
-            except: pass
-            if lane == "BOTTOM":
-                if role == "DUO_SUPPORT": lane = "SUPPORTER"
-                else:
-                    csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
-                    if team == 0: # target 유저가 블루팀인 경우
-                        for pidx in range(5):
-                            ptcp = matchinfo['participants'][pidx]
-                            csKilled = ptcp['stats']['totalMinionsKilled']
-                            csList.append(csKilled)
-                    else: # target 유저가 레드팀인 경우
-                        for pidx in range(5, 10):
-                            ptcp = matchinfo['participants'][pidx]
-                            csKilled = ptcp['stats']['totalMinionsKilled']
-                            csList.append(csKilled)
-                    supporterId = csList.index(min(csList))+1
-                    if team == 1: supporterId += 5
-                    if targetId == supporterId: lane = "SUPPORTER"
+        lane = laneInfoForDb[str(targetId)]
         # lane이 정해졌으면, 플레이스타일용 데이터도 저장
         ps_db_features = ps.PlayStyle().ps_db_features
         ps_features = ps.PlayStyle().ps_features
@@ -339,12 +345,17 @@ def getspec(info, Models):
         matchspecs[idx]['feedbacks'] = feedbacks
         db.store_timelinespec(summoner_name_db, matchspecs[idx]['game_id'], timelinespec)
         try:
+            timeline_pframes = {}
             timeline_events = {}
             for point in feedback_points.keys():
+                # pf: timeline participant frmaes
+                pf = timelines[idx]['timeline_data']['frames'][int(point)]['participantFrames']
+                timeline_pframes[point] = pf
                 # te: timeline event
                 te = timelines[idx]['timeline_data']['frames'][int(point)]['events']
                 if len(te) == 0: te = 0 # 어떤 event도 발생하지 않은 경우
                 timeline_events[point] = te
+            db.store_pframes(timelines[idx]['gameId'], timeline_pframes)
             db.store_events(timelines[idx]['gameId'], timeline_events)
         except: pass # feedback_points = 0, 즉 피드백할 내용이 없는 경기인 경우
     try: matchspecs += matchspecs_db[:cutIdx+1]
