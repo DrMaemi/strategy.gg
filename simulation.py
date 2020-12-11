@@ -113,7 +113,7 @@ def before5(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 kill = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 국지전 승리")
+                strategy.append("솔로킬 혹은 소규모 전투 승리")
                 kill = True
         elif tf == "kills_total_minion":
             strategy.append("cs 격차")
@@ -229,7 +229,7 @@ def before8(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 dragon = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 국지전 승리")
+                strategy.append("솔로킬 혹은 소규모 전투 승리")
                 kill = True
         elif tf == "kills_total_minion":
             strategy.append("cs 격차")
@@ -395,7 +395,7 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 tower = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 국지전 승리")
+                strategy.append("솔로킬 혹은 소규모 전투 승리")
                 kill = True
         elif tf == "kills_total_minion":
             strategy.append("cs 격차")
@@ -623,7 +623,7 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     inhibitor = True
         elif tf == "kills":
             if not kill:
-                strategy.append("국지전 혹은 한타 승리")
+                strategy.append("소규모 전투 혹은 한타 승리")
                 kill = True
         elif tf == "kills_total_minion":
             strategy.append("cs 격차")

@@ -108,6 +108,7 @@ def getanalysis(summoner_name, game_id, Models):
         timeline_df = pd.concat([timeline_df, df_row])
     # timeline_df has been made
     events = db.load_events(game_id)
+    target_id = db.load_target_id(summoner_name, game_id)
     for point in points: # npArr[k] = k+1분의 상황 데이터
         # 원인(피드백) 조사
         # npArr[point]: (point+1)분의 상황
@@ -119,11 +120,11 @@ def getanalysis(summoner_name, game_id, Models):
         delta = feedback_points[str(point)]['delta']
         win_rate = feedback_points[str(point)]['win_rate']
         if point < 11: # lane phase, 1 ~ 10 minute
-            feedback = fba.lanephase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
+            feedback = fba.lanephase_analysis(point, target_id, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
         elif point < 21: # transition phase, 11 ~ 20 minute
-            feedback = fba.transphase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
+            feedback = fba.transphase_analysis(point, target_id, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
         else:
-            feedback = fba.tfphase_analysis(point, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
+            feedback = fba.tfphase_analysis(point, target_id, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
         # 타 티어 전략 추천
         # strategies:List<e_strategy>, e_strategy:Json(modelTier:String, strategy:List)
         strategies = getstrategies(tier, point, team_belongs_to, timeline_df, df, Models)
