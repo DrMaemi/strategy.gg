@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import processdb
+import processdb as db
 from refinedata import Metadata
 from sklearn.preprocessing import StandardScaler
 
@@ -43,14 +43,82 @@ class TargetFeatures:
             "total_level", "place_wards", "kills_wards"
         ]
 
-def before5(tier, point, team_belongs_to, timeline_df, df, targetModel):
+def makeCompetsByLane(team_belongs_to, lane_info, target_pframes):
+    competsByLane = {}
+    lanes = ["TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORTER"]
+    for lane in lanes:
+        if team_belongs_to == 0: # 블루팀이 아군
+            for p_id in range(1, 6):
+                if lane_info[p_id-1] == lane:
+                    friendLevel, friendGold = target_pframes[p_id]['level'], target_pframes[p_id]['totalGold']
+                    break
+            for p_id in range(6, 11):
+                if lane_info[p_id-1] == lane:
+                    enemyLevel, enemyGold = target_pframes[p_id]['level'], target_pframes[p_id]['totalGold']
+                    break
+            if lane == "TOP": laneKey = "탑"
+            elif lane == "JUNGLE": laneKey = "정글"
+            elif lane == "MID": laneKey = "미드"
+            elif lane == "BOTTOM": laneKey = "봇"
+            elif lane == "SUPPORTER": laneKey = "서폿"
+            try:
+                if (friendLevel-enemyLevel > 0) and (friendGold-enemyGold > 500): # 아군이 라인전을 이기고 있어..!
+                    competsByLane[laneKey] = 1
+                elif (friendLevel-enemyLevel < 0) and (friendGold-enemyGold < 500): # 아군이 라인전을 지고 있어 ㅜ
+                    competsByLane[laneKey] = -1
+                else: # 애매한데?
+                    competsByLane[laneKey] = 0
+            except: competsByLane[laneKey] = 0
+        else: # 레드팀이 아군
+            for p_id in range(6, 11):
+                if lane_info[p_id-1] == lane:
+                    friendLevel, friendGold = target_pframes[p_id]['level'], target_pframes[p_id]['totalGold']
+                    break
+            for p_id in range(1, 6):
+                if lane_info[p_id-1] == lane:
+                    enemyLevel, enemyGold = target_pframes[p_id]['level'], target_pframes[p_id]['totalGold']
+                    break
+            if lane == "TOP": laneKey = "탑"
+            elif lane == "JUNGLE": laneKey = "정글"
+            elif lane == "MID": laneKey = "미드"
+            elif lane == "BOTTOM": laneKey = "봇"
+            elif lane == "SUPPORTER": laneKey = "서폿"
+            try:
+                if (friendLevel-enemyLevel > 0) and (friendGold-enemyGold > 500): # 아군이 라인전을 이기고 있어..!
+                    competsByLane[laneKey] = 1
+                elif (friendLevel-enemyLevel < 0) and (friendGold-enemyGold < 500): # 아군이 라인전을 지고 있어 ㅜ
+                    competsByLane[laneKey] = -1
+                else: # 애매한데?
+                    competsByLane[laneKey] = 0
+            except: competsByLane[laneKey] = 0
+    return competsByLane
+
+def distinguish_pos(x, y):
+    # TOP
+    if ((y>3000) and (570<x and x<1710)) or ((x<12000) and (13090<y and y<14230)):
+        return "탑"
+    elif ((x>3000) and (570<y and y<1710)) or ((y<12000) and (13090<x and x<14230)):
+        return "봇"
+    elif (2120<x and x<12880) and (y<x+820 and y>x-820):
+        return "미드"
+    else:
+        if y<-x+14180 and y>x+820: result = "블루팀 위쪽 정글"
+        elif y<-x+14180 and y<x-820: result = "블루팀 아래쪽 정글"
+        elif y>-x+15820 and y>x+820: result = "레드팀 위쪽 정글"
+        elif y>-x+15820 and y<x-820: result = "레드팀 아래쪽 정글"
+        else:
+            if y>x: result = "전령/바론 앞"
+            else: result = "용 앞"
+        return result
+
+def before5(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, targetModel):
     strategy = [] # result to return
     tf_b5 = TargetFeatures().tf_b5
     if team_belongs_to == 0: # blue team
         team = "blue"
     else:
         team = "red"
-    statistics = processdb.bringStatistics(tier, point, team)
+    statistics = db.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
     if latestState['first_blood'] == 0: # 아직 퍼블이 발생하지 않은 경우
@@ -104,39 +172,70 @@ def before5(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
     kill = False
+    myLane = lane_info[target_id-1]
     while len(strategy) < 2: # 두 번만 반복, 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b5[twrIdx]
         if tf == "first_blood":
             if not kill:
-                strategy.append("선취점")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 선취점을 가져가도록 노력하세요.")
+                elif myLane == "SUPPORTER":
+                    strategy.append("봇 동선 상 와드 위치를 체크, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 선취점을 가져가도록 노력하세요.")
+                else:
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 선취점을 가져가도록 노력하세요.")
                 kill = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 소규모 전투 승리")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 킬을 하도록 노력하세요. 정글링이 뒤쳐지더라도 킬을 하는 것이 승률에 유리합니다.")
+                elif myLane == "SUPPORTER":
+                    strategy.append("봇 동선 상 와드 위치를 체크, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 라인전을 이기도록 노력하세요.")
+                else:
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 킬을 가져가도록 노력하세요. cs가 뒤쳐지더라도 킬을 하는 것이 승률에 유리합니다.")
                 kill = True
         elif tf == "kills_total_minion":
-            strategy.append("cs 격차")
+            if not kill:
+                if myLane == "JUNGLE":
+                    strategy.append("정글링을 하는 것보다 갱을 시도하는 것이 더 좋습니다. 킬을 하지 못하더라도 상대를 귀환시켜 아군이 cs차이를 내도록 돕는 것이 승률에 유리합니다.")
+                elif myLane == "SUPPORTER":
+                    strategy.append("원딜이 cs를 잘 먹을 수 있도록 보조해주세요. 킬을 하는 것도 좋지만 원딜이 cs격차만 내더라도 승률에 상당히 유리합니다.")
+                else:
+                    strategy.append("킬 하는 것도 좋지만 딜교환을 하며 라인전 우위를 가져가고 cs격차만 내더라도 승률에 상당히 유리합니다.")
+            kill = True
         elif tf == "kills_total_jungle_minion":
-            strategy.append("정글링 격차")
+            if myLane == "JUNGLE":
+                if not kill:
+                    strategy.append("정글링 격차를 내도록 노력하세요. 아군이 적 정글에게 갱킹을 당해 라인에서 손해를 보더라도 정글링을 하는 것이 승률에 유리합니다.")
+                    kill = True
+            elif myLane == "SUPPORTER":
+                strategy.append("맵리딩을 통해 상대 정글의 동선을 파악하세요. 아군 정글이 안전하게 정글링을 하도록 하거나 카정을 할 수 있도록 도와주세요. 정글링 격차가 승률에 유리합니다.")
+            else:
+                strategy.append("라인 주도권을 뺏기지 않도록 노력하세요. 주도권을 가지고 있다면 본인 라인을 통해 아군 정글의 동선을 유도하고 적극적인 카정을 시도하도록 오더하세요. 정글링 격차가 승률에 유리합니다.")
         elif tf == "total_level":
-            strategy.append("성장, 레벨링")
+            strategy.append("라인 관리와 귀환 타이밍 조절을 통해 레벨 성장을 하세요. 단순히 레벨을 높이기만 하더라도 충분히 승률에 유리합니다.")
         elif tf == "place_wards":
-            strategy.append("맵 내 시야 확보")
+            if myLane == "JUNGLE":
+                strategy.append("정글을 돌며 틈틈히 상대 정글 주요 경로에 와드를 해주세요. 시야 확보를 통해 아군의 맵리딩을 돕는 것만으로도 승률에 유리합니다.")
+            else:
+                strategy.append("본인 라인의 갱킹/로밍 주요 경로에 와드를 하세요. 현 시점에서 갱킹/로밍을 방지하는 것만으로도 승률에 유리합니다.")
         elif tf == "kills_wards":
-            strategy.append("적 시야 제거")
+            if myLane == "JUNGLE":
+                strategy.append("갱킹을 시도하며 시야를 제거하세요. 갱킹을 성공시켜도 좋지만 현 시점에서 시야만 제거하더라도 승률에 유리합니다. 갱킹에 실패했더라도 후에 더 좋은 기회를 만들 수 있을겁니다.")
+            else:
+                strategy.append("상대 라이너가 설치한 와드가 있다면 제거하도록 노력하세요. 현 시점에서 시야를 지우고 갱킹/로밍 압박을 가하는 것만으로도 승률에 상당히 유리합니다.")
         del winrate_var[twrIdx]
         del tf_b5[twrIdx]
     return strategy
 
-def before8(tier, point, team_belongs_to, timeline_df, df, targetModel):
+def before8(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, targetModel):
     strategy = [] # result to return
     tf_b8 = TargetFeatures().tf_b8
     if team_belongs_to == 0: # blue team
         team = "blue"
     else:
         team = "red"
-    statistics = processdb.bringStatistics(tier, point, team)
+    statistics = db.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
     # 퍼블 검사
@@ -216,42 +315,192 @@ def before8(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
     kill, dragon = False, False
+    myLane = lane_info[target_id-1]
+    competsByLane = makeCompetsByLane(team_belongs_to, lane_info, target_pframes)
+    favorableLanes, unfavorableLanes, nTnLanes = [], [], []
+    for lane, value in competsByLane.items():
+        if value == 1: favorableLanes.append(lane)
+        elif value == -1: unfavorableLanes.append(lane)
+        else: nTnLanes.append(lane)
+    numFavorableLanes = len(favorableLanes)
+    numUnfavorableLanes = len(unfavorableLanes)
+    numNTNLanes = len(nTnLanes)
     while len(strategy) < 2: # 두 번만 반복, 가장 영향 높은 feature 두개 선정
-        twrIdx = winrate_var.index(max(winrate_var))
+        twrIdx = winrate_var.index(max(winrate_var)) # target win rate index
         tf = tf_b8[twrIdx]
         if tf == "first_blood":
             if not kill:
-                strategy.append("선취점")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 선취점을 가져가도록 노력하세요.")
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                    if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                    if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    if numFavorableLanes == 0 and numNTNLanes < 2:
+                        strategy.append("모든 라인전이 열세라 갱킹이 힘들 수 있습니다. 냉정하게 판단하여 갱킹을 시도하세요.")
+                    elif numFavorableLanes != 0 and numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 우세하고, {} 라인이 열세입니다. 보통 우세한 라인을 갱킹하는 것이 게임을 풀어나가기 쉽습니다.".format(copiedFavorableLanes, copiedUnfavorableLanes))
+                    elif numUnfavorableLanes == 0:
+                        strategy.append("모든 라인이 무난하게 라인전을 진행하고 있습니다. 기회가 되는 대로 갱킹을 시도해보세요.")
+                elif myLane == "SUPPORTER":
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    strategy.append("맵 전반적 아군/적의 시야를 파악하고, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 선취점을 가져가도록 노력하세요.")
+                    if "정글" in favorableLanes:
+                        strategy.append("아군 정글이 적 정글보다 우세합니다. 아군 정글이 봇 동선을 자주 이용한다면 함께 다니며 정글 시야를 장악하고 게임을 풀어가세요.")
+                    if numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 지고있군요. 이 타이밍에 정글과 협동하여 로밍을 시도한다면 상대가 예측하기 쉽지 않습니다. 로밍을 시도하여 게임을 풀어가보세요.".format(copiedUnfavorableLanes))
+                else:
+                    if myLane == "TOP": laneKey = "탑"
+                    elif myLane == "MID": laneKey = "미드"
+                    elif myLane == "BOTTOM": laneKey = "봇"
+                    if laneKey in favorableLanes:
+                        strategy.append("라인전을 이기고 있네요.")                    
+                    elif laneKey in unfavorableLanes:
+                        strategy.append("라인전을 지고있군요. 적 정글의 갱킹을 조심하세요. 상대방의 무리한 플레이나 포탑 다이브를 노리세요.")
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 선취점을 가져가도록 노력하세요.")
                 kill = True
         elif tf == "first_dragon":
             if not dragon:
-                strategy.append("첫 용 선점")
+                numFavorableLanes = len(favorableLanes)
+                numUnfavorableLanes = len(unfavorableLanes)
+                numNTNLanes = len(nTnLanes)
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                    strategy.append("즉시 용 처치를 시도하여 첫 용을 선점하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                    strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                else:
+                    strategy.append("용 주변 시야를 장악하고 첫 용 선점을 위해 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                strategy.append("첫 용 선점이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 소규모 전투 승리")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 킬을 하도록 노력하세요.")
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                    if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                    if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    if numFavorableLanes == 0 and numNTNLanes < 2:
+                        strategy.append("모든 라인전이 열세라 갱킹이 힘들 수 있습니다. 냉정하게 판단하여 갱킹을 시도하세요.")
+                    elif numFavorableLanes != 0 and numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 우세하고, {} 라인이 열세입니다. 보통 우세한 라인을 갱킹하는 것이 게임을 풀어나가기 쉽습니다.".format(copiedFavorableLanes, copiedUnfavorableLanes))
+                    elif numUnfavorableLanes == 0:
+                        strategy.append("모든 라인이 무난하게 라인전을 진행하고 있습니다. 기회가 되는 대로 갱킹을 시도해보세요.")
+                elif myLane == "SUPPORTER":
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    strategy.append("맵 전반적 아군/적의 시야를 파악하고, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 킬을 하도록 노력하세요.")
+                    if "정글" in favorableLanes:
+                        strategy.append("아군 정글이 적 정글보다 우세합니다. 아군 정글이 봇 동선을 자주 이용한다면 함께 다니며 정글 시야를 장악하고 게임을 풀어가세요.")
+                    if numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 지고있군요. 이 타이밍에 정글과 협동하여 로밍을 시도한다면 상대가 예측하기 쉽지 않습니다. 로밍을 시도하여 게임을 풀어가보세요.".format(copiedUnfavorableLanes))
+                else:
+                    if myLane == "TOP": laneKey = "탑"
+                    elif myLane == "MID": laneKey = "미드"
+                    elif myLane == "BOTTOM": laneKey = "봇"
+                    if laneKey in favorableLanes:
+                        strategy.append("라인전을 이기고 있네요.")                    
+                    elif laneKey in unfavorableLanes:
+                        strategy.append("라인전을 지고있군요. 적 정글의 갱킹을 조심하세요. 상대방의 무리한 플레이나 포탑 다이브를 노리세요.")
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 킬을 하도록 노력하세요.")
                 kill = True
         elif tf == "kills_total_minion":
-            strategy.append("cs 격차")
+            if not kill:
+                if myLane == "JUNGLE":
+                    strategy.append("정글링을 하는 것보다 갱을 시도하는 것이 더 좋습니다. 킬을 하지 못하더라도 상대를 귀환시켜 아군이 cs차이를 내도록 돕는 것이 승률에 유리합니다.")
+                elif myLane == "SUPPORTER":
+                    strategy.append("원딜이 cs를 잘 먹을 수 있도록 보조해주세요. 킬을 하는 것도 좋지만 원딜이 cs격차만 내더라도 승률에 상당히 유리합니다.")
+                else:
+                    strategy.append("킬 하는 것도 좋지만 딜교환을 하며 라인전 우위를 가져가고 cs격차만 내더라도 승률에 상당히 유리합니다.")
+            kill = True
         elif tf == "kills_total_jungle_minion":
-            strategy.append("정글링 격차")
+            if myLane == "JUNGLE":
+                if not kill:
+                    strategy.append("정글링 격차를 내도록 노력하세요. 아군이 적 정글에게 갱킹을 당해 라인에서 손해를 보더라도 정글링을 하는 것이 승률에 유리합니다.")
+                    kill = True
+            elif myLane == "SUPPORTER":
+                strategy.append("맵리딩을 통해 상대 정글의 동선을 파악하세요. 아군 정글이 안전하게 정글링을 하도록 하거나 카정을 할 수 있도록 도와주세요. 정글링 격차가 승률에 유리합니다.")
+            else:
+                strategy.append("라인 주도권을 뺏기지 않도록 노력하세요. 주도권을 가지고 있다면 본인 라인을 통해 아군 정글의 동선을 유도하고 적극적인 카정을 시도하도록 오더하세요. 정글링 격차가 승률에 유리합니다.")
         elif tf == "total_dragons":
             if not dragon:
-                strategy.append("즉시 용 처치 시도")
+                numFavorableLanes = len(favorableLanes)
+                numUnfavorableLanes = len(unfavorableLanes)
+                numNTNLanes = len(nTnLanes)
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                    strategy.append("즉시 용 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                    strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                else:
+                    strategy.append("용 주변 시야를 장악하고 용싸움을 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "total_level":
-            strategy.append("성장, 레벨링")
+            strategy.append("라인 관리와 귀환 타이밍 조절을 통해 레벨 성장을 하세요. 단순히 레벨을 높이기만 하더라도 충분히 승률에 유리합니다.")
         elif tf == "tower_shield":
-            strategy.append("아무 공격로 압박 및 포탑 방패 제거")
+            copiedFavorableLanes = favorableLanes.copy()
+            copiedUnfavorableLanes = unfavorableLanes.copy()
+            copiedNTNLanes = nTnLanes.copy()
+            if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+            if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+            if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+            if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+            if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+            if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+            numFavorableLanes = len(copiedFavorableLanes)
+            numUnfavorableLanes = len(copiedUnfavorableLanes)
+            numNTNLanes = len(copiedNTNLanes)
+            if numFavorableLanes != 0:
+                strategy.append("유리한 {} 라인을 압박하고 포탑 방패 골드를 획득하세요.".format(copiedFavorableLanes))
+            else:
+                strategy.append("철저한 라인 관리로 상대에게 포탑 방패 골드를 획득하지 못하도록 방해하세요.")
+            strategy.append("포탑 방패 골드가 승률에 큰 영향을 줍니다.")
         elif tf == "place_wards":
-            strategy.append("맵 내 시야 확보")
+            if myLane == "JUNGLE":
+                strategy.append("정글을 돌며 틈틈히 상대 정글 주요 경로에 와드를 해주세요. 시야 확보를 통해 아군의 맵리딩을 돕는 것만으로도 승률에 유리합니다.")
+            else:
+                strategy.append("본인 라인의 갱킹/로밍 주요 경로에 와드를 하세요. 현 시점에서 갱킹/로밍을 방지하는 것만으로도 승률에 유리합니다.")
         elif tf == "kills_wards":
-            strategy.append("적 시야 제거")
+            if myLane == "JUNGLE":
+                strategy.append("갱킹을 시도하며 시야를 제거하세요. 갱킹을 성공시켜도 좋지만 현 시점에서 시야만 제거하더라도 승률에 유리합니다. 갱킹에 실패했더라도 후에 더 좋은 기회를 만들 수 있을겁니다.")
+            else:
+                strategy.append("상대 라이너가 설치한 와드가 있다면 제거하도록 노력하세요. 현 시점에서 시야를 지우고 갱킹/로밍 압박을 가하는 것만으로도 승률에 상당히 유리합니다.")
         del winrate_var[twrIdx]
         del tf_b8[twrIdx]
     return strategy
         
-def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
+def before14(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, targetModel):
     strategy = [] # result to return
     tf_b14 = TargetFeatures().tf_b14
     if team_belongs_to == 0: # blue team
@@ -264,7 +513,7 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
         topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
         midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
         botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
-    statistics = processdb.bringStatistics(tier, point, team)
+    statistics = db.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
     # 퍼블 검사
@@ -378,29 +627,163 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
     kill, dragon, tower = False, False, False
+    myLane = lane_info[target_id-1]
+    competsByLane = makeCompetsByLane(team_belongs_to, lane_info, target_pframes)
+    favorableLanes, unfavorableLanes, nTnLanes = [], [], []
+    for lane, value in competsByLane.items():
+        if value == 1: favorableLanes.append(lane)
+        elif value == -1: unfavorableLanes.append(lane)
+        else: nTnLanes.append(lane)
+    numFavorableLanes = len(favorableLanes)
+    numUnfavorableLanes = len(unfavorableLanes)
+    numNTNLanes = len(nTnLanes)
     while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b14[twrIdx]
         if tf == "first_blood":
             if not kill:
-                strategy.append("선취점")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 선취점을 가져가도록 노력하세요.")
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                    if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                    if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    if numFavorableLanes == 0 and numNTNLanes < 2:
+                        strategy.append("모든 라인전이 열세라 갱킹이 힘들 수 있습니다. 냉정하게 판단하여 갱킹을 시도하세요.")
+                    elif numFavorableLanes != 0 and numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 우세하고, {} 라인이 열세입니다. 보통 우세한 라인을 갱킹하는 것이 게임을 풀어나가기 쉽습니다.".format(copiedFavorableLanes, copiedUnfavorableLanes))
+                    elif numUnfavorableLanes == 0:
+                        strategy.append("모든 라인이 무난하게 라인전을 진행하고 있습니다. 기회가 되는 대로 갱킹을 시도해보세요.")
+                elif myLane == "SUPPORTER":
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    strategy.append("맵 전반적 아군/적의 시야를 파악하고, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 선취점을 가져가도록 노력하세요.")
+                    if "정글" in favorableLanes:
+                        strategy.append("아군 정글이 적 정글보다 우세합니다. 아군 정글이 봇 동선을 자주 이용한다면 함께 다니며 정글 시야를 장악하고 게임을 풀어가세요.")
+                    if numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 지고있군요. 이 타이밍에 정글과 협동하여 로밍을 시도한다면 상대가 예측하기 쉽지 않습니다. 로밍을 시도하여 게임을 풀어가보세요.".format(copiedUnfavorableLanes))
+                else:
+                    if myLane == "TOP": laneKey = "탑"
+                    elif myLane == "MID": laneKey = "미드"
+                    elif myLane == "BOTTOM": laneKey = "봇"
+                    if laneKey in favorableLanes:
+                        strategy.append("라인전을 이기고 있네요.")                    
+                    elif laneKey in unfavorableLanes:
+                        strategy.append("라인전을 지고있군요. 적 정글의 갱킹을 조심하세요. 상대방의 무리한 플레이나 포탑 다이브를 노리세요.")
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 선취점을 가져가도록 노력하세요.")
                 kill = True
         elif tf == "first_dragon":
             if not dragon:
-                strategy.append("첫 용 선점")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                    strategy.append("즉시 용 처치를 시도하여 첫 용을 선점하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                    strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                else:
+                    strategy.append("용 주변 시야를 장악하고 첫 용 선점을 위해 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                strategy.append("첫 용 선점이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "first_tower":
             if not tower:
-                strategy.append("공격로 압박 및 포탑 방패 제거, 첫 포탑 파괴")
+                copiedFavorableLanes = favorableLanes.copy()
+                copiedUnfavorableLanes = unfavorableLanes.copy()
+                copiedNTNLanes = nTnLanes.copy()
+                if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                numFavorableLanes = len(copiedFavorableLanes)
+                numUnfavorableLanes = len(copiedUnfavorableLanes)
+                numNTNLanes = len(copiedNTNLanes)
+                if numFavorableLanes != 0:
+                    strategy.append("유리한 {} 라인에 힘을 실어주어 포탑 방패를 제거하고 첫 포탑을 파괴하세요. 자기 포지션을 고집하는 것보다 첫 포탑을 먼저 파괴하는 것이 승률에 유리합니다.".format(copiedFavorableLanes))
+                else:
+                    if myLane == "JUNGLE":
+                        strategy.append("상대가 먼저 첫 포탑 파괴를 선점하지 않도록 라이너들을 도와주세요. 당장의 갱킹이나 정글링보다 첫 포탑 파괴 선점이 승률에 유리합니다.")
+                    else:
+                        strategy.append("라인전에 더욱 집중하여 상대가 먼저 첫 포탑 파괴를 선점하지 않도록 하고, 상대 라이너가 라인을 떠날 때를 기회삼아 첫 포탑 파괴를 선점하도록 노력하세요. 합류하는 것보다 첫 포탑 파괴 선점이 승률에 더 유리할 수 있습니다.")
                 tower = True
         elif tf == "kills":
             if not kill:
-                strategy.append("솔로킬 혹은 소규모 전투 승리")
+                if myLane == "JUNGLE":
+                    strategy.append("효율적인 정글 동선으로 공격로에 도움을 주거나 카정을 통해 킬을 하도록 노력하세요.")
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                    if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                    if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    if numFavorableLanes == 0 and numNTNLanes < 2:
+                        strategy.append("모든 라인전이 열세라 갱킹이 힘들 수 있습니다. 냉정하게 판단하여 갱킹을 시도하세요.")
+                    elif numFavorableLanes != 0 and numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 우세하고, {} 라인이 열세입니다. 보통 우세한 라인을 갱킹하는 것이 게임을 풀어나가기 쉽습니다.".format(copiedFavorableLanes, copiedUnfavorableLanes))
+                    elif numUnfavorableLanes == 0:
+                        strategy.append("모든 라인이 무난하게 라인전을 진행하고 있습니다. 기회가 되는 대로 갱킹을 시도해보세요.")
+                elif myLane == "SUPPORTER":
+                    copiedFavorableLanes = favorableLanes.copy()
+                    copiedUnfavorableLanes = unfavorableLanes.copy()
+                    copiedNTNLanes = nTnLanes.copy()
+                    if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                    if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                    if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                    numFavorableLanes = len(copiedFavorableLanes)
+                    numUnfavorableLanes = len(copiedUnfavorableLanes)
+                    numNTNLanes = len(copiedNTNLanes)
+                    strategy.append("맵 전반적 아군/적의 시야를 파악하고, 정글이 봇을 들를 경우 어느 경로로 와야 하는지 알려주세요. 원딜과 호흡을 맞추어 킬을 하도록 노력하세요.")
+                    if "정글" in favorableLanes:
+                        strategy.append("아군 정글이 적 정글보다 우세합니다. 아군 정글이 봇 동선을 자주 이용한다면 함께 다니며 정글 시야를 장악하고 게임을 풀어가세요.")
+                    if numUnfavorableLanes != 0:
+                        strategy.append("{} 라인이 지고있군요. 이 타이밍에 정글과 협동하여 로밍을 시도한다면 상대가 예측하기 쉽지 않습니다. 로밍을 시도하여 게임을 풀어가보세요.".format(unfavorableLanes))
+                else:
+                    if myLane == "TOP": laneKey = "탑"
+                    elif myLane == "MID": laneKey = "미드"
+                    elif myLane == "BOTTOM": laneKey = "봇"
+                    if laneKey in favorableLanes:
+                        strategy.append("라인전을 이기고 있네요.")                    
+                    elif laneKey in unfavorableLanes:
+                        strategy.append("라인전을 지고있군요. 적 정글의 갱킹을 조심하세요. 상대방의 무리한 플레이나 포탑 다이브를 노리세요.")
+                    strategy.append("cs에 집중하는 것도 좋지만 딜교환에 더 집중하고 킬을 하도록 노력하세요.")
                 kill = True
         elif tf == "kills_total_minion":
-            strategy.append("cs 격차")
+            if not kill:
+                if myLane == "JUNGLE":
+                    strategy.append("정글링을 하는 것보다 갱을 시도하는 것이 더 좋습니다. 킬을 하지 못하더라도 상대를 귀환시켜 아군이 cs차이를 내도록 돕는 것이 승률에 유리합니다.")
+                elif myLane == "SUPPORTER":
+                    strategy.append("원딜이 cs를 잘 먹을 수 있도록 보조해주세요. 킬을 하는 것도 좋지만 원딜이 cs격차만 내더라도 승률에 상당히 유리합니다.")
+                else:
+                    strategy.append("킬 하는 것도 좋지만 딜교환을 하며 라인전 우위를 가져가고 cs격차만 내더라도 승률에 상당히 유리합니다.")
+            kill = True
         elif tf == "kills_total_jungle_minion":
-            strategy.append("정글링 격차")
+            if myLane == "JUNGLE":
+                if not kill:
+                    strategy.append("정글링 격차를 내도록 노력하세요. 아군이 적 정글에게 갱킹을 당해 라인에서 손해를 보더라도 정글링을 하는 것이 승률에 유리합니다.")
+                    kill = True
+            elif myLane == "SUPPORTER":
+                strategy.append("맵리딩을 통해 상대 정글의 동선을 파악하세요. 아군 정글이 안전하게 정글링을 하도록 하거나 카정을 할 수 있도록 도와주세요. 정글링 격차가 승률에 유리합니다.")
+            else:
+                strategy.append("라인 주도권을 뺏기지 않도록 노력하세요. 주도권을 가지고 있다면 본인 라인을 통해 아군 정글의 동선을 유도하고 적극적인 카정을 시도하도록 오더하세요. 정글링 격차가 승률에 유리합니다.")
         elif tf == "total_dragons":
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
@@ -411,47 +794,81 @@ def before14(tier, point, team_belongs_to, timeline_df, df, targetModel):
                         toWait = idx+1
                         break
                 if isDragonAlive:
-                    strategy.append("즉시 용 처치 시도")
+                    if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                        strategy.append("즉시 용 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                    elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                        strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                    else:
+                        strategy.append("용 주변 시야를 장악하고 용싸움을 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                    strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
-                    strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
-                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
-                strategy.append("상단 공격로 압박 및 포탑 방패 제거, 포탑 파괴")
+                #if myLane == "TOP":
+                if "탑" in favorableLanes:
+                    strategy.append("탑 라인전 상황이 유리하네요. 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                #else:
+                    #if "탑" in favorableLanes:
+                        #strategy.append("탑 라인전 상황이 유리하네요. 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("상단 공격로 2, 3차 포탑 압박")
+                strategy.append("상단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_mid_towers":
             if midTowerKills == 0:
-                strategy.append("중단 공격로 압박 및 포탑 방패 제거, 포탑 파괴")
+                if "미드" in favorableLanes:
+                    strategy.append("미드 라인전 상황이 유리하네요. 중단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 중단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("중단 공격로 2, 3차 포탑 압박")
+                strategy.append("중단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_bot_towers":
             if botTowerKills == 0:
-                strategy.append("하단 공격로 압박 및 포탑 방패 제거, 포탑 파괴")
+                if "봇" in favorableLanes:
+                    strategy.append("봇 라인전 상황이 유리하네요. 하단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 하단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("하단 공격로 2, 3차 포탑 압박")
+                strategy.append("하단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "rift_heralds":
-            strategy.append("전령 처치")
+            if len(favorableLanes) < 2:
+                strategy.append("다른 곳에서 손해를 보더라도 전령을 처치하는 것이 승률에 더 유리할 수 있습니다.")
+            else:
+                strategy.append("기회가 된다면 전령 처치를 시도하세요. 전령을 처치하는 것이 승률에 유리합니다.")
         elif tf == "total_level":
-            strategy.append("성장, 레벨링")
+            strategy.append("라인 관리와 귀환 타이밍 조절을 통해 레벨 성장을 하세요. 단순히 레벨을 높이기만 하더라도 충분히 승률에 유리합니다.")
         elif tf == "tower_shield":
             if not tower:
-                strategy.append("아무 공격로 압박 및 포탑 방패 제거")
+                strategy.append("기회가 되는대로 어떤 공격로든 압박을 시도하고 포탑 방패 골드를 획득하세요. 포탑 방패 골드를 얻는 것이 승률에 크게 기여할 수 있습니다.")
                 tower = True
         elif tf == "place_wards":
-            strategy.append("맵 내 시야 확보")
+            if myLane == "JUNGLE":
+                strategy.append("정글을 돌며 틈틈히 상대 정글 주요 경로에 와드를 해주세요. 시야 확보를 통해 아군의 맵리딩을 돕는 것만으로도 승률에 유리합니다.")
+            else:
+                strategy.append("본인 라인의 갱킹/로밍 주요 경로에 와드를 하세요. 현 시점에서 갱킹/로밍을 방지하는 것만으로도 승률에 유리합니다.")
         elif tf == "kills_wards":
-            strategy.append("적 시야 제거")
+            if myLane == "JUNGLE":
+                strategy.append("갱킹을 시도하며 시야를 제거하세요. 갱킹을 성공시켜도 좋지만 현 시점에서 시야만 제거하더라도 승률에 유리합니다. 갱킹에 실패했더라도 후에 더 좋은 기회를 만들 수 있을겁니다.")
+            else:
+                strategy.append("상대 라이너가 설치한 와드가 있다면 제거하도록 노력하세요. 현 시점에서 시야를 지우고 갱킹/로밍 압박을 가하는 것만으로도 승률에 상당히 유리합니다.")
         del winrate_var[twrIdx]
         del tf_b14[twrIdx]
     return strategy
 
-def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
+def before20(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, targetModel):
     strategy = [] # result to return
     tf_b20 = TargetFeatures().tf_b20
     if team_belongs_to == 0: # blue team
@@ -464,7 +881,7 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
         midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
         botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
-    statistics = processdb.bringStatistics(tier, point, team)
+    statistics = db.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
     # 퍼블 검사
@@ -595,6 +1012,16 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
     kill, dragon, tower, inhibitor = False, False, False, False
+    myLane = lane_info[target_id-1]
+    competsByLane = makeCompetsByLane(team_belongs_to, lane_info, target_pframes)
+    favorableLanes, unfavorableLanes, nTnLanes = [], [], []
+    for lane, value in competsByLane.items():
+        if value == 1: favorableLanes.append(lane)
+        elif value == -1: unfavorableLanes.append(lane)
+        else: nTnLanes.append(lane)
+    numFavorableLanes = len(favorableLanes)
+    numUnfavorableLanes = len(unfavorableLanes)
+    numNTNLanes = len(nTnLanes)
     while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_b20[twrIdx]
@@ -604,11 +1031,35 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 kill = True
         elif tf == "first_dragon":
             if not dragon:
-                strategy.append("첫 용 선점")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                    strategy.append("즉시 용 처치를 시도하여 첫 용을 선점하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                    strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                else:
+                    strategy.append("용 주변 시야를 장악하고 첫 용 선점을 위해 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                strategy.append("첫 용 선점이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "first_tower":
             if not tower:
-                strategy.append("첫 포탑 파괴")
+                copiedFavorableLanes = favorableLanes.copy()
+                copiedUnfavorableLanes = unfavorableLanes.copy()
+                copiedNTNLanes = nTnLanes.copy()
+                if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                numFavorableLanes = len(copiedFavorableLanes)
+                numUnfavorableLanes = len(copiedUnfavorableLanes)
+                numNTNLanes = len(copiedNTNLanes)
+                if numFavorableLanes != 0:
+                    strategy.append("유리한 {} 라인에 힘을 실어주어 포탑 방패를 제거하고 첫 포탑을 파괴하세요. 자기 포지션을 고집하는 것보다 첫 포탑을 먼저 파괴하는 것이 승률에 유리합니다.".format(copiedFavorableLanes))
+                else:
+                    if myLane == "JUNGLE":
+                        strategy.append("상대가 먼저 첫 포탑 파괴를 선점하지 않도록 라이너들을 도와주세요. 당장의 갱킹이나 정글링보다 첫 포탑 파괴 선점이 승률에 유리합니다.")
+                    else:
+                        strategy.append("라인 관리를 해서 상대가 먼저 첫 포탑 파괴를 선점하지 않도록 하고, 다른 라인의 우위를 가늠하여 로밍을 시도해보세요. 첫 포탑을 먼저 파괴하는 것이 승률에 유리합니다.")
                 tower = True
         elif tf == "first_inhibitor":
             if not inhibitor:
@@ -623,12 +1074,24 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     inhibitor = True
         elif tf == "kills":
             if not kill:
-                strategy.append("소규모 전투 혹은 한타 승리")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2:
+                    strategy.append("소규모 전투 혹은 한타를 적극적으로 시도하고 킬을 가져가도록 노력하세요. 충분히 유리하기 때문에 전투가 유리하게 진행될 가능성이 높습니다.")
+                elif numUnfavorableLanes > 2:
+                    strategy.append("전반적으로 지고있어 소규모 전투 혹은 한타에서 유리하게 전투를 진행할 가능성이 낮지만, 상대방의 실수를 노려 최대한 이득을 보려 노력하세요. 현재 상태를 유지할 수만 있어도 승률에 유리합니다.")
+                else:
+                    strategy.append("소규모 전투 혹은 한타를 시도하고 킬을 가져가도록 노력하세요. 킬을 따내는 것이 승률에 유리합니다.")
                 kill = True
         elif tf == "kills_total_minion":
-            strategy.append("cs 격차")
+            strategy.append("라인 관리를 통해 cs 격차를 내도록 노력하세요. 현 시점에서 cs만 잘 관리해도 승률에 유리합니다.")
         elif tf == "kills_total_jungle_minion":
-            strategy.append("정글링 격차")
+            if myLane == "JUNGLE":
+                if not kill:
+                    strategy.append("정글링 격차를 내도록 노력하세요. 아군이 적 정글에게 갱킹을 당해 라인에서 손해를 보더라도 정글링을 하는 것이 승률에 유리합니다.")
+                    kill = True
+            elif myLane == "SUPPORTER":
+                strategy.append("맵리딩을 통해 상대 정글의 동선을 파악하세요. 아군 정글이 안전하게 정글링을 하도록 하거나 카정을 할 수 있도록 도와주세요. 정글링 격차가 승률에 유리합니다.")
+            else:
+                strategy.append("라인 주도권을 뺏기지 않도록 노력하세요. 주도권을 가지고 있다면 본인 라인을 통해 아군 정글의 동선을 유도하고 적극적인 카정을 시도하도록 오더하세요. 기회가 된다면 적 정글에 들어가 직접 카정을 시도하세요. 정글링 격차가 승률에 유리합니다.")
         elif tf == "total_dragons":
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
@@ -639,31 +1102,54 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                         toWait = idx+1
                         break
                 if isDragonAlive:
-                    strategy.append("즉시 용 처치 시도")
+                    if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                        strategy.append("즉시 용 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                    elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                        strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                    else:
+                        strategy.append("용 주변 시야를 장악하고 용싸움을 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                    strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
-                    strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
-                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
-                strategy.append("상단 공격로 1차 포탑 파괴")
+                #if myLane == "TOP":
+                if "탑" in favorableLanes:
+                    strategy.append("탑 라인전 상황이 유리하네요. 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                #else:
+                    #if "탑" in favorableLanes:
+                        #strategy.append("탑 라인전 상황이 유리하네요. 상단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("상단 공격로 2, 3차 포탑 파괴")
+                strategy.append("상단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_mid_towers":
             if midTowerKills == 0:
-                strategy.append("중단 공격로 1차 포탑 파괴")
-            elif midTowerKills == 1 or midTowerKills == 2:
-                strategy.append("중단 공격로 2, 3차 포탑 파괴")
+                if "미드" in favorableLanes:
+                    strategy.append("미드 라인전 상황이 유리하네요. 중단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 중단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("넥서스 포탑 파괴")
+                strategy.append("중단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_bot_towers":
             if botTowerKills == 0:
-                strategy.append("하단 공격로 1차 포탑 파괴")
+                if "봇" in favorableLanes:
+                    strategy.append("봇 라인전 상황이 유리하네요. 하단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 기회가 되는대로 포탑을 파괴하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
+                else:
+                    strategy.append("기회가 있을 때마다 하단 공격로를 압박하고 포탑 방패 골드를 획득하세요. 포탑을 파괴하려 노력하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             else:
-                strategy.append("하단 공격로 2, 3차 포탑 파괴")
+                strategy.append("하단 공격로 2, 3차 포탑을 압박하세요. 때론 합류보다 포탑을 파괴하는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_inhibitors":
             if not inhibitor:
@@ -676,18 +1162,27 @@ def before20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                 strategy.append("{} 억제기 파괴".format(targetInhibitors))
                 inhibitor = True
         elif tf == "rift_heralds":
-            strategy.append("전령 처치")
+            if len(favorableLanes) < 2:
+                strategy.append("다른 곳에서 손해를 보더라도 전령을 처치하는 것이 승률에 더 유리할 수 있습니다.")
+            else:
+                strategy.append("기회가 된다면 전령 처치를 시도하세요. 전령을 처치하는 것이 승률에 유리합니다.")
         elif tf == "total_level":
-            strategy.append("성장, 레벨링")
+            strategy.append("라인 관리와 귀환 타이밍 조절을 통해 레벨 성장을 하세요. 단순히 레벨을 높이기만 하더라도 충분히 승률에 유리합니다.")
         elif tf == "place_wards":
-            strategy.append("맵 내 시야 확보")
+            if myLane == "JUNGLE":
+                strategy.append("정글을 돌며 틈틈히 상대 정글 주요 경로에 와드를 해주세요. 시야 확보를 통해 아군의 맵리딩을 돕는 것만으로도 승률에 유리합니다.")
+            else:
+                strategy.append("본인 라인의 갱킹/로밍 주요 경로에 와드를 하세요. 현 시점에서 갱킹/로밍을 방지하는 것만으로도 승률에 유리합니다.")
         elif tf == "kills_wards":
-            strategy.append("맵 내 적 시야")
+            if myLane == "JUNGLE":
+                strategy.append("갱킹을 시도하며 시야를 제거하세요. 갱킹을 성공시켜도 좋지만 현 시점에서 시야만 제거하더라도 승률에 유리합니다. 갱킹에 실패했더라도 후에 더 좋은 기회를 만들 수 있을겁니다.")
+            else:
+                strategy.append("상대 라이너가 설치한 와드가 있다면 제거하도록 노력하세요. 현 시점에서 시야를 지우고 갱킹/로밍 압박을 가하는 것만으로도 승률에 상당히 유리합니다.")
         del winrate_var[twrIdx]
         del tf_b20[twrIdx]
     return strategy
 
-def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
+def after20(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, targetModel):
     strategy = [] # result to return
     tf_after = TargetFeatures().tf_after
     if team_belongs_to == 0: # blue team
@@ -700,7 +1195,7 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         topTowerKills = list(timeline_df['redTopTowerKills'])[point-1]
         midTowerKills = list(timeline_df['redMidTowerKills'])[point-1]
         botTowerKills = list(timeline_df['redBotTowerKills'])[point-1]
-    statistics = processdb.bringStatistics(tier, point, team)
+    statistics = db.bringStatistics(tier, point, team)
     winrate_var = []
     latestState = df.iloc[-1] # Pandas Series
     # 퍼블 검사
@@ -845,20 +1340,53 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
         else:
             winrate_var.append(targetModel.predict(simul)[0][1])
     kill, dragon, tower, inhibitor, baron = False, False, False, False, False
+    myLane = lane_info[target_id-1]
+    competsByLane = makeCompetsByLane(team_belongs_to, lane_info, target_pframes)
+    favorableLanes, unfavorableLanes, nTnLanes = [], [], []
+    for lane, value in competsByLane.items():
+        if value == 1: favorableLanes.append(lane)
+        elif value == -1: unfavorableLanes.append(lane)
+        else: nTnLanes.append(lane)
+    numFavorableLanes = len(favorableLanes)
+    numUnfavorableLanes = len(unfavorableLanes)
+    numNTNLanes = len(nTnLanes)
     while len(strategy) < 2: # 가장 영향 높은 feature 두개 선정
         twrIdx = winrate_var.index(max(winrate_var))
         tf = tf_after[twrIdx]
         if tf == "first_blood":
             if not kill:
-                strategy.append("선취점")
+                strategy.append("선취점이 아직 안나왔군요. 선취점을 가져가도록 노력해보세요.")
                 kill = True
         elif tf == "first_dragon":
             if not dragon:
-                strategy.append("첫 용 선점")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                    strategy.append("즉시 용 처치를 시도하여 첫 용을 선점하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다. 첫 용 선점이 승률에 큰 영향을 줍니다.")
+                elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                    strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다. 첫 용 선점이 승률에 큰 영향을 줍니다.")
+                else:
+                    strategy.append("용 주변 시야를 장악하고 첫 용 선점을 위해 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다. 첫 용 선점이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "first_tower":
             if not tower:
-                strategy.append("첫 포탑 파괴")
+                copiedFavorableLanes = favorableLanes.copy()
+                copiedUnfavorableLanes = unfavorableLanes.copy()
+                copiedNTNLanes = nTnLanes.copy()
+                if "정글" in favorableLanes: copiedFavorableLanes.remove("정글")
+                if "정글" in unfavorableLanes: copiedUnfavorableLanes.remove("정글")
+                if "정글" in nTnLanes: copiedNTNLanes.remove("정글")
+                if "서폿" in favorableLanes: copiedFavorableLanes.remove("서폿")
+                if "서폿" in unfavorableLanes: copiedUnfavorableLanes.remove("서폿")
+                if "서폿" in nTnLanes: copiedNTNLanes.remove("서폿")
+                numFavorableLanes = len(copiedFavorableLanes)
+                numUnfavorableLanes = len(copiedUnfavorableLanes)
+                numNTNLanes = len(copiedNTNLanes)
+                if numFavorableLanes != 0:
+                    strategy.append("유리한 {} 라인에 힘을 실어주어 포탑 방패를 제거하고 첫 포탑을 파괴하세요. 자기 포지션을 고집하는 것보다 첫 포탑을 먼저 파괴하는 것이 승률에 유리합니다.".format(copiedFavorableLanes))
+                else:
+                    if myLane == "JUNGLE":
+                        strategy.append("상대가 먼저 첫 포탑 파괴를 선점하지 않도록 라이너들을 도와주세요. 당장의 갱킹이나 정글링보다 첫 포탑 파괴 선점이 승률에 유리합니다.")
+                    else:
+                        strategy.append("라인 관리를 해서 상대가 먼저 첫 포탑 파괴를 선점하지 않도록 하고, 다른 라인의 우위를 가늠하여 로밍을 시도해보세요. 첫 포탑을 먼저 파괴하는 것이 승률에 유리합니다.")
                 tower = True
         elif tf == "first_inhibitor":
             if not inhibitor:
@@ -873,16 +1401,24 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                     inhibitor = True
         elif tf == "first_baron":
             if not baron:
-                strategy.append("첫 바론 선점")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2:
+                    strategy.append("팀이 충분히 유리할 때 첫 바론을 선점하도록 노력하세요. 첫 번째 바론을 선점하는 것이 승률에 매우 유리합니다.")
+                else:
+                    strategy.append("첫 바론을 선점하도록 노력하세요. 상황이 여의치 않다면 주변 시야를 확보하고 적에게 첫 바론을 주지 않도록 노력하세요. 첫 번째 바론을 선점하는 것이 승률에 매우 유리합니다.")
                 baron = True
         elif tf == "kills":
             if not kill:
-                strategy.append("스플릿 공격로 압도 혹은 한타 승리")
+                if numFavorableLanes > 2 and numUnfavorableLanes < 2:
+                    strategy.append("팀이 유리할 때 스플릿 공격을 시도하거나 한타에 승리하여 킬을 따내도록 노력하세요. 전투가 유리하게 진행될 가능성이 높습니다. 현 시점 킬을 따내는 것만으로도 승률에 유리합니다.")
+                elif numUnfavorableLanes > 2:
+                    strategy.append("상대가 스플릿 공격이나 한타를 시도할 가능성이 높습니다. 팀이 불리해서 전투가 불리하게 진행될 가능성이 높지만, 상대의 실수를 노려 최대한 이득을 보려 노력하세요. 현 시점 킬을 교환하는 것만으로도 승률에 유리합니다.")
+                else:
+                    strategy.append("스플릿 공격이나 한타를 시도하여 킬을 따내도록 노력해보세요. 현 시점 킬을 따내는 것만으로도 승률에 유리합니다.")
                 kill = True
         elif tf == "kills_total_minion":
-            strategy.append("cs 격차")
+            strategy.append("맵리딩을 통해 라인관리를 철저히 하세요. 주 캐리 포지션의 cs 우위를 점하도록 노력해보세요. 현 시점에서 단순히 라인 관리만 하더라도 승률에 유리합니다.")
         elif tf == "kills_total_jungle_minion":
-            strategy.append("정글링 격차")
+            strategy.append("맵리딩을 통해 정글관리를 철저히 하세요. 현 시점에서 단순히 정글관리만 하더라도 승률에 유리합니다.")
         elif tf == "total_dragons":
             if not dragon:
                 dragonList = list(df[-6:]['total_dragons'])
@@ -893,31 +1429,43 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                         toWait = idx+1
                         break
                 if isDragonAlive:
-                    strategy.append("즉시 용 처치 시도")
-                elif toWait < 3: # 기다려야되는 시간이 2분 미만
-                    strategy.append("1분 뒤 생성될 용 처치를 위환 정비 및 시야 확보")
+                    if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                        strategy.append("즉시 용 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다.")
+                    elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                        strategy.append("상대가 용 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 용을 뺏어야 합니다.")
+                    else:
+                        strategy.append("용 주변 시야를 장악하고 용싸움을 준비하세요. 기회가 된다면 용 처치를 시도해야 합니다.")
+                    strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
+                elif toWait < 3: # 기다려야되는 시간이 1분 미만
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
-                    strategy.append("2분 뒤 생성될 용 처치를 위한 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                    else:
+                        strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
         elif tf == "kills_top_towers":
             if topTowerKills == 0:
-                strategy.append("상단 공격로 1차 포탑 파괴")
+                strategy.append("상단 공격로 1차 포탑을 파괴하도록 노력하세요. 탑 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             else:
-                strategy.append("상단 공격로 2, 3차 포탑 파괴")
+                strategy.append("상단 공격로 2, 3차 포탑을 파괴하도록 노력하세요. 탑 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_mid_towers":
             if midTowerKills == 0:
-                strategy.append("중단 공격로 1차 포탑 파괴")
+                strategy.append("중단 공격로 1차 포탑을 파괴하도록 노력하세요. 미드 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             elif midTowerKills == 1 or midTowerKills == 2:
-                strategy.append("중단 공격로 2, 3차 포탑 파괴")
+                strategy.append("중단 공격로 2, 3차 포탑을 파괴하도록 노력하세요. 미드 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             else:
-                strategy.append("넥서스 포탑 파괴")
+                strategy.append("넥서스 포탑을 파괴하도록 노력하세요.")
             tower = True
         elif tf == "kills_bot_towers":
             if botTowerKills == 0:
-                strategy.append("하단 공격로 1차 포탑 파괴")
+                strategy.append("하단 공격로 1차 포탑을 파괴하도록 노력하세요. 바텀 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             else:
-                strategy.append("하단 공격로 2, 3차 포탑 파괴")
+                strategy.append("하단 공격로 2, 3차 포탑을 파괴하도록 노력하세요. 바텀 포탑을 파괴해놓는 것이 승률에 유리합니다.")
             tower = True
         elif tf == "kills_inhibitors":
             if not inhibitor:
@@ -939,18 +1487,34 @@ def after20(tier, point, team_belongs_to, timeline_df, df, targetModel):
                         toWait = idx+1
                         break
                 if isBaronAlive:
-                    strategy.append("즉시 바론 처치 시도")
-                elif toWait < 3:
-                    strategy.append("1분 뒤 생성될 바론 처치를 위한 정비 및 시야 확보")
+                    if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
+                        strategy.append("즉시 바론 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
+                    elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
+                        strategy.append("상대가 바론 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 바론을 뻇어야 합니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
+                    else:
+                        strategy.append("바론 주변 시야를 장악하고 바론 싸움을 준비하세요. 기회가 된다면 바론 처치를 시도해야 합니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
+                elif toWait < 3: # 기다려야되는 시간이 1분 미만
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("1분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뻇어야 합니다.")
+                    else:
+                        strategy.append("1분 뒤 생성될 바론 처치를 위해 정비하고 바론 주변 시야를 확보하도록 노력하세요. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
-                    strategy.append("2분 뒤 생성될 바론 처치를 위한 정비 및 시야 확보")
+                    if numUnfavorableLanes > 2 and numFavorableLanes < 2:
+                        strategy.append("2분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뻇어야 합니다.")
+                    else:
+                        strategy.append("2분 뒤 생성될 바론 처치를 위해 정비하고 바론 주변 시야를 확보하도록 노력하세요. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 baron = True
         elif tf == "total_level":
-            strategy.append("성장, 레벨링")
+            if numFavorableLanes > 2 and numUnfavorableLanes < 2:
+                strategy.append("라인과 정글을 관리하며 레벨업에 힘쓰세요. 현 시점 단순히 레벨 격차를 벌리는 것만으로도 승률에 유리합니다.")
+            elif numUnfavorableLanes > 2:
+                strategy.append("라인과 정글을 관리하며 레벨업에 힘쓰세요. 현 시점 단순히 레벨 격차를 따라잡는 것만으로도 승률에 유리합니다.")
+            else:
+                strategy.append("라인과 정글을 관리하며 레벨업에 힘쓰세요. 현 시점 단순히 레벨을 올리는 것만으로도 승률에 유리합니다.")
         elif tf == "place_wards":
-            strategy.append("맵 내 시야 확보")
+            strategy.append("맵 내 시야를 확보하고 상대의 동선 실수를 노리거나 전투를 유리하게 점하도록 노력해보세요. 현 시점 시야를 확보하는 것만으로도 승률에 유리합니다.")
         elif tf == "kills_wards":
-            strategy.append("적 시야 제거")
+            strategy.append("맵 내 적의 시야를 제거하고 상대의 동선 실수를 유도하거나 맵 내 정보력을 차단하세요. 현 시점 시야를 제거하는 것만으로도 승률에 유리합니다.")
         del winrate_var[twrIdx]
         del tf_after[twrIdx]
     return strategy

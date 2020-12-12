@@ -43,7 +43,8 @@ def getplaystyle(summoner_name, game_id, psModels):
     #db.store_playstyle(summoner_name, game_id, playstyle)
     return playstyle
 
-def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df, Models):
+def getstrategies(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, refined_timeline_df, Models):
+    # target_pframes에는 그 point분의 participantFrames를 담고 있다.
     modelTiers = Models['tiers']
     try: tierIdx = modelTiers.index(tier)
     except ValueError:
@@ -62,15 +63,15 @@ def getstrategies(tier, point, team_belongs_to, timeline_df, refined_timeline_df
         targetModel = models[point-1]
         # Simulationing code
         if point < 5:
-            strategy = simul.before5(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
+            strategy = simul.before5(modelTier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 8:
-            strategy = simul.before8(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
+            strategy = simul.before8(modelTier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 14:
-            strategy = simul.before14(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
+            strategy = simul.before14(modelTier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, sliced_df, targetModel)
         elif point < 20:
-            strategy = simul.before20(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
+            strategy = simul.before20(modelTier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, sliced_df, targetModel)
         else:
-            strategy = simul.after20(modelTier, point, team_belongs_to, timeline_df, sliced_df, targetModel)
+            strategy = simul.after20(modelTier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, sliced_df, targetModel)
         e_strategy = {
             "model_tier":modelTier,
             "strategy":strategy
@@ -108,7 +109,8 @@ def getanalysis(summoner_name, game_id, Models):
         timeline_df = pd.concat([timeline_df, df_row])
     # timeline_df has been made
     events = db.load_events(game_id)
-    target_id = db.load_target_id(summoner_name, game_id)
+    target_id = db.load_target_id(summoner_name, game_id) # 원인 피드백, 전략 추천에 직접적으로 필요
+    lane_info = db.load_laneinfo(game_id) # 나중에 전략에 필요
     for point in points: # npArr[k] = k+1분의 상황 데이터
         # 원인(피드백) 조사
         # npArr[point]: (point+1)분의 상황
@@ -127,7 +129,8 @@ def getanalysis(summoner_name, game_id, Models):
             feedback = fba.tfphase_analysis(point, target_id, team_belongs_to, win_rate, delta, deltaFeatures, timeline_df, targetEvents)
         # 타 티어 전략 추천
         # strategies:List<e_strategy>, e_strategy:Json(modelTier:String, strategy:List)
-        strategies = getstrategies(tier, point, team_belongs_to, timeline_df, df, Models)
+        target_pframes = db.load_pframes(game_id)[str(point)] # 전략에 필요
+        strategies = getstrategies(tier, point, feedback, target_id, lane_info, target_pframes, team_belongs_to, timeline_df, df, Models)
         db.store_feedback(summoner_name, game_id, point, feedback)
         db.store_strategies(summoner_name, game_id, point, strategies)
         feedback_points[str(point)]['feedback'] = feedback

@@ -89,7 +89,10 @@ def calCombatFeedback(target_id, team_belongs_to, combatState, feedback):
                         feedback.append("적의 슈퍼플레이: {}에서 단신으로 아군 {}명 처치".format(pos, numVictims))
             elif numParticipants > 1:
                 if target_id in victims:
-                    feedback.append("적 {}명이 {}에서 나와 아군 {}명 처치".format(numParticipants, pos, numVictims-1))
+                    if numVictims == 1:
+                        feedback.append("적 {}명이 {}에서 나 처치".format(numParticipants, pos))
+                    else:
+                        feedback.append("적 {}명이 {}에서 나와 아군 {}명 처치".format(numParticipants, pos, numVictims-1))
                 else:
                     feedback.append("적 {}명이 {}에서 아군 {}명 처치".format(numParticipants, pos, numVictims))
     else: # 유저가 레드팀
@@ -131,7 +134,10 @@ def calCombatFeedback(target_id, team_belongs_to, combatState, feedback):
                         feedback.append("적의 슈퍼플레이: {}에서 단신으로 아군 {}명 처치".format(pos, numVictims))
             elif numParticipants > 1:
                 if target_id in victims:
-                    feedback.append("적 {}명이 {}에서 나와 아군 {}명 처치".format(numParticipants, pos, numVictims-1))
+                    if numVictims == 1:
+                        feedback.append("적 {}명이 {}에서 나 처치".format(numParticipants, pos))
+                    else:
+                        feedback.append("적 {}명이 {}에서 나와 아군 {}명 처치".format(numParticipants, pos, numVictims-1))
                 else:
                     feedback.append("적 {}명이 {}에서 아군 {}명 처치".format(numParticipants, pos, numVictims))
     return feedback

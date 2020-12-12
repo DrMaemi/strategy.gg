@@ -158,7 +158,7 @@ def getspec(info, Models):
             team = 1 # red team
             if matchinfo['teams'][1]['win'] == 'Win': win = 1
             else: win = 0
-        laneInfoForDb, frames = {}, timeline_data['frames'][3:11]
+        laneInfoForDb, frames = [], timeline_data['frames'][3:11]
         for p_id in range(1, 11): # 해당 게임에 참여한 유저 10명의 라인 정보 조사
             tmpParticipant = matchinfo['participants'][p_id-1]
             spell1id, spell2id = tmpParticipant['spell1Id'], tmpParticipant['spell2Id']
@@ -175,11 +175,11 @@ def getspec(info, Models):
                             pf = participantFrames[str(pfidx)]
                             if pf['participantId'] == p_id:
                                 x, y = pf['position']['x'], pf['position']['y']
-                                if (x<4000 and y>4000) or (x<11000 and y>11000):
+                                if ((y>3000) and (570<x and x<1710)) or ((x<12000) and (13090<y and y<14230)):
                                     calPositions['TOP'] += 1
-                                elif (x>4000 and y<4000) or (x>11000 and y<11000):
+                                elif ((x>3000) and (570<y and y<1710)) or ((y<12000) and (13090<x and x<14230)):
                                     calPositions['BOTTOM'] += 1
-                                else:
+                                elif (2120<x and x<12880) and (y<x+820 and y>x-820):
                                     calPositions['MID'] += 1
                                 break
                     posVals = list(calPositions.values())
@@ -201,12 +201,12 @@ def getspec(info, Models):
                     supporterId = csList.index(min(csList))+1
                     if team == 1: supporterId += 5
                     if p_id == supporterId: lane = "SUPPORTER"
-            laneInfoForDb[str(p_id)] = lane
+            laneInfoForDb.append(lane)
         db.store_laneinfo(game_id, laneInfoForDb)
         targetParticipant = matchinfo['participants'][targetId-1] # json
         spell1id, spell2id = targetParticipant['spell1Id'], targetParticipant['spell2Id']
         role = outline['role']
-        lane = laneInfoForDb[str(targetId)]
+        lane = laneInfoForDb[targetId-1]
         # lane이 정해졌으면, 플레이스타일용 데이터도 저장
         ps_db_features = ps.PlayStyle().ps_db_features
         ps_features = ps.PlayStyle().ps_features
