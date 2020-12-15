@@ -2,7 +2,11 @@ import pandas as pd
 import numpy as np
 from refinedata import Metadata
 
-posTypes = ["탑", "봇", "미드", "블루팀 위쪽 정글", "블루팀 아래쪽 정글", "레드팀 위쪽 정글", "레드팀 아래쪽 정글", "전령/바론 앞", "용 앞"]
+posTypes = [
+    "탑", "블루팀 위쪽 정글", "레드팀 위쪽 정글", "전령/바론 앞", # 0 1 2 3
+    "미드", "블루팀 아래쪽 정글", "레드팀 아래쪽 정글", "용 앞", # 4 5 6 7
+    "봇" # 8
+    ]
 
 def distinguish_pos(x, y):
     # TOP

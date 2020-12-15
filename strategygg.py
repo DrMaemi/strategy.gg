@@ -17,8 +17,9 @@ import spectoanalysis
 
 app = Flask(__name__)
 CORS(app)
-host_addr = "61.99.75.232"
-api_key = "RGAPI-15e90a21-fdbd-4349-9685-0fda537325ea"
+host_addr = "118.223.76.206"
+#host_addr = "61.99.75.232"
+api_key = "RGAPI-7a9494ac-51d2-4e62-a20a-3e5cd4a9a0ef"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
@@ -145,6 +146,7 @@ def regenerate_key(new_key):
     return "True"
 
 if __name__ == "__main__":
-    context = ("APICertificates/server.crt", "APICertificates/server.key")
+    context = ("APICertificates/certificate.crt", "APICertificates/private.key")
     app.run(host_addr, port=5000, threaded=True, ssl_context=context)
+    #app.run(host_addr, port=5000, threaded=True)
     #app.run()

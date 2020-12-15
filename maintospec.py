@@ -120,7 +120,7 @@ def getspec(info, Models):
             if game_id == outline['gameId']:
                 cutIdx = idx
                 break
-        for matchspec_db in matchspecs_db[:cutIdx]:
+        for matchspec_db in matchspecs_db[cutIdx:]:
             whenGamePlayed = matchspec_db['whenGamePlayed']
             time_passed = ceil(round(time.time(), 1)-whenGamePlayed)
             matchspec_db['time_passed'] = time_passed
@@ -186,22 +186,23 @@ def getspec(info, Models):
                     posKeys = list(calPositions.keys())
                     lane = posKeys[posVals.index(max(posVals))]
                 except: pass
-                if lane == "BOTTOM":
-                    csList = [] # 해당 경기 각 플레이어의 총 cs 획득 수를 담는다
-                    if team == 0: # target 유저가 블루팀인 경우
-                        for pidx in range(5):
-                            ptcp = matchinfo['participants'][pidx]
-                            csKilled = ptcp['stats']['totalMinionsKilled']
-                            csList.append(csKilled)
-                    else: # target 유저가 레드팀인 경우
-                        for pidx in range(5, 10):
-                            ptcp = matchinfo['participants'][pidx]
-                            csKilled = ptcp['stats']['totalMinionsKilled']
-                            csList.append(csKilled)
-                    supporterId = csList.index(min(csList))+1
-                    if team == 1: supporterId += 5
-                    if p_id == supporterId: lane = "SUPPORTER"
             laneInfoForDb.append(lane)
+        bottoms = []
+        for laneidx, lane in enumerate(laneInfoForDb[:5]):
+            if lane == "BOTTOM":
+                bottoms.append(laneidx)
+        if len(bottoms) == 2:
+            cs0, cs1 = matchinfo['participants'][bottoms[0]]['stats']['totalMinionsKilled'], matchinfo['participants'][bottoms[1]]['stats']['totalMinionsKilled']
+            if cs0 > cs1: laneInfoForDb[bottoms[1]] = "SUPPORTER"
+            else: laneInfoForDb[bottoms[0]] = "SUPPORTER"
+        bottoms = []
+        for laneidx, lane in enumerate(laneInfoForDb[5:]):
+            if lane == "BOTTOM":
+                bottoms.append(laneidx+5)
+        if len(bottoms) == 2:
+            cs0, cs1 = matchinfo['participants'][bottoms[0]]['stats']['totalMinionsKilled'], matchinfo['participants'][bottoms[1]]['stats']['totalMinionsKilled']
+            if cs0 > cs1: laneInfoForDb[bottoms[1]] = "SUPPORTER"
+            else: laneInfoForDb[bottoms[0]] = "SUPPORTER"
         db.store_laneinfo(game_id, laneInfoForDb)
         targetParticipant = matchinfo['participants'][targetId-1] # json
         spell1id, spell2id = targetParticipant['spell1Id'], targetParticipant['spell2Id']
@@ -356,7 +357,7 @@ def getspec(info, Models):
             db.store_pframes(timelines[idx]['gameId'], timeline_pframes)
             db.store_events(timelines[idx]['gameId'], timeline_events)
         except: pass # feedback_points = 0, 즉 피드백할 내용이 없는 경기인 경우
-    try: matchspecs += matchspecs_db[:cutIdx+1]
+    try: matchspecs += matchspecs_db[cutIdx:]
     except TypeError: pass
     spec = {
         "userspec":userspec, # json

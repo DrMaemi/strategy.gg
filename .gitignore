@@ -1,2 +1,4 @@
 APICerticiates
 *.json
+*.crt
+*.key
