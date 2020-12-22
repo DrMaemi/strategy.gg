@@ -951,12 +951,12 @@ def before14(tier, point, feedback, target_id, lane_info, target_pframes, team_b
                     strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
@@ -1270,12 +1270,12 @@ def before20(tier, point, feedback, target_id, lane_info, target_pframes, team_b
                     strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
@@ -1605,12 +1605,12 @@ def after20(tier, point, feedback, target_id, lane_info, target_pframes, team_be
                     strategy.append("용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("1분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("1분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뻇어야 합니다.")
+                        strategy.append("2분 뒤 생성될 용을 위해 상대가 용 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 용 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 용을 뺏어야 합니다.")
                     else:
                         strategy.append("2분 뒤 생성될 용 처치를 위해 정비하고 용 주변 시야를 확보하도록 노력하세요. 용을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 dragon = True
@@ -1657,17 +1657,17 @@ def after20(tier, point, feedback, target_id, lane_info, target_pframes, team_be
                     if numFavorableLanes > 2 and numUnfavorableLanes < 2: # 과반수 이상의 라인이 유리한 경우(정글, 서폿 포함)
                         strategy.append("즉시 바론 처치를 시도하세요. 상대가 싸움을 걸더라도 이길 확률이 높습니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                     elif numUnfavorableLanes > 2 and numFavorableLanes < 2: # 과반수 이상의 라인이 불리한 경우
-                        strategy.append("상대가 바론 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 바론을 뻇어야 합니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
+                        strategy.append("상대가 바론 처치를 시도하는 순간을 노려 유리한 전투를 하도록 유도하세요. 기회가 된다면 바론을 뺏어야 합니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                     else:
                         strategy.append("바론 주변 시야를 장악하고 바론 싸움을 준비하세요. 기회가 된다면 바론 처치를 시도해야 합니다. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait < 3: # 기다려야되는 시간이 1분 미만
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("1분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뻇어야 합니다.")
+                        strategy.append("1분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뺏어야 합니다.")
                     else:
                         strategy.append("1분 뒤 생성될 바론 처치를 위해 정비하고 바론 주변 시야를 확보하도록 노력하세요. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 elif toWait == 3:
                     if numUnfavorableLanes > 2 and numFavorableLanes < 2:
-                        strategy.append("2분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뻇어야 합니다.")
+                        strategy.append("2분 뒤 생성될 바론을 위해 상대가 바론 주변 시야를 장악하려 시도할 가능성이 높습니다. 전면전을 할 경우 이길 확률이 낮으니 상대의 실수를 노리며 시야 싸움을 하세요. 현 시점 바론 처치가 승률에 큰 영향을 줍니다. 기회가 된다면 바론을 뺏어야 합니다.")
                     else:
                         strategy.append("2분 뒤 생성될 바론 처치를 위해 정비하고 바론 주변 시야를 확보하도록 노력하세요. 현 시점 바론을 처치하는 것이 승률에 큰 영향을 줍니다.")
                 baron = True

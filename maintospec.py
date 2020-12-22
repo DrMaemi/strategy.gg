@@ -129,6 +129,7 @@ def getspec(info, Models):
             "userspec":userspec,
             "matchspecs":matchspecs_db
         }
+        db.store_spec(summoner_name_db, spec)
         for matchspec in spec['matchspecs']:
             try: del matchspec['whenGamePlayed']
             except: pass

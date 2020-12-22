@@ -17,9 +17,10 @@ import spectoanalysis
 
 app = Flask(__name__)
 CORS(app)
-host_addr = "118.223.76.206"
+host_addr = "1.234.104.65"
+#host_addr = "118.223.76.206"
 #host_addr = "61.99.75.232"
-api_key = "RGAPI-7a9494ac-51d2-4e62-a20a-3e5cd4a9a0ef"
+api_key = "RGAPI-89b12687-2b36-4d08-b3c3-4348f26144ab"
 
 mod = sys.modules[__name__]
 tiers = ["GOLD", "PLATINUM", "DIAMOND", "MASTER", "CHALLENGER"]
