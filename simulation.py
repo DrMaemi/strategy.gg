@@ -1371,6 +1371,8 @@ def after20(tier, point, feedback, target_id, lane_info, target_pframes, team_be
         varState['deaths'] -= statistics['deaths']
         simul = np.array(df.append(varState))
         simul = scaler.fit_transform(simul)
+        timestamps, input_dim = simul.shape
+        simul = simul.reshape(1, timestamps, input_dim)
         if team == "blue":
             winrate_var.append(targetModel.predict(simul)[0][0])
         else:
