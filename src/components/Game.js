@@ -165,9 +165,11 @@ function ChIDToName(id) {
 }
 
 const Game = (props) => {
-
+  
     const [DropdownState, setDropdownState] = useState("dropdown-disable");
-    const [copyInfo, setCopyInfo] = useState(props);
+
+ 
+    
     
     const [isPageLoading, setIsPageLoading] = useState(0);
     const [isLoading, setLoading] = useState(0);
@@ -180,30 +182,36 @@ const Game = (props) => {
     const [ChampionImg, setChampionImg] = useState(null);
 
     useEffect(() => {
-        if (isPageLoading === 0) { getUrlnfo(); }
+        if (isPageLoading === 0) { 
+            getUrlnfo(); 
+
+        }
     
 
     }, [isLoading, isPageLoading])
     
 
+
     const getUrlnfo = async () => {
         let ChampionURL, Spell1URL, Spell2URL, LaneURL = 0;
-        let Lane = copyInfo.info.lane;
-        if (copyInfo.info.lane === "BOTTOM" && copyInfo.info.role === "DUO_CARRY") {
-            Lane = "AD";
-        }
-        else if (copyInfo.info.lane === "BOTTOM" && copyInfo.info.role === "DUO_SUPPORT") {
-            Lane = "SUPPORTER";
-        }
+        let Lane = props.info.lane;
+      
+        // if (copyInfo.info.lane === "BOTTOM" && copyInfo.info.role === "DUO_CARRY") {
+        //     Lane = "AD";
+        // }
+        // else if (copyInfo.info.lane === "BOTTOM" && copyInfo.info.role === "DUO_SUPPORT") {
+        //     Lane = "SUPPORTER";
+        // }
+       
 
         const championURL = () => {
-            ChampionURL = storage.ref().child('Champion/' + String(ChIDToName(copyInfo.info.champion_id)) + '.png').getDownloadURL();
+            ChampionURL = storage.ref().child('Champion/' + String(ChIDToName(props.info.champion_id)) + '.png').getDownloadURL();
         }
         const spell1URL = () => {
-            Spell1URL = storage.ref().child('Spell/' + String(copyInfo.info.spell_id[0]) + '.png').getDownloadURL();
+            Spell1URL = storage.ref().child('Spell/' + String(props.info.spell_id[0]) + '.png').getDownloadURL();
         }
         const spell2URL = () => {
-            Spell2URL = storage.ref().child('Spell/' + String(copyInfo.info.spell_id[1]) + '.png').getDownloadURL();
+            Spell2URL = storage.ref().child('Spell/' + String(props.info.spell_id[1]) + '.png').getDownloadURL();
         }
         const laneURL = () => {
             LaneURL = storage.ref().child('Lane/' + String(Lane) + '.png').getDownloadURL();
@@ -241,23 +249,24 @@ const Game = (props) => {
             });
         }
         catch { }
-
+        
+    
         setIsPageLoading(1);
     }
 
     
     var time_passed;
-    if (copyInfo.info.time_passed < 60) {//1분 이내
-        time_passed = copyInfo.info.time_passed + '초';
+    if (props.info.time_passed < 60) {//1분 이내
+        time_passed = props.info.time_passed + '초';
     }
-    else if (copyInfo.info.time_passed < 3600) {//1시간 이내
-        time_passed = parseInt(copyInfo.info.time_passed / 60) + '분 ' + parseInt(copyInfo.info.time_passed % 60) + '초';
+    else if (props.info.time_passed < 3600) {//1시간 이내
+        time_passed = parseInt(props.info.time_passed / 60) + '분 ' + parseInt(props.info.time_passed % 60) + '초';
     }
-    else if (copyInfo.info.time_passed < 86400) {//하루 이내
-        time_passed = parseInt(copyInfo.info.time_passed / 3600) + '시간 ' + parseInt(copyInfo.info.time_passed % 3600 / 60) + '분';
+    else if (props.info.time_passed < 86400) {//하루 이내
+        time_passed = parseInt(props.info.time_passed / 3600) + '시간 ' + parseInt(props.info.time_passed % 3600 / 60) + '분';
     }
     else {
-        time_passed = parseInt(copyInfo.info.time_passed / 86400) + '일'
+        time_passed = parseInt(props.info.time_passed / 86400) + '일'
     }
     const onClick = (event) => {
         if (DropdownState === "dropdown-disable") {
@@ -273,9 +282,9 @@ const Game = (props) => {
 
         try {
             const spec = await axios
-                .get(`http://61.99.75.232:5000/analysis/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
+                .get(`https://stggapi.ga:5000/analysis/?name=${props.summonerName}&game_id=${props.info.game_id}`);
             const PS_spec = await axios
-            .get(`http://61.99.75.232:5000/playstyle/?name=${copyInfo.summonerName}&game_id=${copyInfo.info.game_id}`);
+            .get(`https://stggapi.ga:5000/playstyle/?name=${props.summonerName}&game_id=${props.info.game_id}`);
       
             setPlayStyleInfo(PS_spec.data); 
      
@@ -298,7 +307,7 @@ const Game = (props) => {
                     <div className="near">
                         <div className="column">
                             <img src={ChampionImg} className="Champion" />
-                            <b className="Level">Lv {copyInfo.info.level}</b>
+                            <b className="Level">Lv {props.info.level}</b>
                         </div>
                         <div className="column">
                             <img src={Spell1Img} className="Spell1" />
@@ -306,17 +315,17 @@ const Game = (props) => {
                         </div>
                     </div>
                     <div className="column">
-                        <b className="KDA">{copyInfo.info.kill + ' / ' + copyInfo.info.death + ' / ' + copyInfo.info.assist}</b>
-                        <b className="AVG">{'평점 ' + copyInfo.info.avg}:1</b>
+                        <b className="KDA">{props.info.kill + ' / ' + props.info.death + ' / ' + props.info.assist}</b>
+                        <b className="AVG">{'평점 ' + props.info.avg}:1</b>
                     </div>
                     <img src={LaneImg} className="Lane" />
                     <div className="column">
-                        <h3 className="TeamScore">{copyInfo.info.team_score}</h3>
-                        {copyInfo.info.win === 0 ? <h5 className="패배">패배</h5> : <h5 className="승리">승리</h5>}
+                        <h3 className="TeamScore">{props.info.team_score}</h3>
+                        {props.info.win === 0 ? <h5 className="패배">패배</h5> : <h5 className="승리">승리</h5>}
                     </div>
-                    <h3 className="Duration">{parseInt(copyInfo.info.duration / 60) + '분 ' + (copyInfo.info.duration - (parseInt(copyInfo.info.duration / 60)) * 60) + '초'}</h3>
+                    <h3 className="Duration">{parseInt(props.info.duration / 60) + '분 ' + (props.info.duration - (parseInt(props.info.duration / 60)) * 60) + '초'}</h3>
                     <div className="column">
-                        <PieChart className="PieChart" feedback={copyInfo.info.feedbacks} />
+                        <PieChart className="PieChart" feedback={props.info.feedbacks} />
                         <b className="descPieChart">피드백 개수</b>
                     </div>
                     <button className="Analysis" width="70px" height="70px" onClick={onClick}></button>

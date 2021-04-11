@@ -28,9 +28,9 @@
 .feedback_content{
     color : black;
     font-family: '나눔스퀘어';
-    src : url('../common/NANUMSQUAREEB.TTF');
-    font-size : 17px;
-    font-weight : bolder;
+    src : url('../common/NANUMSQUAREL.TTF');
+    font-weight: 600;
+    font-size : 15px;
     margin : 10px;
 }
 .원인_Container{
@@ -41,7 +41,7 @@
 
     padding-top : 10px;
     padding-bottom : 10px;
-    width : 380px;
+    width : 430px;
 
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -49,6 +49,6 @@
 
     color : black;
     font-family: '나눔스퀘어';
-    src : url('../common/NANUMSQUAREEB.TTF');
-    font-size:17px;
+    src : url('../common/NANUMSQUAREB.TTF');
+    font-size:15px;
 }
