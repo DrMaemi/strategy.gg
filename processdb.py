@@ -1,10 +1,10 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
-firebase_admin.initialize_app(cred,{
-    "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
-})
+# cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
+# firebase_admin.initialize_app(cred,{
+#     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
+# })
 
 def load_playstyle(summoner_name, game_id):
     db_path = "Playstyles/{}/{}"
