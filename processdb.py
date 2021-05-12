@@ -1,9 +1,13 @@
-import firebase_admin
+import firebase_admin, json
 from firebase_admin import credentials
 from firebase_admin import db
-# cred = credentials.Certificate("strategygg-f3884-firebase-adminsdk-l4cvw-481c873e10.json")
+
+# with open('./config/keys.json') as f:
+#     firebase_url = json.load(f)['firebase_url']
+#     firebase_key = json.load(f)['firebase_key']
+# cred = credentials.Certificate(firebase_key)
 # firebase_admin.initialize_app(cred,{
-#     "databaseURL" : "https://strategygg-f3884.firebaseio.com/"
+#     "databaseURL" : firebase_url
 # })
 
 def load_playstyle(summoner_name, game_id):
