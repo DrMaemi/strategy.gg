@@ -1,0 +1,12 @@
+.SummonerDetailPageContainer{
+    background-image:url('../img/SummonerDetailPageBackground.png');
+    height : 100vh;
+    width : 100vw;
+
+    background-size : cover;
+    background-repeat: no-repeat;
+    overflow: scroll;
+} 
+.Boxs{
+    margin : 40px;
+}

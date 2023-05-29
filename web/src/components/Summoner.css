@@ -1,0 +1,79 @@
+.ProfileContainer{
+    background-color: #222A35;
+    width : 400px;
+    height: 110px;
+    border-radius : 10px;
+    box-shadow:1px 2px 13px -5px black, -1px 2px 13px -5px black;
+    margin : 20px;
+    margin-bottom : 40px;
+    display : flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.ProfileIcon{
+    
+    width : 70px;
+    height : 70px;
+}
+.nameNbtn{
+    display : flex;
+    flex-direction : column;
+    align-items: center;
+
+}
+.SummonerName{
+    color : white;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    margin : 5px;
+
+}
+.UpdateButton{
+    border-radius: 20px;
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    background-color: #d6e6ff ;
+    color : black;
+    margin : 5px;
+    
+}
+.TierIcon{
+   
+    width : 40px;
+    height : 40px;
+}
+.tierNlp{
+    display : flex;
+    flex-direction : column;
+    align-items: center;
+    
+}
+.TierName{
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color : white;
+    margin : 5px;
+}
+.LP{
+    font-family: '나눔스퀘어';
+    src : url('./common/NANUMSQUAREL.TTF');
+    color : white;
+    margin : 5px;
+}
+
+
+
+.refetching {    
+    position: relative;    
+    display: inline-block;    
+    width: 20px;    
+    height: 20px;    
+    margin-left: 25px;
+    border: 1px solid rgba(255,255,255,.3);    
+    border-radius: 50%;    
+    border-top-color: #fff133;    
+    animation: spin 1s ease-in-out infinite;    
+    -webkit-animation: spin 1s ease-in-out infinite;  }    
+    @keyframes spin {    to { -webkit-transform: rotate(360deg); }  }  
+    @-webkit-keyframes spin {    to { -webkit-transform: rotate(360deg); }  
+}
